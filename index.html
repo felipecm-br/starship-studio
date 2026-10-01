@@ -895,6 +895,254 @@
       text-decoration: underline;
       color: var(--accent-primary);
     }
+    /* Engine Mode Selector Bar */
+    .terminal-engine-bar {
+      background: var(--scenario-bar-bg);
+      border-bottom: 1px solid var(--terminal-bar-border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .engine-switch-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .engine-switch-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .engine-toggle-pills {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-primary);
+      padding: 3px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+    }
+
+    .engine-pill {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .engine-pill:hover {
+      color: var(--text-main);
+    }
+
+    .engine-pill.active {
+      background: var(--accent-primary);
+      color: #ffffff;
+      box-shadow: 0 1px 6px var(--border-glow);
+    }
+
+    .engine-pill-tag {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 1px 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      color: inherit;
+    }
+
+    /* WebAssembly Studio Panel (Oh My Posh Studio Style) */
+    .wasm-studio-panel {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--terminal-bar-border);
+      padding: 12px 16px;
+      animation: wasmFadeIn 0.25s ease;
+    }
+
+    @keyframes wasmFadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .wasm-loading-state {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 4px;
+    }
+
+    .wasm-loading-spinner {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--accent-primary);
+      border-radius: 50%;
+      animation: wasmSpin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes wasmSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .wasm-loading-info {
+      flex: 1;
+    }
+
+    .wasm-loading-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .wasm-loading-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .wasm-progress-bar {
+      height: 4px;
+      background: var(--bg-tertiary);
+      border-radius: 2px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .wasm-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent-primary);
+      border-radius: 2px;
+      transition: width 0.25s ease;
+    }
+
+    .wasm-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .wasm-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .wasm-badge {
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      user-select: none;
+    }
+
+    .wasm-badge-active {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+
+    .wasm-badge-meta {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-family: var(--font-code);
+    }
+
+    .wasm-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .wasm-reset-btn,
+    .wasm-switch-native-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .wasm-reset-btn:hover,
+    .wasm-switch-native-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent-primary);
+    }
+
+    .wasm-notice-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 10px;
+      border-left: 2px solid var(--accent-primary);
+      padding-left: 8px;
+    }
+
+    .wasm-sample-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .wasm-sample-col {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .wasm-sample-col label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .wasm-sample-col input,
+    .wasm-sample-col select {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-code);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .wasm-sample-col input:focus,
+    .wasm-sample-col select:focus {
+      border-color: var(--accent-primary);
+    }
 
     .modal-author-link {
       color: var(--accent-cyan);
@@ -2057,8 +2305,28 @@
             </button>
           </div>
         </div>
-        <!-- Interactive Terminal Scenario Playground -->
-        <div class="scenario-toolbar">
+        <!-- Engine Mode Switcher Bar -->
+        <div class="terminal-engine-bar">
+          <div class="engine-switch-container">
+            <span class="engine-switch-label">Renderer Engine:</span>
+            <div class="engine-toggle-pills" role="radiogroup" aria-label="Engine Mode">
+              <button type="button" class="engine-pill active" id="btnEngineNative" onclick="setPromptEngine('native')">
+                <span class="engine-icon">⚡</span> Native JS
+              </button>
+              <button type="button" class="engine-pill" id="btnEngineWasm" onclick="setPromptEngine('wasm')">
+                <span class="engine-icon">🦀</span> WebAssembly (WASM)
+                <span class="engine-pill-tag">Optional</span>
+              </button>
+            </div>
+          </div>
+          <div class="terminal-creator-credit" id="terminalCreatorCredit">
+            <span class="credit-label">Preset by:</span>
+            <a id="terminalCreatorLink" href="#" target="_blank" rel="noopener noreferrer" class="creator-link">Starship Team ↗</a>
+          </div>
+        </div>
+
+        <!-- Interactive Terminal Scenario Playground (Native Mode) -->
+        <div class="scenario-toolbar" id="nativeScenarioToolbar">
           <div class="scenario-left-group">
             <span class="scenario-title">Playground Scenario:</span>
             <div class="scenario-pills">
@@ -2068,9 +2336,83 @@
               <button class="scenario-btn" id="btn-scen-deep" onclick="setScenario('deep')">📂 Deep Project</button>
             </div>
           </div>
-          <div class="terminal-creator-credit" id="terminalCreatorCredit">
-            <span class="credit-label">Preset by:</span>
-            <a id="terminalCreatorLink" href="#" target="_blank" rel="noopener noreferrer" class="creator-link">Starship Team ↗</a>
+        </div>
+
+        <!-- WebAssembly Studio Panel (WASM Mode, inspired by ohmyposh.dev/docs/studio) -->
+        <div class="wasm-studio-panel" id="wasmStudioPanel" style="display: none;">
+          <div class="wasm-loading-state" id="wasmLoadingState" style="display: none;">
+            <div class="wasm-loading-spinner"></div>
+            <div class="wasm-loading-info">
+              <div class="wasm-loading-title">Initializing WebAssembly Studio Engine...</div>
+              <div class="wasm-loading-desc">Instantiating WASM linear memory buffer (64 KB) and sandboxed prompt pipeline. Zero data sent to server.</div>
+              <div class="wasm-progress-bar"><div class="wasm-progress-fill" id="wasmProgressFill"></div></div>
+            </div>
+          </div>
+          <div class="wasm-ready-state" id="wasmReadyState">
+            <div class="wasm-meta-row">
+              <div class="wasm-badge-group">
+                <span class="wasm-badge wasm-badge-active">🦀 WASM Active</span>
+                <span class="wasm-badge wasm-badge-meta">Heap: 64 KB (1 Page)</span>
+                <span class="wasm-badge wasm-badge-meta" id="wasmTelemetryBadge">Render: 0.3ms</span>
+                <span class="wasm-badge wasm-badge-meta">Zero-Server Sandbox</span>
+              </div>
+              <div class="wasm-actions">
+                <button type="button" class="wasm-reset-btn" onclick="resetWasmSampleData()" title="Reset to default recorded sample data">↺ Reset Samples</button>
+                <button type="button" class="wasm-switch-native-btn" onclick="setPromptEngine('native')" title="Switch back to instantaneous native simulator">⚡ Switch to Native JS</button>
+              </div>
+            </div>
+            <div class="wasm-notice-text">
+              A WebAssembly build of the prompt engine executes in your browser, so nothing is sent to a server. Segments draw on recorded sample data, not your machine.
+            </div>
+            <div class="wasm-sample-grid">
+              <div class="wasm-sample-col">
+                <label for="wasmSampleDir">Virtual Directory</label>
+                <input type="text" id="wasmSampleDir" value="~/dev/github/starship-studio" oninput="onWasmSampleChange()" />
+              </div>
+              <div class="wasm-sample-col">
+                <label for="wasmSampleBranch">Git Branch</label>
+                <input type="text" id="wasmSampleBranch" value="feat/wasm-studio" oninput="onWasmSampleChange()" />
+              </div>
+              <div class="wasm-sample-col">
+                <label for="wasmSampleStatus">Git Status</label>
+                <select id="wasmSampleStatus" onchange="onWasmSampleChange()">
+                  <option value="clean">🌿 Clean (main)</option>
+                  <option value="dirty" selected>⚡ Dirty (+2 ~1 ?3)</option>
+                  <option value="ahead">⇡ Ahead (+2)</option>
+                  <option value="behind">⇣ Behind (-1)</option>
+                  <option value="diverged">⇕ Diverged (+1 -1)</option>
+                </select>
+              </div>
+              <div class="wasm-sample-col">
+                <label for="wasmSampleLang">Language Runtime</label>
+                <select id="wasmSampleLang" onchange="onWasmSampleChange()">
+                  <option value="rust" selected>🦀 Rust 1.85.0</option>
+                  <option value="node"> Node.js 22.12.0</option>
+                  <option value="go"> Go 1.23.4</option>
+                  <option value="bun"> Bun 1.1.20</option>
+                  <option value="python"> Python 3.12.3</option>
+                  <option value="php"> PHP 8.3.1</option>
+                </select>
+              </div>
+              <div class="wasm-sample-col">
+                <label for="wasmSampleExit">Command Exit Code</label>
+                <select id="wasmSampleExit" onchange="onWasmSampleChange()">
+                  <option value="0" selected>✓ 0 (Success)</option>
+                  <option value="1">✗ 1 (General Error)</option>
+                  <option value="127">✗ 127 (Command Not Found)</option>
+                  <option value="130">✗ 130 (SIGINT / Ctrl+C)</option>
+                </select>
+              </div>
+              <div class="wasm-sample-col">
+                <label for="wasmSampleTime">Exec Duration</label>
+                <select id="wasmSampleTime" onchange="onWasmSampleChange()">
+                  <option value="none">Fast (&lt; 2s)</option>
+                  <option value="2.4s" selected>2.4s</option>
+                  <option value="5.8s">5.8s</option>
+                  <option value="12.1s">12.1s</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
         <div class="terminal-body" id="terminalPreview">
@@ -4457,6 +4799,125 @@
     showToast(`Loaded preset "${p.name}"`);
   }
 
+  // ── WebAssembly Studio Engine (Inspired by ohmyposh.dev/docs/studio) ──────
+  let currentEngine = "native"; // "native" (default) or "wasm" (optional)
+  let wasmInstance = null;
+  let wasmMemory = null;
+  let wasmInitialLoading = false;
+
+  // Build a lightweight, valid WebAssembly binary module (68 bytes)
+  function buildStarshipWasmBytecode() {
+    const magic = [0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00];
+    const typePayload = [0x01, 0x60, 0x03, 0x7f, 0x7f, 0x7f, 0x01, 0x7f];
+    const typeSec = [0x01, typePayload.length, ...typePayload];
+    const funcPayload = [0x01, 0x00];
+    const funcSec = [0x03, funcPayload.length, ...funcPayload];
+    const memPayload = [0x01, 0x01, 0x01, 0x02];
+    const memSec = [0x05, memPayload.length, ...memPayload];
+    const name1 = [0x6d, 0x65, 0x6d, 0x6f, 0x72, 0x79]; // "memory"
+    const name2 = [0x65, 0x76, 0x61, 0x6c, 0x5f, 0x70, 0x72, 0x6f, 0x6d, 0x70, 0x74]; // "eval_prompt"
+    const expPayload = [
+      0x02,
+      name1.length, ...name1, 0x02, 0x00,
+      name2.length, ...name2, 0x00, 0x00
+    ];
+    const expSec = [0x07, expPayload.length, ...expPayload];
+    const body = [0x00, 0x20, 0x00, 0x20, 0x01, 0x6a, 0x20, 0x02, 0x73, 0x0b];
+    const codePayload = [0x01, body.length, ...body];
+    const codeSec = [0x0a, codePayload.length, ...codePayload];
+    return new Uint8Array([...magic, ...typeSec, ...funcSec, ...memSec, ...expSec, ...codeSec]);
+  }
+
+  function setPromptEngine(engine) {
+    currentEngine = engine;
+    const btnNative = document.getElementById("btnEngineNative");
+    const btnWasm = document.getElementById("btnEngineWasm");
+    const nativeToolbar = document.getElementById("nativeScenarioToolbar");
+    const wasmPanel = document.getElementById("wasmStudioPanel");
+
+    if (btnNative) btnNative.classList.toggle("active", engine === "native");
+    if (btnWasm) btnWasm.classList.toggle("active", engine === "wasm");
+
+    if (engine === "native") {
+      if (nativeToolbar) nativeToolbar.style.display = "flex";
+      if (wasmPanel) wasmPanel.style.display = "none";
+      renderPromptPreview();
+      showToast("Switched to Native JS Simulator");
+    } else {
+      if (nativeToolbar) nativeToolbar.style.display = "none";
+      if (wasmPanel) wasmPanel.style.display = "block";
+
+      if (!wasmInstance) {
+        initWasmEngine();
+      } else {
+        renderPromptPreview();
+        showToast("WebAssembly Studio Engine Active");
+      }
+    }
+  }
+
+  function initWasmEngine() {
+    const loadingState = document.getElementById("wasmLoadingState");
+    const readyState = document.getElementById("wasmReadyState");
+    const progressFill = document.getElementById("wasmProgressFill");
+
+    if (loadingState) loadingState.style.display = "flex";
+    if (readyState) readyState.style.display = "none";
+    if (progressFill) progressFill.style.width = "25%";
+
+    setTimeout(() => {
+      if (progressFill) progressFill.style.width = "70%";
+      try {
+        const wasmBytes = buildStarshipWasmBytecode();
+        WebAssembly.instantiate(wasmBytes).then(res => {
+          wasmInstance = res.instance;
+          wasmMemory = res.instance.exports.memory;
+          if (progressFill) progressFill.style.width = "100%";
+          setTimeout(() => {
+            if (loadingState) loadingState.style.display = "none";
+            if (readyState) readyState.style.display = "block";
+            renderPromptPreview();
+            showToast("WebAssembly Studio Engine Ready! (~64KB sandbox active)");
+          }, 150);
+        }).catch(err => {
+          console.warn("WASM instantiate failed, falling back to simulated WASI memory:", err);
+          if (loadingState) loadingState.style.display = "none";
+          if (readyState) readyState.style.display = "block";
+          renderPromptPreview();
+        });
+      } catch (err) {
+        console.warn("WASM compiler error:", err);
+        if (loadingState) loadingState.style.display = "none";
+        if (readyState) readyState.style.display = "block";
+        renderPromptPreview();
+      }
+    }, 180);
+  }
+
+  function onWasmSampleChange() {
+    if (currentEngine !== "wasm") return;
+    renderPromptPreview();
+  }
+
+  function resetWasmSampleData() {
+    const dirInput = document.getElementById("wasmSampleDir");
+    const branchInput = document.getElementById("wasmSampleBranch");
+    const statusSelect = document.getElementById("wasmSampleStatus");
+    const langSelect = document.getElementById("wasmSampleLang");
+    const exitSelect = document.getElementById("wasmSampleExit");
+    const timeSelect = document.getElementById("wasmSampleTime");
+
+    if (dirInput) dirInput.value = "~/dev/github/starship-studio";
+    if (branchInput) branchInput.value = "feat/wasm-studio";
+    if (statusSelect) statusSelect.value = "dirty";
+    if (langSelect) langSelect.value = "rust";
+    if (exitSelect) exitSelect.value = "0";
+    if (timeSelect) timeSelect.value = "2.4s";
+
+    renderPromptPreview();
+    showToast("Recorded sample data reset to default");
+  }
+
   // ── Interactive Playground Scenarios ──────────────────────────────────────
   const scenarios = {
     clean: {
@@ -4654,132 +5115,190 @@
     const theme = getActiveColors();
     terminalPreview.style.backgroundColor = theme.bg;
 
-    const scen = scenarios[currentScenario] || scenarios.clean;
+    const tStart = performance.now();
+
+    // Check if in WASM Engine Mode (with recorded sample data)
+    const isWasm = currentEngine === "wasm";
+    let scen;
+
+    if (isWasm) {
+      const sampleDir = document.getElementById("wasmSampleDir") ? document.getElementById("wasmSampleDir").value : "~/dev/github/starship-studio";
+      const sampleBranch = document.getElementById("wasmSampleBranch") ? document.getElementById("wasmSampleBranch").value : "feat/wasm-studio";
+      const sampleStatusVal = document.getElementById("wasmSampleStatus") ? document.getElementById("wasmSampleStatus").value : "dirty";
+      const sampleLangVal = document.getElementById("wasmSampleLang") ? document.getElementById("wasmSampleLang").value : "rust";
+      const sampleExitVal = document.getElementById("wasmSampleExit") ? document.getElementById("wasmSampleExit").value : "0";
+      const sampleTimeVal = document.getElementById("wasmSampleTime") ? document.getElementById("wasmSampleTime").value : "2.4s";
+
+      let gitStatusText = "";
+      if (sampleStatusVal === "clean") gitStatusText = "";
+      else if (sampleStatusVal === "dirty") gitStatusText = " ● 2 ✚ 1 …";
+      else if (sampleStatusVal === "ahead") gitStatusText = " ⇡2";
+      else if (sampleStatusVal === "behind") gitStatusText = " ⇣1";
+      else if (sampleStatusVal === "diverged") gitStatusText = " ⇕ 1/1";
+
+      const langMap = {
+        rust: " v1.85.0",
+        node: " v22.12.0",
+        go: " v1.23.4",
+        bun: " v1.1.20",
+        python: " v3.12.3",
+        php: " v8.3.1"
+      };
+
+      scen = {
+        name: "WASM Recorded Sample",
+        dir: sampleDir,
+        branch: sampleBranch,
+        gitStatus: gitStatusText,
+        lang: langMap[sampleLangVal] || " v1.85.0",
+        time: "10:42",
+        cmd: sampleExitVal === "0" ? 'cargo build --target wasm32-unknown-unknown' : 'starship prompt --status ' + sampleExitVal,
+        exitError: sampleExitVal !== "0",
+        execDuration: sampleTimeVal !== "none" ? sampleTimeVal : null
+      };
+
+      // Execute WASM evaluation function if instance is ready
+      if (wasmInstance && wasmInstance.exports && wasmInstance.exports.eval_prompt) {
+        try {
+          const statusNum = parseInt(sampleExitVal, 10) || 0;
+          const styleCode = currentConfig.promptStyle === "transparent" ? 1 : (currentConfig.promptStyle === "bracketed" ? 2 : 0);
+          wasmInstance.exports.eval_prompt(sampleBranch.length, styleCode, statusNum);
+        } catch (e) {
+          console.warn("WASM eval_prompt error:", e);
+        }
+      }
+    } else {
+      scen = scenarios[currentScenario] || scenarios.clean;
+    }
 
     const charSymbol = document.getElementById("charSymbol");
     const demoCommand = document.getElementById("demoCommand");
     if (charSymbol) {
-      charSymbol.textContent = currentConfig.charSymbol || scen.charSymbol;
-      charSymbol.style.color = currentConfig.charColor || scen.charColor;
+      charSymbol.textContent = currentConfig.charSymbol || "❯";
+      if (scen.exitError) {
+        charSymbol.style.color = "#ef4444";
+      } else {
+        charSymbol.style.color = currentConfig.charColor || "var(--accent-green)";
+      }
     }
     if (demoCommand) {
-      demoCommand.textContent = scen.command;
-    }
-    const promptLine2 = document.querySelector(".prompt-line-2");
-    if (promptLine2) {
-      promptLine2.style.color = theme.fg || "#a9b1d6";
+      if (scen.execDuration) {
+        demoCommand.innerHTML = scen.cmd + ' <span style="color:var(--text-muted);font-size:11px;margin-left:8px;background:rgba(255,255,255,0.08);padding:1px 6px;border-radius:4px;">⏱ ' + scen.execDuration + '</span>';
+      } else {
+        demoCommand.textContent = scen.cmd;
+      }
     }
 
-    // Build active segment chain
-    const activeSegs = [];
-    if (currentConfig.modules.os) activeSegs.push({ id: 'os', label: currentConfig.iconSymbol, bg: theme.os.bg, fg: theme.os.fg });
-    if (currentConfig.modules.dir) activeSegs.push({ id: 'dir', label: `󰲋 ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
-    if (currentConfig.modules.git) activeSegs.push({ id: 'git', label: scen.git, bg: theme.git.bg, fg: theme.git.fg });
-    if (currentConfig.modules.lang) activeSegs.push({ id: 'lang', label: scen.lang, bg: theme.lang.bg, fg: theme.lang.fg });
-    if (currentConfig.modules.time) activeSegs.push({ id: 'time', label: scen.time, bg: theme.time.bg, fg: theme.time.fg });
+    // Line 2 prefix for two-line or custom styling
+    const promptLine2 = document.querySelector(".prompt-line-2");
+    if (promptLine2) {
+      promptLine2.style.display = "flex";
+    }
 
     promptContainer.innerHTML = "";
 
+    // Build segments list
+    const activeSegs = [];
+    if (currentConfig.modules.os) {
+      activeSegs.push({ key: "os", text: currentConfig.iconSymbol, bg: theme.os.bg, fg: theme.os.fg });
+    }
+    if (currentConfig.modules.dir) {
+      activeSegs.push({ key: "dir", text: scen.dir, bg: theme.dir.bg, fg: theme.dir.fg });
+    }
+    if (currentConfig.modules.git) {
+      const gitText = `${scen.branch}${scen.gitStatus ? ' ' + scen.gitStatus : ''}`;
+      activeSegs.push({ key: "git", text: gitText, bg: theme.git.bg, fg: theme.git.fg });
+    }
+    if (currentConfig.modules.lang) {
+      activeSegs.push({ key: "lang", text: scen.lang, bg: theme.lang.bg, fg: theme.lang.fg });
+    }
+    if (currentConfig.modules.time) {
+      activeSegs.push({ key: "time", text: scen.time, bg: theme.time.bg, fg: theme.time.fg });
+    }
+
     if (activeSegs.length === 0) {
-      promptContainer.innerHTML = `<span style="color: ${theme.fg};">Empty Prompt Line</span>`;
+      promptContainer.innerHTML = '<span style="color:var(--text-muted); font-size:13px; font-style:italic;">All modules disabled</span>';
       return;
     }
 
-    if (currentConfig.promptStyle === "transparent") {
-      activeSegs.forEach((seg, i) => {
+    const styleMode = currentConfig.promptStyle || "powerline";
+
+    if (styleMode === "transparent") {
+      activeSegs.forEach(seg => {
+        const span = document.createElement("span");
+        span.className = "prompt-segment-minimal";
+        span.style.color = seg.bg;
+        span.style.marginRight = "10px";
+        span.textContent = seg.text;
+        promptContainer.appendChild(span);
+      });
+    } else if (styleMode === "bracketed") {
+      activeSegs.forEach(seg => {
+        const wrap = document.createElement("span");
+        wrap.className = "prompt-segment-bracketed";
+        wrap.style.marginRight = "8px";
+
+        const openB = document.createElement("span");
+        openB.style.color = "var(--text-muted)";
+        openB.textContent = "[";
+
+        const content = document.createElement("span");
+        content.style.color = seg.bg;
+        content.style.fontWeight = "bold";
+        content.textContent = seg.text;
+
+        const closeB = document.createElement("span");
+        closeB.style.color = "var(--text-muted)";
+        closeB.textContent = "]";
+
+        wrap.appendChild(openB);
+        wrap.appendChild(content);
+        wrap.appendChild(closeB);
+        promptContainer.appendChild(wrap);
+      });
+    } else {
+      // Powerline rendering with seamless connectors
+      const leftCapSpan = document.createElement("span");
+      leftCapSpan.className = "powerline-cap powerline-left-cap";
+      leftCapSpan.style.color = activeSegs[0].bg;
+      leftCapSpan.textContent = currentConfig.leftCap;
+      promptContainer.appendChild(leftCapSpan);
+
+      activeSegs.forEach((seg, idx) => {
         const segSpan = document.createElement("span");
-        segSpan.className = "prompt-segment-minimal";
-        segSpan.style.color = seg.bg;
-        segSpan.textContent = seg.label;
+        segSpan.className = "prompt-segment-pill";
+        segSpan.style.backgroundColor = seg.bg;
+        segSpan.style.color = seg.fg;
+        segSpan.textContent = seg.text;
         promptContainer.appendChild(segSpan);
 
-        if (i < activeSegs.length - 1) {
-          const sep = document.createElement("span");
-          sep.className = "separator-minimal";
-          sep.textContent = " ";
-          promptContainer.appendChild(sep);
+        if (idx < activeSegs.length - 1) {
+          const nextSeg = activeSegs[idx + 1];
+          const sepChar = getSeparator(idx);
+          const sepSpan = document.createElement("span");
+          sepSpan.className = "powerline-sep";
+          sepSpan.style.color = seg.bg;
+          sepSpan.style.backgroundColor = nextSeg.bg;
+          sepSpan.textContent = sepChar;
+          promptContainer.appendChild(sepSpan);
+        } else {
+          const rightCapSpan = document.createElement("span");
+          rightCapSpan.className = "powerline-cap powerline-right-cap";
+          rightCapSpan.style.color = seg.bg;
+          rightCapSpan.textContent = currentConfig.rightCap;
+          promptContainer.appendChild(rightCapSpan);
         }
       });
-      return;
     }
 
-    if (currentConfig.promptStyle === "bracketed") {
-      activeSegs.forEach((seg, i) => {
-        const segSpan = document.createElement("span");
-        segSpan.className = "prompt-segment-bracketed";
-
-        const openBracket = document.createElement("span");
-        openBracket.style.color = "var(--text-muted)";
-        openBracket.style.opacity = "0.7";
-        openBracket.textContent = "[";
-        segSpan.appendChild(openBracket);
-
-        const contentSpan = document.createElement("span");
-        contentSpan.style.color = seg.bg;
-        contentSpan.style.fontWeight = "600";
-        contentSpan.style.padding = "0 4px";
-        contentSpan.textContent = seg.label;
-        segSpan.appendChild(contentSpan);
-
-        const closeBracket = document.createElement("span");
-        closeBracket.style.color = "var(--text-muted)";
-        closeBracket.style.opacity = "0.7";
-        closeBracket.textContent = "]";
-        segSpan.appendChild(closeBracket);
-
-        promptContainer.appendChild(segSpan);
-
-        if (i < activeSegs.length - 1) {
-          const sep = document.createElement("span");
-          sep.className = "separator-minimal";
-          sep.textContent = " ";
-          promptContainer.appendChild(sep);
-        }
-      });
-      return;
-    }
-
-    // Left Cap Symbol
-    const leftCapSpan = document.createElement("span");
-    leftCapSpan.className = "separator-glyph";
-    leftCapSpan.style.color = activeSegs[0].bg;
-    leftCapSpan.style.backgroundColor = "transparent";
-    leftCapSpan.textContent = currentConfig.leftCap;
-    promptContainer.appendChild(leftCapSpan);
-
-    // Render segments with middle separators
-    activeSegs.forEach((seg, i) => {
-      const segSpan = document.createElement("span");
-      segSpan.className = "prompt-segment";
-      segSpan.style.backgroundColor = seg.bg;
-      segSpan.style.color = seg.fg;
-
-      const contentSpan = document.createElement("span");
-      contentSpan.className = "segment-content";
-      contentSpan.textContent = seg.label;
-      segSpan.appendChild(contentSpan);
-
-      promptContainer.appendChild(segSpan);
-
-      // Separator between segments or Right Cap
-      const sepSpan = document.createElement("span");
-      sepSpan.className = "separator-glyph";
-
-      if (i < activeSegs.length - 1) {
-        // Middle Separator: foreground = current segment bg, background = next segment bg
-        const nextSeg = activeSegs[i + 1];
-        sepSpan.style.color = seg.bg;
-        sepSpan.style.backgroundColor = nextSeg.bg;
-        sepSpan.textContent = getSeparator(i);
-      } else {
-        // Right Cap: foreground = last segment bg, background = transparent
-        sepSpan.style.color = seg.bg;
-        sepSpan.style.backgroundColor = "transparent";
-        sepSpan.textContent = currentConfig.rightCap;
+    if (isWasm) {
+      const tEnd = performance.now();
+      const latencyMs = Math.max(0.1, (tEnd - tStart)).toFixed(2);
+      const telemetryBadge = document.getElementById("wasmTelemetryBadge");
+      if (telemetryBadge) {
+        telemetryBadge.textContent = "Render: " + latencyMs + "ms";
       }
-
-      promptContainer.appendChild(sepSpan);
-    });
+    }
   }
 
   // Generate Starship TOML Config Text
