@@ -1250,16 +1250,23 @@
       padding: 4px 0;
       border-radius: 4px;
       transition: all 0.2s ease;
-      height: var(--prompt-height);
+      min-height: var(--prompt-height);
+      overflow: visible;
     }
 
-    .prompt-segment {
+    .prompt-segment,
+    .prompt-segment-pill {
       display: inline-flex;
       align-items: center;
+      gap: 6px;
+      padding: 0 10px;
       height: var(--prompt-height);
       font-size: 14px;
       font-weight: 500;
       line-height: 1;
+      white-space: nowrap;
+      user-select: none;
+      box-sizing: border-box;
     }
 
     .segment-content {
@@ -1271,17 +1278,45 @@
       line-height: 1;
     }
 
-    .separator-glyph {
-      font-size: var(--prompt-height);
-      height: var(--prompt-height);
-      line-height: 1;
+    .powerline-cap {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      height: var(--prompt-height);
+      line-height: 1;
       user-select: none;
       vertical-align: middle;
-      overflow: hidden;
+      overflow: visible;
+      box-sizing: border-box;
+    }
+
+    .powerline-sep {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: var(--prompt-height);
+      line-height: 1;
+      user-select: none;
+      vertical-align: middle;
+      overflow: visible;
+      box-sizing: border-box;
+    }
+
+    .powerline-cap .sep-glyph,
+    .powerline-sep .sep-glyph,
+    .separator-glyph {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--prompt-height);
+      height: var(--prompt-height);
+      line-height: 1;
+      user-select: none;
+      vertical-align: middle;
+      overflow: visible;
       transform: scaleY(var(--sep-scale));
+      transform-origin: center;
+      will-change: transform;
     }
 
     /* Prompt Style Mode Toggles & Minimalist Styling */
@@ -2551,8 +2586,11 @@
             </div>
 
             <div class="control-group">
-              <label for="scaleInput">Separator Vertical Scale</label>
-              <input type="range" id="scaleInput" value="1" min="0.75" max="1.25" step="0.01"
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <label for="scaleInput" style="margin-bottom: 0;">Separator Vertical Scale</label>
+                <span id="scaleValue" style="color: var(--accent-primary); font-family: var(--font-code); font-size: 11px; font-weight: 600;">1.00x</span>
+              </div>
+              <input type="range" id="scaleInput" value="1" min="0.6" max="1.6" step="0.01"
                 onchange="updateCustomizer()" oninput="updateCustomizer()">
             </div>
           </div>
@@ -4563,6 +4601,10 @@
 
     const hInput = document.getElementById("heightInput");
     if (hInput) hInput.value = currentConfig.promptHeight;
+    const sInput = document.getElementById("scaleInput");
+    if (sInput) sInput.value = currentConfig.sepScale;
+    const scaleValue = document.getElementById("scaleValue");
+    if (scaleValue) scaleValue.textContent = Number(currentConfig.sepScale).toFixed(2) + "x";
 
     updateCustomizer();
   }
@@ -5003,6 +5045,10 @@
       if (sep4Select) sep4Select.value = currentConfig.separators[3];
       if (themeSelect) themeSelect.value = currentConfig.themeKey;
       if (iconSelect) iconSelect.value = currentConfig.iconSymbol;
+      const hInput = document.getElementById("heightInput");
+      if (hInput) hInput.value = currentConfig.promptHeight;
+      const sInput = document.getElementById("scaleInput");
+      if (sInput) sInput.value = currentConfig.sepScale;
       const modOS = document.getElementById("modOS");
       const modDir = document.getElementById("modDir");
       const modGit = document.getElementById("modGit");
@@ -5017,6 +5063,8 @@
 
     document.documentElement.style.setProperty('--prompt-height', currentConfig.promptHeight + 'px');
     document.documentElement.style.setProperty('--sep-scale', currentConfig.sepScale);
+    const scaleValue = document.getElementById("scaleValue");
+    if (scaleValue) scaleValue.textContent = Number(currentConfig.sepScale).toFixed(2) + "x";
 
     // Sync active state on preset buttons
     let matched = presets.find(p => p.id === currentConfig.activePreset);
@@ -5261,7 +5309,10 @@
       const leftCapSpan = document.createElement("span");
       leftCapSpan.className = "powerline-cap powerline-left-cap";
       leftCapSpan.style.color = activeSegs[0].bg;
-      leftCapSpan.textContent = currentConfig.leftCap;
+      const leftCapGlyph = document.createElement("span");
+      leftCapGlyph.className = "sep-glyph";
+      leftCapGlyph.textContent = currentConfig.leftCap;
+      leftCapSpan.appendChild(leftCapGlyph);
       promptContainer.appendChild(leftCapSpan);
 
       activeSegs.forEach((seg, idx) => {
@@ -5279,13 +5330,19 @@
           sepSpan.className = "powerline-sep";
           sepSpan.style.color = seg.bg;
           sepSpan.style.backgroundColor = nextSeg.bg;
-          sepSpan.textContent = sepChar;
+          const sepGlyph = document.createElement("span");
+          sepGlyph.className = "sep-glyph";
+          sepGlyph.textContent = sepChar;
+          sepSpan.appendChild(sepGlyph);
           promptContainer.appendChild(sepSpan);
         } else {
           const rightCapSpan = document.createElement("span");
           rightCapSpan.className = "powerline-cap powerline-right-cap";
           rightCapSpan.style.color = seg.bg;
-          rightCapSpan.textContent = currentConfig.rightCap;
+          const rightCapGlyph = document.createElement("span");
+          rightCapGlyph.className = "sep-glyph";
+          rightCapGlyph.textContent = currentConfig.rightCap;
+          rightCapSpan.appendChild(rightCapGlyph);
           promptContainer.appendChild(rightCapSpan);
         }
       });
