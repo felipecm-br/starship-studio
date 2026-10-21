@@ -318,6 +318,8 @@
       line-height: 1.5;
       min-height: 100vh;
       padding: 24px;
+      /* leave room for the fixed floating quick bar (42px tall + 16px offset) */
+      padding-bottom: 82px;
       background-image:
         radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
         radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
@@ -732,6 +734,10 @@
     }
 
     @media (max-width: 640px) {
+      body {
+        padding: 16px 16px 92px;
+      }
+
       .floating-quick-bar {
         left: 12px;
         right: 12px;
