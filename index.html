@@ -490,6 +490,14 @@
       gap: 8px;
     }
 
+    /* Nerd Font glyphs used as UI icons (replaces emoji for a consistent look) */
+    .ui-glyph {
+      font-family: 'Symbols Nerd Font', var(--font-code);
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+    }
+
     /* Terminal Mockup (Sticky by default so prompt is always visible while browsing presets/glyphs) */
     /* --terminal-stick-top is set from JS so the header and toolbars scroll away
        and only the live prompt stays pinned */
@@ -2734,7 +2742,7 @@
           <div class="terminal-title">zsh — starship prompt preview</div>
           <div class="terminal-actions-group">
             <button type="button" class="terminal-action-btn" id="pinPreviewBtn" onclick="togglePinPreview()" aria-pressed="true" title="Pin/Unpin terminal preview while scrolling">
-              <span id="pinPreviewIcon">📌</span>
+              <span class="ui-glyph" id="pinPreviewIcon" aria-hidden="true">󰐃</span>
               <span id="pinPreviewLabel">Pinned</span>
             </button>
             <button type="button" class="terminal-action-btn terminal-btn-copy" id="terminalCopyBtn" onclick="quickCopyToml(this)" title="Directly copy current starship.toml to clipboard">
@@ -2768,10 +2776,10 @@
           <div class="scenario-left-group">
             <span class="scenario-title">Scenario:</span>
             <div class="scenario-pills" role="group" aria-label="Playground Scenarios">
-              <button type="button" class="scenario-btn active" id="btn-scen-clean" onclick="setScenario('clean')" aria-pressed="true">🌿 Clean Main</button>
-              <button type="button" class="scenario-btn" id="btn-scen-dirty" onclick="setScenario('dirty')" aria-pressed="false">⚡ Dirty Git (+1*)</button>
-              <button type="button" class="scenario-btn" id="btn-scen-error" onclick="setScenario('error')" aria-pressed="false">🚨 Error (127)</button>
-              <button type="button" class="scenario-btn" id="btn-scen-deep" onclick="setScenario('deep')" aria-pressed="false">📂 Deep Project</button>
+              <button type="button" class="scenario-btn active" id="btn-scen-clean" onclick="setScenario('clean')" aria-pressed="true"><span class="ui-glyph" aria-hidden="true"></span> Clean Main</button>
+              <button type="button" class="scenario-btn" id="btn-scen-dirty" onclick="setScenario('dirty')" aria-pressed="false"><span class="ui-glyph" aria-hidden="true"></span> Dirty Git (+1*)</button>
+              <button type="button" class="scenario-btn" id="btn-scen-error" onclick="setScenario('error')" aria-pressed="false"><span class="ui-glyph" aria-hidden="true"></span> Error (127)</button>
+              <button type="button" class="scenario-btn" id="btn-scen-deep" onclick="setScenario('deep')" aria-pressed="false"><span class="ui-glyph" aria-hidden="true"></span> Deep Project</button>
             </div>
           </div>
           <div class="terminal-creator-credit" id="terminalCreatorCredit">
@@ -2806,7 +2814,7 @@
               </button>
             </div>
           </div>
-          <span class="terminal-hint-text">💡 Click any segment in the prompt to customize</span>
+          <span class="terminal-hint-text"><span class="ui-glyph" aria-hidden="true"></span> Click any segment in the prompt to customize</span>
         </div>
         <div class="terminal-body" id="terminalPreview">
           <div class="prompt-preview-container" id="promptContainer">
@@ -2824,7 +2832,7 @@
       <div class="card" id="presets" style="margin-bottom: 24px;">
         <h2 class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <span>🎨 Presets Gallery</span>
+            <span><span class="ui-glyph" aria-hidden="true">󰏘</span> Presets Gallery</span>
             <span class="presets-count-badge" id="presetsTotalBadge" style="font-size: 11px; font-weight: normal; color: var(--text-muted); background: var(--bg-tertiary); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color);">35 presets</span>
           </div>
           <button type="button" class="btn btn-sm btn-primary export-header-btn" onclick="openExportModal()" title="View and copy active starship.toml configuration">
@@ -2846,20 +2854,20 @@
               <span class="filter-count" id="count-all">0</span>
             </button>
             <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="powerline" onclick="setPresetFilter('powerline')">
-              <span>⚡ Powerline</span>
+              <span><span class="ui-glyph" aria-hidden="true"></span> Powerline</span>
               <span class="filter-count" id="count-powerline">0</span>
             </button>
             <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="minimal" onclick="setPresetFilter('minimal')">
-              <span>✨ Minimal</span>
+              <span><span class="ui-glyph" aria-hidden="true">❯</span> Minimal</span>
               <span class="filter-count" id="count-minimal">0</span>
             </button>
             <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="light" onclick="setPresetFilter('light')">
-              <span>☀️ Light</span>
+              <span><span class="ui-glyph" aria-hidden="true"></span> Light</span>
               <span class="filter-count" id="count-light">0</span>
             </button>
           </div>
           <div class="preset-search-wrap">
-            <span class="preset-search-icon" aria-hidden="true">🔍</span>
+            <span class="preset-search-icon ui-glyph" aria-hidden="true"></span>
             <input type="search" id="presetSearchInput" class="preset-search-input" placeholder="Search preset, palette, or author... (Press /)" oninput="onPresetSearch(this.value)" aria-label="Search presets by name, palette, or author">
           </div>
         </div>
@@ -2903,10 +2911,10 @@
       <!-- Quick Mode Switcher so TOML Editor & Customizer are 1 click away without scrolling -->
       <div class="sidebar-mode-tabs" role="tablist" aria-label="Sidebar View Mode">
         <button type="button" class="sidebar-tab-btn active" id="sidebarTab-customizer" role="tab" aria-selected="true" onclick="switchSidebarMode('customizer')">
-          <span>⚙️ Customizer</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Customizer</span>
         </button>
         <button type="button" class="sidebar-tab-btn" id="sidebarTab-toml" role="tab" aria-selected="false" onclick="switchSidebarMode('toml')">
-          <span>📄 Live TOML</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Live TOML</span>
         </button>
         <button type="button" class="sidebar-tab-btn" id="sidebarTab-both" role="tab" aria-selected="false" onclick="switchSidebarMode('both')" title="Show both Customizer and TOML Editor stacked">
           <span>⬍ Both</span>
@@ -2916,13 +2924,13 @@
       <!-- Customizer Controls -->
       <div class="card" id="customizer">
         <h2 class="card-title">
-          <span>⚙️ Customizer</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Customizer</span>
           <div style="display: flex; gap: 6px; align-items: center;">
             <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 11px; height: auto;" onclick="randomizePreset()" title="Shuffle random prompt combination">
-              <span>🎲 Shuffle</span>
+              <span class="ui-glyph" aria-hidden="true"></span><span>Shuffle</span>
             </button>
             <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px; height: auto;" onclick="quickCopyToml(this)" title="Copy current starship.toml">
-              <span class="btn-copy-label">📋 Copy TOML</span>
+              <span class="ui-glyph" aria-hidden="true"></span><span class="btn-copy-label">Copy TOML</span>
             </button>
           </div>
         </h2>
@@ -2938,7 +2946,7 @@
           </div>
 
           <div id="minimalStyleNotice" style="display: none; padding: 6px 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-muted); line-height: 1.35; margin-bottom: 2px;">
-            ✨ <strong>Minimalist Mode</strong>: Segments render with clean spacing, vibrant foreground colors, and optional brackets without Powerline block fills or cap glyphs.
+            <span class="ui-glyph" aria-hidden="true"></span> <strong>Minimalist Mode</strong>: Segments render with clean spacing, vibrant foreground colors, and optional brackets without Powerline block fills or cap glyphs.
           </div>
 
           <div class="control-group">
@@ -2950,7 +2958,7 @@
           <div class="control-group" id="segmentColorsSection">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
               <span style="font-weight: 600; font-size: 0.82rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
-                <span>🎨</span> Modules, Icons &amp; Colors
+                <span class="ui-glyph" aria-hidden="true">󰏘</span> Modules, Icons &amp; Colors
               </span>
               <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 10px; height: auto;" onclick="resetColorsToPalette()" title="Reset segment colors to palette defaults">Reset Colors</button>
             </div>
@@ -3169,7 +3177,7 @@
       <!-- Generated TOML Output & Two-Way Editor -->
       <div class="card" id="config" style="display: none;">
         <h2 class="card-title">
-          <span>📄 starship.toml Config</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> starship.toml Config</span>
           <span style="font-size: 11px; font-weight: normal; color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1); padding: 2px 8px; border-radius: 999px;">Two-Way Live Editor</span>
         </h2>
         <div class="toml-box">
@@ -3177,7 +3185,7 @@
           <span id="tomlSyncBadge" class="toml-sync-badge">Live Synced</span>
         </div>
         <div class="actions-bar">
-          <button type="button" class="btn btn-secondary" onclick="applyTomlFromEditor()" title="Parse and apply edited TOML to the UI preview">⚡ Apply TOML</button>
+          <button type="button" class="btn btn-secondary" onclick="applyTomlFromEditor()" title="Parse and apply edited TOML to the UI preview"><span class="ui-glyph" aria-hidden="true"></span> Apply TOML</button>
           <button type="button" class="btn btn-secondary" onclick="downloadToml()">Download .toml</button>
           <button type="button" class="btn" onclick="copyToml()">Copy Config</button>
         </div>
@@ -3192,7 +3200,7 @@
     <div class="seo-card">
       <div class="seo-grid">
         <article class="seo-article" id="about">
-          <h2>🚀 What is Starship Studio?</h2>
+          <h2><span class="ui-glyph" aria-hidden="true"></span> What is Starship Studio?</h2>
           <p>
             <strong>Starship Studio</strong> is an interactive visual editor and preset generator for the 
             <a href="https://starship.rs" target="_blank" rel="noopener noreferrer">Starship cross-shell prompt</a>. 
@@ -3204,7 +3212,7 @@
         </article>
 
         <article class="seo-article" id="install">
-          <h2>⚡ How to Install Your Generated Prompt</h2>
+          <h2><span class="ui-glyph" aria-hidden="true"></span> How to Install Your Generated Prompt</h2>
           <ol class="seo-steps">
             <li>
               <strong>Customize Prompt:</strong> Configure your start cap, middle separator, end cap, line height, and color palette.
@@ -3225,7 +3233,7 @@
 
       <!-- FAQ Section -->
       <div class="seo-faq" id="faq">
-        <h2>💡 Frequently Asked Questions (FAQ)</h2>
+        <h2><span class="ui-glyph" aria-hidden="true"></span> Frequently Asked Questions (FAQ)</h2>
         <div class="faq-grid">
           <div class="faq-item">
             <h3>What is Starship Studio?</h3>
@@ -4824,6 +4832,10 @@
     }
     if (pinLabel) {
       pinLabel.textContent = isPreviewPinned ? "Pinned" : "Unpinned";
+    }
+    const pinIcon = document.getElementById("pinPreviewIcon");
+    if (pinIcon) {
+      pinIcon.textContent = isPreviewPinned ? "\u{F0403}" : "\u{F0404}";
     }
     showToast(isPreviewPinned ? "Terminal preview pinned to top while scrolling" : "Terminal preview unpinned");
   }
@@ -6878,10 +6890,10 @@ error_symbol = "[❯](bold red)"
       <!-- Modal Tabs -->
       <div class="modal-tabs">
         <button type="button" class="modal-tab-btn active" id="tabBtn-config" onclick="switchModalTab('config')">
-          <span>📄 Configuration</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Configuration</span>
         </button>
         <button type="button" class="modal-tab-btn" id="tabBtn-install" onclick="switchModalTab('install')">
-          <span>💻 Installation Guide</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Installation Guide</span>
         </button>
       </div>
 
@@ -6921,7 +6933,7 @@ error_symbol = "[❯](bold red)"
 
       <!-- Modal Footer -->
       <div class="modal-footer">
-        <span class="modal-footer-note">⚡ Schema valid: <a href="https://starship.rs/config-schema.json" target="_blank" rel="noopener noreferrer">starship.rs</a></span>
+        <span class="modal-footer-note"><span class="ui-glyph" aria-hidden="true"></span> Schema valid: <a href="https://starship.rs/config-schema.json" target="_blank" rel="noopener noreferrer">starship.rs</a></span>
         <button type="button" class="btn btn-secondary btn-sm" onclick="closeExportModal()">Close</button>
       </div>
     </div>
