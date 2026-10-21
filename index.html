@@ -2778,6 +2778,18 @@
     .footer-links a:hover {
       color: var(--accent-cyan);
     }
+
+    /* Respect users who ask the OS for less motion */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 
@@ -4946,6 +4958,10 @@
     showToast(isPreviewPinned ? "Terminal preview pinned to top while scrolling" : "Terminal preview unpinned");
   }
 
+  function preferredScrollBehavior() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  }
+
   // Pin only the prompt body: offset the sticky top by the chrome above it
   function initCompactStickyPreview() {
     const previewWin = document.getElementById("preview");
@@ -5077,7 +5093,7 @@
     }
     const row = document.getElementById(`colorRow-${segId}`);
     if (row) {
-      row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      row.scrollIntoView({ behavior: preferredScrollBehavior(), block: "nearest" });
       row.classList.remove("highlight-pulse");
       void row.offsetWidth;
       row.classList.add("highlight-pulse");
@@ -5093,7 +5109,7 @@
     }
     const sec = document.getElementById("capsSeparatorsSection");
     if (sec) {
-      sec.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      sec.scrollIntoView({ behavior: preferredScrollBehavior(), block: "nearest" });
       sec.classList.remove("highlight-pulse");
       void sec.offsetWidth;
       sec.classList.add("highlight-pulse");
