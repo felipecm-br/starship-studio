@@ -1879,6 +1879,112 @@
       color: #ffffff;
     }
 
+    /* Presets gallery header & shared title badges */
+    .presets-card {
+      margin-bottom: 24px;
+    }
+
+    h2.presets-card-title {
+      margin-bottom: 14px;
+    }
+
+    .presets-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-badge,
+    h2.card-title .presets-count-badge {
+      font-size: 11px;
+      font-weight: normal;
+      color: var(--text-muted);
+      background: var(--bg-tertiary);
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+    }
+
+    .title-badge-accent {
+      color: var(--accent-cyan);
+      background: color-mix(in srgb, var(--accent-cyan) 10%, transparent);
+      border-color: transparent;
+    }
+
+    .preset-empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .inline-notice {
+      padding: 6px 10px;
+      background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent-primary) 25%, transparent);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+      margin-bottom: 2px;
+    }
+
+    /* Middle separators panel */
+    .sep-panel {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      margin-bottom: 6px;
+    }
+
+    .sep-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .sep-panel-title {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text-main);
+    }
+
+    .sep-link-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      text-transform: none;
+    }
+
+    .sep-link-toggle input {
+      accent-color: var(--accent-primary);
+    }
+
+    .sep-field-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sep-field-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 2px;
+      text-transform: none;
+    }
+
+    .sep-field-select {
+      width: 100%;
+    }
+
     /* Preset Buttons Grid */
     .preset-grid {
       display: grid;
@@ -2829,11 +2935,11 @@
       </div>
 
       <!-- Presets Gallery -->
-      <div class="card" id="presets" style="margin-bottom: 24px;">
-        <h2 class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
+      <div class="card presets-card" id="presets">
+        <h2 class="card-title presets-card-title">
+          <div class="presets-title-group">
             <span><span class="ui-glyph" aria-hidden="true">󰏘</span> Presets Gallery</span>
-            <span class="presets-count-badge" id="presetsTotalBadge" aria-live="polite" style="font-size: 11px; font-weight: normal; color: var(--text-muted); background: var(--bg-tertiary); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color);">35 presets</span>
+            <span class="presets-count-badge" id="presetsTotalBadge" aria-live="polite">35 presets</span>
           </div>
           <button type="button" class="btn btn-sm btn-primary export-header-btn" onclick="openExportModal()" title="View and copy active starship.toml configuration">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -2945,7 +3051,7 @@
             </div>
           </div>
 
-          <div id="minimalStyleNotice" style="display: none; padding: 6px 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-muted); line-height: 1.35; margin-bottom: 2px;">
+          <div id="minimalStyleNotice" class="inline-notice" style="display: none;">
             <span class="ui-glyph" aria-hidden="true"></span> <strong>Minimalist Mode</strong>: Segments render with clean spacing, vibrant foreground colors, and optional brackets without Powerline block fills or cap glyphs.
           </div>
 
@@ -3119,32 +3225,32 @@
             </div>
 
             <!-- Smart Collapsible Middle Separators Section -->
-            <div class="control-group" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 7px 10px; margin-bottom: 6px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                <span style="font-weight: 600; font-size: 0.8rem; color: var(--text-main);">Middle Separators</span>
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; user-select: none; text-transform: none;">
-                  <input type="checkbox" id="linkSeparators" onchange="toggleLinkSeparators()" checked style="accent-color: var(--accent-primary);">
+            <div class="control-group sep-panel">
+              <div class="sep-panel-header">
+                <span class="sep-panel-title">Middle Separators</span>
+                <label class="sep-link-toggle">
+                  <input type="checkbox" id="linkSeparators" onchange="toggleLinkSeparators()" checked>
                   <span>Link all</span>
                 </label>
               </div>
 
-              <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="sep-field-stack">
                 <div>
-                  <label id="sep1Label" for="sep1Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">All Middle Separators (Linked)</label>
-                  <select id="sep1Select" onchange="onSeparatorChange(0)" style="width: 100%;"></select>
+                  <label id="sep1Label" for="sep1Select" class="sep-field-label">All Middle Separators (Linked)</label>
+                  <select id="sep1Select" onchange="onSeparatorChange(0)" class="sep-field-select"></select>
                 </div>
-                <div id="unlinkedSeparatorsExtra" style="display: none; flex-direction: column; gap: 6px;">
+                <div id="unlinkedSeparatorsExtra" class="sep-field-stack" style="display: none;">
                   <div>
-                    <label for="sep2Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 2 (Dir ➔ Git)</label>
-                    <select id="sep2Select" onchange="onSeparatorChange(1)" style="width: 100%;"></select>
+                    <label for="sep2Select" class="sep-field-label">Separator 2 (Dir ➔ Git)</label>
+                    <select id="sep2Select" onchange="onSeparatorChange(1)" class="sep-field-select"></select>
                   </div>
                   <div>
-                    <label for="sep3Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 3 (Git ➔ Lang)</label>
-                    <select id="sep3Select" onchange="onSeparatorChange(2)" style="width: 100%;"></select>
+                    <label for="sep3Select" class="sep-field-label">Separator 3 (Git ➔ Lang)</label>
+                    <select id="sep3Select" onchange="onSeparatorChange(2)" class="sep-field-select"></select>
                   </div>
                   <div>
-                    <label for="sep4Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 4 (Lang ➔ Time)</label>
-                    <select id="sep4Select" onchange="onSeparatorChange(3)" style="width: 100%;"></select>
+                    <label for="sep4Select" class="sep-field-label">Separator 4 (Lang ➔ Time)</label>
+                    <select id="sep4Select" onchange="onSeparatorChange(3)" class="sep-field-select"></select>
                   </div>
                 </div>
               </div>
@@ -3178,7 +3284,7 @@
       <div class="card" id="config" style="display: none;">
         <h2 class="card-title">
           <span><span class="ui-glyph" aria-hidden="true"></span> starship.toml Config</span>
-          <span style="font-size: 11px; font-weight: normal; color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1); padding: 2px 8px; border-radius: 999px;">Two-Way Live Editor</span>
+          <span class="title-badge title-badge-accent">Two-Way Live Editor</span>
         </h2>
         <div class="toml-box">
           <textarea id="tomlOutput" class="toml-editor" aria-label="starship.toml configuration editor" placeholder="Edit or paste your starship.toml here to update the live preview..." oninput="onTomlInput()"></textarea>
@@ -5442,7 +5548,7 @@
 
     if (filtered.length === 0) {
       const empty = document.createElement("div");
-      empty.style.cssText = "grid-column: 1 / -1; text-align: center; padding: 28px 16px; color: var(--text-muted); font-size: 0.85rem;";
+      empty.className = "preset-empty-state";
       empty.textContent = `No presets match "${presetSearchQuery}". Try clearing the search filter.`;
       presetsGrid.appendChild(empty);
       return;
