@@ -318,6 +318,8 @@
       line-height: 1.5;
       min-height: 100vh;
       padding: 24px;
+      /* leave room for the fixed floating quick bar (42px tall + 16px offset) */
+      padding-bottom: 82px;
       background-image:
         radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
         radial-gradient(circle at 85% 85%, rgba(6, 182, 212, 0.08) 0%, transparent 40%);
@@ -397,7 +399,7 @@
       max-width: 1300px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 24px;
       align-items: start;
     }
@@ -488,10 +490,20 @@
       gap: 8px;
     }
 
+    /* Nerd Font glyphs used as UI icons (replaces emoji for a consistent look) */
+    .ui-glyph {
+      font-family: 'Symbols Nerd Font', var(--font-code);
+      font-weight: normal;
+      font-style: normal;
+      line-height: 1;
+    }
+
     /* Terminal Mockup (Sticky by default so prompt is always visible while browsing presets/glyphs) */
+    /* --terminal-stick-top is set from JS so the header and toolbars scroll away
+       and only the live prompt stays pinned */
     .terminal-window {
       position: sticky;
-      top: 12px;
+      top: var(--terminal-stick-top, 12px);
       z-index: 120;
       background: var(--code-bg);
       border: 1px solid var(--terminal-win-border);
@@ -730,6 +742,10 @@
     }
 
     @media (max-width: 640px) {
+      body {
+        padding: 16px 16px 92px;
+      }
+
       .floating-quick-bar {
         left: 12px;
         right: 12px;
@@ -1238,6 +1254,29 @@
       overflow-x: auto;
     }
 
+    .terminal-body {
+      position: relative;
+    }
+
+    .preview-peek-badge {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: var(--accent-primary);
+      pointer-events: none;
+    }
+
+    .preview-peek-badge[hidden] {
+      display: none;
+    }
+
     :root {
       --prompt-height: 30px;
       --sep-scale: 1;
@@ -1657,6 +1696,13 @@
       min-width: 42px;
     }
 
+    /* On very narrow phones the swatch alone carries the color */
+    @media (max-width: 360px) {
+      .color-hex-label {
+        display: none;
+      }
+    }
+
     .color-picker-wrapper input[type="color"] {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -1734,6 +1780,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      min-width: 0;
     }
 
     label {
@@ -1862,6 +1909,112 @@
       color: #ffffff;
     }
 
+    /* Presets gallery header & shared title badges */
+    .presets-card {
+      margin-bottom: 24px;
+    }
+
+    h2.presets-card-title {
+      margin-bottom: 14px;
+    }
+
+    .presets-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .title-badge,
+    h2.card-title .presets-count-badge {
+      font-size: 11px;
+      font-weight: normal;
+      color: var(--text-muted);
+      background: var(--bg-tertiary);
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+    }
+
+    .title-badge-accent {
+      color: var(--accent-cyan);
+      background: color-mix(in srgb, var(--accent-cyan) 10%, transparent);
+      border-color: transparent;
+    }
+
+    .preset-empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .inline-notice {
+      padding: 6px 10px;
+      background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent-primary) 25%, transparent);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+      margin-bottom: 2px;
+    }
+
+    /* Middle separators panel */
+    .sep-panel {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      margin-bottom: 6px;
+    }
+
+    .sep-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .sep-panel-title {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--text-main);
+    }
+
+    .sep-link-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      text-transform: none;
+    }
+
+    .sep-link-toggle input {
+      accent-color: var(--accent-primary);
+    }
+
+    .sep-field-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sep-field-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 2px;
+      text-transform: none;
+    }
+
+    .sep-field-select {
+      width: 100%;
+    }
+
     /* Preset Buttons Grid */
     .preset-grid {
       display: grid;
@@ -1870,22 +2023,28 @@
       margin-bottom: 8px;
     }
 
+    .preset-card {
+      position: relative;
+      display: flex;
+    }
+
     .preset-btn {
+      flex: 1;
+      min-width: 0;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 10px 12px;
+      padding: 10px;
       border-radius: var(--radius-sm);
       cursor: pointer;
+      font: inherit;
       font-size: 13px;
       font-weight: 500;
       text-align: left;
-      transition: all 0.2s ease;
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       gap: 8px;
-      position: relative;
     }
 
     .preset-btn:hover {
@@ -1894,32 +2053,38 @@
       transform: translateY(-1px);
     }
 
+    .preset-btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
     .preset-btn.active {
       background: rgba(99, 102, 241, 0.15);
       border-color: var(--accent-primary);
       box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
     }
 
-    .preset-top-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
     .preset-header {
       display: flex;
-      flex-direction: column;
-      gap: 3px;
+      flex: 1;
       min-width: 0;
+      /* keep room for the absolutely positioned Copy button */
+      padding-right: 44px;
     }
 
     .preset-btn .preset-name {
       font-weight: 600;
       line-height: 1.25;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
 
     .preset-quick-copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
@@ -1929,34 +2094,74 @@
       font-weight: 600;
       cursor: pointer;
       opacity: 0;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
+      transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
-    .preset-btn:hover .preset-quick-copy-btn,
-    .preset-btn:focus-within .preset-quick-copy-btn,
-    .preset-btn.active .preset-quick-copy-btn {
+    .preset-card:hover .preset-quick-copy-btn,
+    .preset-card:focus-within .preset-quick-copy-btn,
+    .preset-card .preset-btn.active + .preset-quick-copy-btn {
       opacity: 1;
     }
 
-    .preset-quick-copy-btn:hover {
+    @media (hover: none) {
+      .preset-quick-copy-btn {
+        opacity: 1;
+      }
+    }
+
+    .preset-quick-copy-btn:hover,
+    .preset-quick-copy-btn:focus-visible {
       border-color: var(--accent-green);
       color: var(--accent-green);
       background: var(--bg-card);
     }
 
-    .preset-palette-strip {
+    /* Colored mini prompt rendered from the preset's own palette & glyphs */
+    .preset-mini-prompt {
       display: flex;
-      height: 5px;
-      border-radius: 999px;
+      align-items: center;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(127, 127, 127, 0.18);
+      font-family: var(--font-code);
+      font-size: 11.5px;
+      line-height: 1;
+      white-space: nowrap;
       overflow: hidden;
-      gap: 1px;
-      background: rgba(0, 0, 0, 0.2);
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent);
+      mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent);
     }
 
-    .preset-palette-swatch {
-      flex: 1;
-      height: 100%;
+    .mini-seg {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 0 5px;
+      font-weight: 600;
+    }
+
+    .mini-sep {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      font-size: 18px;
+      line-height: 1;
+      overflow: hidden;
+    }
+
+    .mini-text {
+      font-weight: 600;
+    }
+
+    .mini-gap {
+      width: 0.6ch;
+      flex-shrink: 0;
+    }
+
+    .mini-char {
+      margin-left: 0.6ch;
+      font-weight: 700;
     }
 
     .preset-author-row {
@@ -2008,18 +2213,6 @@
       opacity: 0.7;
     }
 
-    .preset-btn .preset-preview {
-      font-family: var(--font-code);
-      font-size: 11.5px;
-      color: var(--accent-cyan);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      background: var(--code-bg);
-      padding: 4px 7px;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
 
     /* Glyphs Explorer Target Bar & Grid */
     .glyph-target-bar {
@@ -2398,7 +2591,7 @@
 
     .seo-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 28px;
       margin-bottom: 32px;
     }
@@ -2478,7 +2671,7 @@
 
     .faq-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 18px;
     }
 
@@ -2493,6 +2686,7 @@
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
       padding: 18px;
+      overflow-wrap: anywhere;
     }
 
     .faq-item h3 {
@@ -2602,6 +2796,7 @@
     .footer-links {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 12px;
     }
 
@@ -2613,6 +2808,18 @@
 
     .footer-links a:hover {
       color: var(--accent-cyan);
+    }
+
+    /* Respect users who ask the OS for less motion */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
@@ -2684,7 +2891,7 @@
           <div class="terminal-title">zsh — starship prompt preview</div>
           <div class="terminal-actions-group">
             <button type="button" class="terminal-action-btn" id="pinPreviewBtn" onclick="togglePinPreview()" aria-pressed="true" title="Pin/Unpin terminal preview while scrolling">
-              <span id="pinPreviewIcon">📌</span>
+              <span class="ui-glyph" id="pinPreviewIcon" aria-hidden="true">󰐃</span>
               <span id="pinPreviewLabel">Pinned</span>
             </button>
             <button type="button" class="terminal-action-btn terminal-btn-copy" id="terminalCopyBtn" onclick="quickCopyToml(this)" title="Directly copy current starship.toml to clipboard">
@@ -2718,10 +2925,10 @@
           <div class="scenario-left-group">
             <span class="scenario-title">Scenario:</span>
             <div class="scenario-pills" role="group" aria-label="Playground Scenarios">
-              <button type="button" class="scenario-btn active" id="btn-scen-clean" onclick="setScenario('clean')" aria-pressed="true">🌿 Clean Main</button>
-              <button type="button" class="scenario-btn" id="btn-scen-dirty" onclick="setScenario('dirty')" aria-pressed="false">⚡ Dirty Git (+1*)</button>
-              <button type="button" class="scenario-btn" id="btn-scen-error" onclick="setScenario('error')" aria-pressed="false">🚨 Error (127)</button>
-              <button type="button" class="scenario-btn" id="btn-scen-deep" onclick="setScenario('deep')" aria-pressed="false">📂 Deep Project</button>
+              <button type="button" class="scenario-btn active" id="btn-scen-clean" onclick="setScenario('clean')" aria-pressed="true"><span class="ui-glyph" aria-hidden="true"></span> Clean Main</button>
+              <button type="button" class="scenario-btn" id="btn-scen-dirty" onclick="setScenario('dirty')" aria-pressed="false"><span class="ui-glyph" aria-hidden="true"></span> Dirty Git (+1*)</button>
+              <button type="button" class="scenario-btn" id="btn-scen-error" onclick="setScenario('error')" aria-pressed="false"><span class="ui-glyph" aria-hidden="true"></span> Error (127)</button>
+              <button type="button" class="scenario-btn" id="btn-scen-deep" onclick="setScenario('deep')" aria-pressed="false"><span class="ui-glyph" aria-hidden="true"></span> Deep Project</button>
             </div>
           </div>
           <div class="terminal-creator-credit" id="terminalCreatorCredit">
@@ -2756,9 +2963,10 @@
               </button>
             </div>
           </div>
-          <span class="terminal-hint-text">💡 Click any segment in the prompt to customize</span>
+          <span class="terminal-hint-text"><span class="ui-glyph" aria-hidden="true"></span> Click any segment in the prompt to customize</span>
         </div>
         <div class="terminal-body" id="terminalPreview">
+          <span class="preview-peek-badge" id="previewPeekBadge" role="status" hidden></span>
           <div class="prompt-preview-container" id="promptContainer">
             <!-- Dynamically Rendered Segments -->
           </div>
@@ -2771,11 +2979,11 @@
       </div>
 
       <!-- Presets Gallery -->
-      <div class="card" id="presets" style="margin-bottom: 24px;">
-        <h2 class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span>🎨 Presets Gallery</span>
-            <span class="presets-count-badge" id="presetsTotalBadge" style="font-size: 11px; font-weight: normal; color: var(--text-muted); background: var(--bg-tertiary); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color);">35 presets</span>
+      <div class="card presets-card" id="presets">
+        <h2 class="card-title presets-card-title">
+          <div class="presets-title-group">
+            <span><span class="ui-glyph" aria-hidden="true">󰏘</span> Presets Gallery</span>
+            <span class="presets-count-badge" id="presetsTotalBadge" aria-live="polite">35 presets</span>
           </div>
           <button type="button" class="btn btn-sm btn-primary export-header-btn" onclick="openExportModal()" title="View and copy active starship.toml configuration">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -2790,26 +2998,26 @@
 
         <!-- Dedicated Filter Bar with spacious pill buttons & instant search -->
         <div class="preset-filter-bar">
-          <div class="preset-filter-group" id="presetFilterGroup" role="tablist" aria-label="Filter Presets by Category">
-            <button type="button" class="preset-filter-btn active" role="tab" aria-selected="true" data-filter="all" onclick="setPresetFilter('all')">
+          <div class="preset-filter-group" id="presetFilterGroup" role="group" aria-label="Filter presets by category">
+            <button type="button" class="preset-filter-btn active" aria-pressed="true" data-filter="all" onclick="setPresetFilter('all')">
               <span>All</span>
               <span class="filter-count" id="count-all">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="powerline" onclick="setPresetFilter('powerline')">
-              <span>⚡ Powerline</span>
+            <button type="button" class="preset-filter-btn" aria-pressed="false" data-filter="powerline" onclick="setPresetFilter('powerline')">
+              <span><span class="ui-glyph" aria-hidden="true"></span> Powerline</span>
               <span class="filter-count" id="count-powerline">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="minimal" onclick="setPresetFilter('minimal')">
-              <span>✨ Minimal</span>
+            <button type="button" class="preset-filter-btn" aria-pressed="false" data-filter="minimal" onclick="setPresetFilter('minimal')">
+              <span><span class="ui-glyph" aria-hidden="true">❯</span> Minimal</span>
               <span class="filter-count" id="count-minimal">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="light" onclick="setPresetFilter('light')">
-              <span>☀️ Light</span>
+            <button type="button" class="preset-filter-btn" aria-pressed="false" data-filter="light" onclick="setPresetFilter('light')">
+              <span><span class="ui-glyph" aria-hidden="true"></span> Light</span>
               <span class="filter-count" id="count-light">0</span>
             </button>
           </div>
           <div class="preset-search-wrap">
-            <span class="preset-search-icon" aria-hidden="true">🔍</span>
+            <span class="preset-search-icon ui-glyph" aria-hidden="true"></span>
             <input type="search" id="presetSearchInput" class="preset-search-input" placeholder="Search preset, palette, or author... (Press /)" oninput="onPresetSearch(this.value)" aria-label="Search presets by name, palette, or author">
           </div>
         </div>
@@ -2853,10 +3061,10 @@
       <!-- Quick Mode Switcher so TOML Editor & Customizer are 1 click away without scrolling -->
       <div class="sidebar-mode-tabs" role="tablist" aria-label="Sidebar View Mode">
         <button type="button" class="sidebar-tab-btn active" id="sidebarTab-customizer" role="tab" aria-selected="true" onclick="switchSidebarMode('customizer')">
-          <span>⚙️ Customizer</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Customizer</span>
         </button>
         <button type="button" class="sidebar-tab-btn" id="sidebarTab-toml" role="tab" aria-selected="false" onclick="switchSidebarMode('toml')">
-          <span>📄 Live TOML</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Live TOML</span>
         </button>
         <button type="button" class="sidebar-tab-btn" id="sidebarTab-both" role="tab" aria-selected="false" onclick="switchSidebarMode('both')" title="Show both Customizer and TOML Editor stacked">
           <span>⬍ Both</span>
@@ -2866,18 +3074,18 @@
       <!-- Customizer Controls -->
       <div class="card" id="customizer">
         <h2 class="card-title">
-          <span>⚙️ Customizer</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Customizer</span>
           <div style="display: flex; gap: 6px; align-items: center;">
             <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 11px; height: auto;" onclick="randomizePreset()" title="Shuffle random prompt combination">
-              <span>🎲 Shuffle</span>
+              <span class="ui-glyph" aria-hidden="true"></span><span>Shuffle</span>
             </button>
             <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px; height: auto;" onclick="quickCopyToml(this)" title="Copy current starship.toml">
-              <span class="btn-copy-label">📋 Copy TOML</span>
+              <span class="ui-glyph" aria-hidden="true"></span><span class="btn-copy-label">Copy TOML</span>
             </button>
           </div>
         </h2>
 
-        <div class="controls-grid" style="grid-template-columns: 1fr;">
+        <div class="controls-grid" style="grid-template-columns: minmax(0, 1fr);">
           <div class="control-group">
             <label>Prompt Style Mode</label>
             <div class="style-toggle-group" role="group" aria-label="Prompt Style Mode">
@@ -2887,8 +3095,8 @@
             </div>
           </div>
 
-          <div id="minimalStyleNotice" style="display: none; padding: 6px 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-muted); line-height: 1.35; margin-bottom: 2px;">
-            ✨ <strong>Minimalist Mode</strong>: Segments render with clean spacing, vibrant foreground colors, and optional brackets without Powerline block fills or cap glyphs.
+          <div id="minimalStyleNotice" class="inline-notice" style="display: none;">
+            <span class="ui-glyph" aria-hidden="true"></span> <strong>Minimalist Mode</strong>: Segments render with clean spacing, vibrant foreground colors, and optional brackets without Powerline block fills or cap glyphs.
           </div>
 
           <div class="control-group">
@@ -2900,7 +3108,7 @@
           <div class="control-group" id="segmentColorsSection">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
               <span style="font-weight: 600; font-size: 0.82rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
-                <span>🎨</span> Modules, Icons &amp; Colors
+                <span class="ui-glyph" aria-hidden="true">󰏘</span> Modules, Icons &amp; Colors
               </span>
               <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 10px; height: auto;" onclick="resetColorsToPalette()" title="Reset segment colors to palette defaults">Reset Colors</button>
             </div>
@@ -3061,32 +3269,32 @@
             </div>
 
             <!-- Smart Collapsible Middle Separators Section -->
-            <div class="control-group" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 7px 10px; margin-bottom: 6px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                <span style="font-weight: 600; font-size: 0.8rem; color: var(--text-main);">Middle Separators</span>
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; user-select: none; text-transform: none;">
-                  <input type="checkbox" id="linkSeparators" onchange="toggleLinkSeparators()" checked style="accent-color: var(--accent-primary);">
+            <div class="control-group sep-panel">
+              <div class="sep-panel-header">
+                <span class="sep-panel-title">Middle Separators</span>
+                <label class="sep-link-toggle">
+                  <input type="checkbox" id="linkSeparators" onchange="toggleLinkSeparators()" checked>
                   <span>Link all</span>
                 </label>
               </div>
 
-              <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div class="sep-field-stack">
                 <div>
-                  <label id="sep1Label" for="sep1Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">All Middle Separators (Linked)</label>
-                  <select id="sep1Select" onchange="onSeparatorChange(0)" style="width: 100%;"></select>
+                  <label id="sep1Label" for="sep1Select" class="sep-field-label">All Middle Separators (Linked)</label>
+                  <select id="sep1Select" onchange="onSeparatorChange(0)" class="sep-field-select"></select>
                 </div>
-                <div id="unlinkedSeparatorsExtra" style="display: none; flex-direction: column; gap: 6px;">
+                <div id="unlinkedSeparatorsExtra" class="sep-field-stack" style="display: none;">
                   <div>
-                    <label for="sep2Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 2 (Dir ➔ Git)</label>
-                    <select id="sep2Select" onchange="onSeparatorChange(1)" style="width: 100%;"></select>
+                    <label for="sep2Select" class="sep-field-label">Separator 2 (Dir ➔ Git)</label>
+                    <select id="sep2Select" onchange="onSeparatorChange(1)" class="sep-field-select"></select>
                   </div>
                   <div>
-                    <label for="sep3Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 3 (Git ➔ Lang)</label>
-                    <select id="sep3Select" onchange="onSeparatorChange(2)" style="width: 100%;"></select>
+                    <label for="sep3Select" class="sep-field-label">Separator 3 (Git ➔ Lang)</label>
+                    <select id="sep3Select" onchange="onSeparatorChange(2)" class="sep-field-select"></select>
                   </div>
                   <div>
-                    <label for="sep4Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 4 (Lang ➔ Time)</label>
-                    <select id="sep4Select" onchange="onSeparatorChange(3)" style="width: 100%;"></select>
+                    <label for="sep4Select" class="sep-field-label">Separator 4 (Lang ➔ Time)</label>
+                    <select id="sep4Select" onchange="onSeparatorChange(3)" class="sep-field-select"></select>
                   </div>
                 </div>
               </div>
@@ -3119,15 +3327,15 @@
       <!-- Generated TOML Output & Two-Way Editor -->
       <div class="card" id="config" style="display: none;">
         <h2 class="card-title">
-          <span>📄 starship.toml Config</span>
-          <span style="font-size: 11px; font-weight: normal; color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1); padding: 2px 8px; border-radius: 999px;">Two-Way Live Editor</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> starship.toml Config</span>
+          <span class="title-badge title-badge-accent">Two-Way Live Editor</span>
         </h2>
         <div class="toml-box">
           <textarea id="tomlOutput" class="toml-editor" aria-label="starship.toml configuration editor" placeholder="Edit or paste your starship.toml here to update the live preview..." oninput="onTomlInput()"></textarea>
           <span id="tomlSyncBadge" class="toml-sync-badge">Live Synced</span>
         </div>
         <div class="actions-bar">
-          <button type="button" class="btn btn-secondary" onclick="applyTomlFromEditor()" title="Parse and apply edited TOML to the UI preview">⚡ Apply TOML</button>
+          <button type="button" class="btn btn-secondary" onclick="applyTomlFromEditor()" title="Parse and apply edited TOML to the UI preview"><span class="ui-glyph" aria-hidden="true"></span> Apply TOML</button>
           <button type="button" class="btn btn-secondary" onclick="downloadToml()">Download .toml</button>
           <button type="button" class="btn" onclick="copyToml()">Copy Config</button>
         </div>
@@ -3142,7 +3350,7 @@
     <div class="seo-card">
       <div class="seo-grid">
         <article class="seo-article" id="about">
-          <h2>🚀 What is Starship Studio?</h2>
+          <h2><span class="ui-glyph" aria-hidden="true"></span> What is Starship Studio?</h2>
           <p>
             <strong>Starship Studio</strong> is an interactive visual editor and preset generator for the 
             <a href="https://starship.rs" target="_blank" rel="noopener noreferrer">Starship cross-shell prompt</a>. 
@@ -3154,7 +3362,7 @@
         </article>
 
         <article class="seo-article" id="install">
-          <h2>⚡ How to Install Your Generated Prompt</h2>
+          <h2><span class="ui-glyph" aria-hidden="true"></span> How to Install Your Generated Prompt</h2>
           <ol class="seo-steps">
             <li>
               <strong>Customize Prompt:</strong> Configure your start cap, middle separator, end cap, line height, and color palette.
@@ -3175,7 +3383,7 @@
 
       <!-- FAQ Section -->
       <div class="seo-faq" id="faq">
-        <h2>💡 Frequently Asked Questions (FAQ)</h2>
+        <h2><span class="ui-glyph" aria-hidden="true"></span> Frequently Asked Questions (FAQ)</h2>
         <div class="faq-grid">
           <div class="faq-item">
             <h3>What is Starship Studio?</h3>
@@ -4775,7 +4983,28 @@
     if (pinLabel) {
       pinLabel.textContent = isPreviewPinned ? "Pinned" : "Unpinned";
     }
+    const pinIcon = document.getElementById("pinPreviewIcon");
+    if (pinIcon) {
+      pinIcon.textContent = isPreviewPinned ? "\u{F0403}" : "\u{F0404}";
+    }
     showToast(isPreviewPinned ? "Terminal preview pinned to top while scrolling" : "Terminal preview unpinned");
+  }
+
+  function preferredScrollBehavior() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  }
+
+  // Pin only the prompt body: offset the sticky top by the chrome above it
+  function initCompactStickyPreview() {
+    const previewWin = document.getElementById("preview");
+    const body = document.getElementById("terminalPreview");
+    if (!previewWin || !body || typeof ResizeObserver === "undefined") return;
+    const update = () => {
+      previewWin.style.setProperty("--terminal-stick-top", `${-body.offsetTop}px`);
+    };
+    const ro = new ResizeObserver(update);
+    Array.from(previewWin.children).forEach(child => ro.observe(child));
+    update();
   }
 
   function switchSidebarMode(mode) {
@@ -4896,7 +5125,7 @@
     }
     const row = document.getElementById(`colorRow-${segId}`);
     if (row) {
-      row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      row.scrollIntoView({ behavior: preferredScrollBehavior(), block: "nearest" });
       row.classList.remove("highlight-pulse");
       void row.offsetWidth;
       row.classList.add("highlight-pulse");
@@ -4912,7 +5141,7 @@
     }
     const sec = document.getElementById("capsSeparatorsSection");
     if (sec) {
-      sec.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      sec.scrollIntoView({ behavior: preferredScrollBehavior(), block: "nearest" });
       sec.classList.remove("highlight-pulse");
       void sec.offsetWidth;
       sec.classList.add("highlight-pulse");
@@ -5234,6 +5463,7 @@
     if (hInput) hInput.value = currentConfig.promptHeight;
 
     updateCustomizer();
+    initCompactStickyPreview();
   }
 
   // Populate Select Dropdowns
@@ -5307,7 +5537,7 @@
     document.querySelectorAll(".preset-filter-btn").forEach(btn => {
       const isMatch = btn.getAttribute("data-filter") === filter;
       btn.classList.toggle("active", isMatch);
-      btn.setAttribute("aria-selected", isMatch ? "true" : "false");
+      btn.setAttribute("aria-pressed", isMatch ? "true" : "false");
     });
     renderPresetButtons();
   }
@@ -5343,8 +5573,6 @@
     if (countPowerline) countPowerline.textContent = presets.filter(p => p.category === "powerline").length;
     if (countMinimal) countMinimal.textContent = presets.filter(p => p.category === "minimal").length;
     if (countLight) countLight.textContent = presets.filter(p => p.category === "light").length;
-    const presetsTotalBadge = document.getElementById("presetsTotalBadge");
-    if (presetsTotalBadge) presetsTotalBadge.textContent = presets.length + " presets";
 
     const filtered = presets.filter(p => {
       const catMatch =
@@ -5359,52 +5587,117 @@
       return haystack.includes(presetSearchQuery);
     });
 
+    const presetsTotalBadge = document.getElementById("presetsTotalBadge");
+    if (presetsTotalBadge) {
+      presetsTotalBadge.textContent = filtered.length === presets.length
+        ? `${presets.length} presets`
+        : `${filtered.length} of ${presets.length} presets`;
+    }
+
     if (filtered.length === 0) {
-      presetsGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 28px 16px; color: var(--text-muted); font-size: 0.85rem;">No presets match "${presetSearchQuery}". Try clearing the search filter.</div>`;
+      const empty = document.createElement("div");
+      empty.className = "preset-empty-state";
+      empty.textContent = `No presets match "${presetSearchQuery}". Try clearing the search filter.`;
+      presetsGrid.appendChild(empty);
       return;
     }
 
     filtered.forEach(p => {
       const isActive = currentConfig.activePreset === p.id;
-      const btn = document.createElement("div");
+      const card = document.createElement("div");
+      card.className = "preset-card";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
       btn.className = "preset-btn " + (isActive ? "active" : "");
       btn.setAttribute("data-preset-id", p.id);
-      btn.setAttribute("role", "button");
-      btn.setAttribute("tabindex", "0");
       btn.setAttribute("aria-pressed", isActive ? "true" : "false");
       btn.onclick = () => applyPreset(p);
-      btn.onkeydown = (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          applyPreset(p);
-        }
+      btn.onpointerenter = (e) => { if (e.pointerType === "mouse") peekPreset(p); };
+      btn.onpointerleave = endPresetPeek;
+      btn.onfocus = () => { if (btn.matches(":focus-visible")) peekPreset(p); };
+      btn.onblur = endPresetPeek;
+
+      const header = document.createElement("span");
+      header.className = "preset-header";
+      const name = document.createElement("span");
+      name.className = "preset-name";
+      name.textContent = p.name;
+      header.appendChild(name);
+      btn.appendChild(header);
+      btn.appendChild(buildPresetMiniPrompt(p));
+
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "preset-quick-copy-btn";
+      copyBtn.textContent = "Copy";
+      copyBtn.title = "Apply preset & copy starship.toml";
+      copyBtn.setAttribute("aria-label", `Apply ${p.name} and copy starship.toml`);
+      copyBtn.onclick = (e) => {
+        e.stopPropagation();
+        quickCopyPreset(p, copyBtn);
       };
 
-      const t = themes[p.theme] || themes.firewatch;
-      const swatches = [t.os && t.os.bg, t.dir && t.dir.bg, t.git && t.git.bg, t.lang && t.lang.bg, t.time && t.time.bg]
-        .filter(Boolean)
-        .map(c => `<span class="preset-swatch-dot" style="background:${c}"></span>`)
-        .join("");
-
-      btn.innerHTML = `
-        <button type="button" class="preset-quick-copy-btn" title="Apply preset & copy starship.toml">Copy</button>
-        <div class="preset-header">
-          <span class="preset-name">${p.name}</span>
-        </div>
-        <span class="preset-preview">${p.preview}</span>
-        <div class="preset-palette-strip" aria-hidden="true">${swatches}</div>
-      `;
-
-      const copyBtn = btn.querySelector(".preset-quick-copy-btn");
-      if (copyBtn) {
-        copyBtn.onclick = (e) => {
-          e.stopPropagation();
-          quickCopyPreset(p, copyBtn);
-        };
-      }
-
-      presetsGrid.appendChild(btn);
+      card.appendChild(btn);
+      card.appendChild(copyBtn);
+      presetsGrid.appendChild(card);
     });
+  }
+
+  // Compact, colored rendering of a preset (same palette, glyphs and style
+  // the terminal preview will show once the preset is applied)
+  function buildPresetMiniPrompt(p) {
+    const t = themes[p.theme] || themes.firewatch;
+    const style = p.promptStyle || "powerline";
+    const mods = p.modules || {};
+    const on = (k) => mods[k] !== false;
+
+    const segs = [];
+    if (on("os")) segs.push({ label: p.icon || "󰣇", c: t.os });
+    if (on("dir")) segs.push({ label: "~", c: t.dir });
+    if (on("git")) segs.push({ label: "\uf418 main", c: t.git });
+    if (on("lang")) segs.push({ label: "\ue7a8", c: t.lang });
+    if (on("time")) segs.push({ label: "\uf43a", c: t.time });
+
+    const box = document.createElement("span");
+    box.className = "preset-mini-prompt";
+    box.setAttribute("aria-hidden", "true");
+    box.style.backgroundColor = t.bg;
+
+    const add = (cls, text, color, bg) => {
+      const el = document.createElement("span");
+      el.className = cls;
+      el.textContent = text;
+      if (color) el.style.color = color;
+      if (bg) el.style.backgroundColor = bg;
+      box.appendChild(el);
+      return el;
+    };
+
+    if (style === "powerline") {
+      const seps = Array.isArray(p.sep) ? p.sep : [p.sep !== undefined ? p.sep : ""];
+      if (segs.length) add("mini-sep", p.leftCap || "", segs[0].c.bg);
+      segs.forEach((seg, i) => {
+        add("mini-seg", seg.label, seg.c.fg, seg.c.bg);
+        const next = segs[i + 1];
+        if (next) add("mini-sep", seps[i % seps.length], seg.c.bg, next.c.bg);
+        else add("mini-sep", p.rightCap || "", seg.c.bg);
+      });
+      return box;
+    }
+
+    segs.forEach((seg, i) => {
+      if (i > 0) add("mini-gap", "");
+      if (style === "bracketed") {
+        add("mini-text", "[", t.fg).style.opacity = "0.6";
+        add("mini-text", seg.label, seg.c.bg);
+        add("mini-text", "]", t.fg).style.opacity = "0.6";
+      } else {
+        add("mini-text", seg.label, seg.c.bg);
+      }
+    });
+    add("mini-char", p.charSymbol || "❯", p.charColor || t.git.bg);
+    return box;
   }
 
   // ── Glyphs Library & Target Selector ──────────────────────────────────────
@@ -5491,46 +5784,94 @@
   }
 
   // Apply Preset
-  function applyPreset(p) {
-    const style = p.promptStyle || "powerline";
-    setPromptStyle(style, true);
-    currentConfig.activePreset = p.id;
-    if (p.leftCap !== undefined) currentConfig.leftCap = p.leftCap;
-    if (p.rightCap !== undefined) currentConfig.rightCap = p.rightCap;
+  // Hover/focus a preset card to see it in the terminal without applying it.
+  // Swaps the preset's fields in only for the duration of one render.
+  let peekPresetId = null;
+
+  function peekPreset(p) {
+    if (peekPresetId === p.id || currentConfig.activePreset === p.id) return;
+    peekPresetId = p.id;
+    const cfg = presetConfig(p);
+    const saved = {};
+    Object.keys(cfg).forEach(k => { saved[k] = currentConfig[k]; });
+    Object.assign(currentConfig, cfg);
+    try {
+      renderPromptPreview();
+    } finally {
+      Object.assign(currentConfig, saved);
+    }
+    const badge = document.getElementById("previewPeekBadge");
+    if (badge) {
+      badge.textContent = `Previewing ${p.name} · click to apply`;
+      badge.hidden = false;
+    }
+  }
+
+  function endPresetPeek() {
+    if (peekPresetId === null) return;
+    peekPresetId = null;
+    const badge = document.getElementById("previewPeekBadge");
+    if (badge) badge.hidden = true;
+    renderPromptPreview();
+  }
+
+  // Config fields a preset sets (shared by applyPreset and the hover preview)
+  function presetConfig(p) {
+    const cfg = {
+      promptStyle: p.promptStyle || "powerline",
+      activePreset: p.id,
+      themeKey: p.theme,
+      charSymbol: p.charSymbol || null,
+      charColor: p.charColor || null,
+      customColors: null
+    };
+    if (p.leftCap !== undefined) cfg.leftCap = p.leftCap;
+    if (p.rightCap !== undefined) cfg.rightCap = p.rightCap;
     if (p.sep !== undefined) {
       if (Array.isArray(p.sep)) {
-        currentConfig.separators = [
-          p.sep[0] || "",
-          p.sep[1] || p.sep[0] || "",
-          p.sep[2] || p.sep[0] || "",
-          p.sep[3] || p.sep[1] || p.sep[0] || ""
+        cfg.separators = [
+          p.sep[0] || "",
+          p.sep[1] || p.sep[0] || "",
+          p.sep[2] || p.sep[0] || "",
+          p.sep[3] || p.sep[1] || p.sep[0] || ""
         ];
-        currentConfig.linkSeparators = false;
+        cfg.linkSeparators = false;
       } else {
-        currentConfig.separators = [p.sep, p.sep, p.sep, p.sep];
-        currentConfig.linkSeparators = true;
+        cfg.separators = [p.sep, p.sep, p.sep, p.sep];
+        cfg.linkSeparators = true;
       }
     }
-    currentConfig.themeKey = p.theme;
     if (p.icon) {
-      currentConfig.iconSymbol = p.icon;
-      if (!startIcons.includes(p.icon)) {
-        startIcons.unshift(p.icon);
-        renderIconSelect();
-      }
-      if (iconSelect) iconSelect.value = p.icon;
+      cfg.iconSymbol = p.icon;
+      cfg.moduleIcons = { ...currentConfig.moduleIcons, os: p.icon };
     }
-    currentConfig.charSymbol = p.charSymbol || null;
-    currentConfig.charColor = p.charColor || null;
-
     if (p.modules) {
-      currentConfig.modules = {
+      cfg.modules = {
         os: p.modules.os !== undefined ? p.modules.os : true,
         dir: p.modules.dir !== undefined ? p.modules.dir : true,
         git: p.modules.git !== undefined ? p.modules.git : true,
         lang: p.modules.lang !== undefined ? p.modules.lang : true,
         time: p.modules.time !== undefined ? p.modules.time : true
       };
+    }
+    return cfg;
+  }
+
+  function applyPreset(p) {
+    endPresetPeek();
+    const cfg = presetConfig(p);
+    setPromptStyle(cfg.promptStyle, true);
+    Object.assign(currentConfig, cfg);
+
+    if (p.icon) {
+      if (!startIcons.includes(p.icon)) {
+        startIcons.unshift(p.icon);
+        renderIconSelect();
+      }
+      if (iconSelect) iconSelect.value = p.icon;
+    }
+
+    if (p.modules) {
       const modOS = document.getElementById("modOS");
       const modDir = document.getElementById("modDir");
       const modGit = document.getElementById("modGit");
@@ -5543,7 +5884,6 @@
       if (modTime) modTime.checked = currentConfig.modules.time;
     }
 
-    currentConfig.customColors = null;
     syncColorPickers();
     syncSeparatorUI();
     renderPresetButtons();
@@ -6760,10 +7100,10 @@ error_symbol = "[❯](bold red)"
       <!-- Modal Tabs -->
       <div class="modal-tabs">
         <button type="button" class="modal-tab-btn active" id="tabBtn-config" onclick="switchModalTab('config')">
-          <span>📄 Configuration</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Configuration</span>
         </button>
         <button type="button" class="modal-tab-btn" id="tabBtn-install" onclick="switchModalTab('install')">
-          <span>💻 Installation Guide</span>
+          <span><span class="ui-glyph" aria-hidden="true"></span> Installation Guide</span>
         </button>
       </div>
 
@@ -6803,7 +7143,7 @@ error_symbol = "[❯](bold red)"
 
       <!-- Modal Footer -->
       <div class="modal-footer">
-        <span class="modal-footer-note">⚡ Schema valid: <a href="https://starship.rs/config-schema.json" target="_blank" rel="noopener noreferrer">starship.rs</a></span>
+        <span class="modal-footer-note"><span class="ui-glyph" aria-hidden="true"></span> Schema valid: <a href="https://starship.rs/config-schema.json" target="_blank" rel="noopener noreferrer">starship.rs</a></span>
         <button type="button" class="btn btn-secondary btn-sm" onclick="closeExportModal()">Close</button>
       </div>
     </div>
