@@ -404,17 +404,13 @@
 
     @media (min-width: 1024px) {
       .container {
-        grid-template-columns: minmax(0, 1fr) 400px;
+        grid-template-columns: minmax(0, 1fr) 390px;
+        gap: 20px;
       }
 
       aside {
         position: sticky;
         top: 12px;
-        max-height: calc(100dvh - 24px);
-        overflow-y: auto;
-        scrollbar-gutter: stable;
-        overscroll-behavior: contain;
-        padding-right: 4px;
       }
     }
 
@@ -422,12 +418,12 @@
     .sidebar-mode-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr auto;
-      gap: 6px;
+      gap: 5px;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 5px;
-      margin-bottom: 12px;
+      padding: 4px;
+      margin-bottom: 8px;
       box-shadow: var(--card-shadow);
     }
 
@@ -632,23 +628,25 @@
       font-weight: 600;
     }
 
-    /* Floating Quick Actions Bar */
+    /* Floating Quick Actions Bar (Centered bottom so it never covers the sidebar on laptops) */
     .floating-quick-bar {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 850;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 999px;
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 20px var(--border-glow);
-      padding: 6px 8px 6px 14px;
+      padding: 6px 10px 6px 14px;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       display: flex;
       align-items: center;
       gap: 12px;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: calc(100vw - 32px);
     }
 
     .floating-preset-info {
@@ -1192,7 +1190,7 @@
       gap: 4px;
     }
 
-    .interactive-segment {
+    .interactive-segment, .interactive-cap {
       cursor: pointer;
       position: relative;
       transition: filter 0.15s ease, transform 0.15s ease;
@@ -1201,6 +1199,11 @@
     .interactive-segment:hover {
       filter: brightness(1.12);
       box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35) inset;
+    }
+
+    .interactive-cap:hover {
+      filter: brightness(1.35) drop-shadow(0 0 4px var(--accent));
+      transform: scale(1.05);
     }
 
     .toml-sync-badge {
@@ -1350,11 +1353,37 @@
       user-select: none;
     }
 
-    /* Segment & Start Icon Color Customizer */
+    /* Segment & Module Color Customizer (Ultra-compact for notebook screens) */
+    #customizer.card,
+    #config.card {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+    }
+
+    #customizer .card-title,
+    #config .card-title {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    #customizer .controls-grid {
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    #segmentColorsSection {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+    }
+
     .segment-colors-grid {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       margin-top: 4px;
     }
 
@@ -1362,11 +1391,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 5px 8px;
+      padding: 3px 6px;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
       transition: all 0.2s ease;
+      gap: 4px;
     }
 
     .seg-color-row:hover {
@@ -1379,7 +1409,8 @@
       background: var(--bg-secondary);
     }
 
-    .seg-color-row.is-disabled .seg-color-pickers {
+    .seg-color-row.is-disabled .seg-color-pickers,
+    .seg-color-row.is-disabled .seg-icon-select-btn {
       pointer-events: none;
     }
 
@@ -1407,45 +1438,148 @@
       flex-shrink: 0;
     }
 
-    .icon-picker-trigger-btn {
+    .seg-color-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+      flex-shrink: 0;
+    }
+
+    .seg-label-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .seg-icon-select-btn {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       color: var(--accent-cyan);
       border-radius: 4px;
-      padding: 1px 6px;
-      font-size: 10px;
-      font-weight: 600;
+      padding: 1px 4px;
+      font-size: 13px;
+      font-family: var(--font-nerd), var(--font-code);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
       transition: all 0.15s ease;
+      min-width: 30px;
+      height: 22px;
+      justify-content: center;
+      line-height: 1;
+      user-select: none;
     }
 
-    .icon-picker-trigger-btn:hover {
+    .seg-icon-select-btn:hover,
+    .seg-icon-select-btn.active {
       border-color: var(--accent-cyan);
       background: var(--bg-card-hover);
+      transform: scale(1.05);
     }
 
+    .seg-icon-caret {
+      font-size: 8px;
+      opacity: 0.65;
+      font-family: var(--font-ui);
+    }
+
+    .seg-color-icon {
+      font-family: var(--font-nerd), var(--font-code);
+      font-size: 13px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 14px;
+      min-height: 14px;
+      color: var(--accent-cyan);
+      vertical-align: middle;
+      flex-shrink: 0;
+      transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+    /* Unified Module Icon Picker Drawer */
     .visual-icon-drawer {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
-      padding: 8px;
-      margin-top: 2px;
+      padding: 8px 10px;
+      margin-top: 4px;
       margin-bottom: 4px;
-      display: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }
 
-    .visual-icon-drawer.open {
-      display: block;
+    .icon-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .icon-drawer-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-drawer-sub {
+      font-size: 10px;
+      font-weight: normal;
+      color: var(--text-muted);
+    }
+
+    .icon-drawer-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .module-icon-select {
+      font-size: 12px !important;
+      padding: 2px 6px !important;
+      font-family: var(--font-nerd), var(--font-code) !important;
+      max-width: 140px;
+      height: 24px;
+    }
+
+    .icon-drawer-close-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 4px;
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .icon-drawer-close-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-tertiary);
+      border-color: var(--accent-pink);
     }
 
     .visual-icon-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
-      gap: 4px;
-      max-height: 150px;
+      grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
+      gap: 3px;
+      max-height: 120px;
       overflow-y: auto;
       padding-right: 2px;
     }
@@ -1455,9 +1589,9 @@
       border: 1px solid var(--border-color);
       color: var(--text-main);
       border-radius: 4px;
-      height: 30px;
+      height: 28px;
       font-family: var(--font-nerd), var(--font-code);
-      font-size: 16px;
+      font-size: 14px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -1480,50 +1614,27 @@
     .caps-two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .seg-color-label {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .seg-color-icon {
-      font-family: var(--font-nerd), var(--font-code);
-      font-size: 15px;
-      line-height: 1;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 18px;
-      min-height: 18px;
-      color: var(--accent-cyan);
-      vertical-align: middle;
-      flex-shrink: 0;
-      transition: color 0.2s ease, background-color 0.2s ease;
+      gap: 8px;
+      margin-bottom: 6px;
     }
 
     .seg-color-pickers {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 3px;
+      flex-shrink: 0;
     }
 
     .color-picker-wrapper {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       cursor: pointer;
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 4px;
-      padding: 2px 5px;
-      transition: all 0.2s ease;
+      padding: 1px 3px;
+      transition: all 0.15s ease;
       position: relative;
     }
 
@@ -1532,7 +1643,7 @@
     }
 
     .color-picker-tag {
-      font-size: 9px;
+      font-size: 8.5px;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -1540,18 +1651,18 @@
     }
 
     .color-hex-label {
-      font-size: 10px;
+      font-size: 9px;
       font-family: monospace;
       color: var(--text-main);
-      min-width: 48px;
+      min-width: 42px;
     }
 
     .color-picker-wrapper input[type="color"] {
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 15px;
+      height: 15px;
       border: none;
       border-radius: 3px;
       cursor: pointer;
@@ -2099,24 +2210,25 @@
     /* Toast Notification (Positioned above Floating Quick Bar to prevent collision) */
     .toast {
       position: fixed;
-      bottom: 84px;
-      right: 24px;
+      bottom: 74px;
+      left: 50%;
+      transform: translate(-50%, 80px);
       background: var(--accent-green);
       color: #042f2e;
-      padding: 10px 18px;
+      padding: 9px 18px;
       border-radius: var(--radius-md);
       font-weight: 600;
       font-size: 13px;
       box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
-      transform: translateY(100px);
       opacity: 0;
       pointer-events: none;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       z-index: 1100;
+      white-space: nowrap;
     }
 
     .toast.show {
-      transform: translateY(0);
+      transform: translate(-50%, 0);
       opacity: 1;
     }
 
@@ -2698,7 +2810,7 @@
           </div>
           <div class="preset-search-wrap">
             <span class="preset-search-icon" aria-hidden="true">🔍</span>
-            <input type="search" id="presetSearchInput" class="preset-search-input" placeholder="Search preset, palette, or author..." oninput="onPresetSearch(this.value)" aria-label="Search presets by name, palette, or author">
+            <input type="search" id="presetSearchInput" class="preset-search-input" placeholder="Search preset, palette, or author... (Press /)" oninput="onPresetSearch(this.value)" aria-label="Search presets by name, palette, or author">
           </div>
         </div>
 
@@ -2752,12 +2864,17 @@
       </div>
 
       <!-- Customizer Controls -->
-      <div class="card" id="customizer" style="margin-bottom: 16px;">
+      <div class="card" id="customizer">
         <h2 class="card-title">
           <span>⚙️ Customizer</span>
-          <button type="button" class="btn btn-secondary" style="padding: 3px 9px; font-size: 11px; height: auto;" onclick="quickCopyToml(this)" title="Copy current starship.toml">
-            <span class="btn-copy-label">📋 Copy TOML</span>
-          </button>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 11px; height: auto;" onclick="randomizePreset()" title="Shuffle random prompt combination">
+              <span>🎲 Shuffle</span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px; height: auto;" onclick="quickCopyToml(this)" title="Copy current starship.toml">
+              <span class="btn-copy-label">📋 Copy TOML</span>
+            </button>
+          </div>
         </h2>
 
         <div class="controls-grid" style="grid-template-columns: 1fr;">
@@ -2770,7 +2887,7 @@
             </div>
           </div>
 
-          <div id="minimalStyleNotice" style="display: none; padding: 10px 12px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 4px;">
+          <div id="minimalStyleNotice" style="display: none; padding: 6px 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-muted); line-height: 1.35; margin-bottom: 2px;">
             ✨ <strong>Minimalist Mode</strong>: Segments render with clean spacing, vibrant foreground colors, and optional brackets without Powerline block fills or cap glyphs.
           </div>
 
@@ -2780,12 +2897,12 @@
           </div>
 
           <!-- Unified Modules, Start Icon & Segment Colors Section -->
-          <div class="control-group" id="segmentColorsSection" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 4px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+          <div class="control-group" id="segmentColorsSection">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
               <span style="font-weight: 600; font-size: 0.82rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
                 <span>🎨</span> Modules, Icons &amp; Colors
               </span>
-              <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 10px; height: auto;" onclick="resetColorsToPalette()" title="Reset segment colors to palette defaults">Reset Colors</button>
+              <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 10px; height: auto;" onclick="resetColorsToPalette()" title="Reset segment colors to palette defaults">Reset Colors</button>
             </div>
 
             <div class="segment-colors-grid">
@@ -2793,9 +2910,11 @@
               <div class="seg-color-row" id="colorRow-os">
                 <span class="seg-color-label">
                   <input type="checkbox" id="modOS" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Start Icon module" title="Toggle Start Icon module">
-                  <span class="seg-color-icon" id="colorPreviewIcon" onclick="toggleVisualIconDrawer()" style="cursor: pointer;" title="Click to choose Start Icon">󰣇</span>
-                  <span>Start Icon</span>
-                  <button type="button" class="icon-picker-trigger-btn" onclick="toggleVisualIconDrawer()" title="Open visual Nerd Font icon picker">Icons ▾</button>
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-os" onclick="toggleModuleIconDrawer('os')" title="Change icon for Start module">
+                    <span class="seg-color-icon" id="colorIcon-os">󰣇</span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Start</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-os-bg" title="Segment Fill Color (Powerline) or Icon Color (Transparent)">
@@ -2811,23 +2930,15 @@
                 </div>
               </div>
 
-              <!-- Visual Start Icon Picker Drawer (Expandable right under Start Icon) -->
-              <div class="visual-icon-drawer" id="visualIconDrawer">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                  <label for="iconSelect" style="font-size: 10px; margin: 0;">Select Start Icon (100+ Nerd Font Symbols)</label>
-                  <select id="iconSelect" onchange="updateCustomizer()" style="font-size: 14px; padding: 2px 8px; width: auto;"></select>
-                </div>
-                <div class="visual-icon-grid" id="visualIconGrid">
-                  <!-- Populated by JS -->
-                </div>
-              </div>
-
               <!-- Directory Row -->
               <div class="seg-color-row" id="colorRow-dir">
                 <span class="seg-color-label">
                   <input type="checkbox" id="modDir" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Directory module" title="Toggle Directory module">
-                  <span class="seg-color-icon" id="colorIcon-dir">󰲋</span>
-                  <span>Directory</span>
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-dir" onclick="toggleModuleIconDrawer('dir')" title="Change icon for Directory module">
+                    <span class="seg-color-icon" id="colorIcon-dir">󰲋</span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Directory</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-dir-bg" title="Segment Fill Color (Powerline) or Directory Color (Transparent)">
@@ -2847,8 +2958,11 @@
               <div class="seg-color-row" id="colorRow-git">
                 <span class="seg-color-label">
                   <input type="checkbox" id="modGit" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Git Branch module" title="Toggle Git Branch module">
-                  <span class="seg-color-icon" id="colorIcon-git"></span>
-                  <span>Git Branch</span>
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-git" onclick="toggleModuleIconDrawer('git')" title="Change icon for Git module">
+                    <span class="seg-color-icon" id="colorIcon-git"></span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Git</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-git-bg" title="Segment Fill Color (Powerline) or Git Color (Transparent)">
@@ -2868,8 +2982,11 @@
               <div class="seg-color-row" id="colorRow-lang">
                 <span class="seg-color-label">
                   <input type="checkbox" id="modLang" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Language module" title="Toggle Language module">
-                  <span class="seg-color-icon" id="colorIcon-lang"></span>
-                  <span>Language</span>
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-lang" onclick="toggleModuleIconDrawer('lang')" title="Change icon for Language module">
+                    <span class="seg-color-icon" id="colorIcon-lang"></span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Language</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-lang-bg" title="Segment Fill Color (Powerline) or Language Color (Transparent)">
@@ -2889,8 +3006,11 @@
               <div class="seg-color-row" id="colorRow-time">
                 <span class="seg-color-label">
                   <input type="checkbox" id="modTime" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Time module" title="Toggle Time module">
-                  <span class="seg-color-icon" id="colorIcon-time"></span>
-                  <span>Time</span>
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-time" onclick="toggleModuleIconDrawer('time')" title="Change icon for Time module">
+                    <span class="seg-color-icon" id="colorIcon-time"></span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Time</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-time-bg" title="Segment Fill Color (Powerline) or Time Color (Transparent)">
@@ -2905,6 +3025,24 @@
                   </label>
                 </div>
               </div>
+
+              <!-- Unified Visual Icon Picker Drawer for Active Module -->
+              <div class="visual-icon-drawer" id="visualIconDrawer" style="display: none;">
+                <div class="icon-drawer-header">
+                  <div class="icon-drawer-title">
+                    <span id="activeDrawerModuleName">Start Icon</span>
+                    <span class="icon-drawer-sub">Select icon:</span>
+                  </div>
+                  <div class="icon-drawer-actions">
+                    <select id="moduleIconSelect" class="module-icon-select" onchange="onModuleIconSelectChange(this.value)" aria-label="Select icon from dropdown"></select>
+                    <button type="button" class="icon-drawer-close-btn" onclick="closeModuleIconDrawer()" title="Close icon picker" aria-label="Close icon picker">✕</button>
+                  </div>
+                </div>
+                <div class="visual-icon-grid" id="visualIconGrid">
+                  <!-- Populated by JS for the currently active module -->
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -2923,31 +3061,31 @@
             </div>
 
             <!-- Smart Collapsible Middle Separators Section -->
-            <div class="control-group" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                <span style="font-weight: 600; font-size: 0.82rem; color: var(--text-main);">Middle Separators</span>
+            <div class="control-group" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 7px 10px; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-weight: 600; font-size: 0.8rem; color: var(--text-main);">Middle Separators</span>
                 <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; user-select: none; text-transform: none;">
                   <input type="checkbox" id="linkSeparators" onchange="toggleLinkSeparators()" checked style="accent-color: var(--accent-primary);">
                   <span>Link all</span>
                 </label>
               </div>
 
-              <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; flex-direction: column; gap: 6px;">
                 <div>
-                  <label id="sep1Label" for="sep1Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: none;">All Middle Separators (Linked)</label>
+                  <label id="sep1Label" for="sep1Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">All Middle Separators (Linked)</label>
                   <select id="sep1Select" onchange="onSeparatorChange(0)" style="width: 100%;"></select>
                 </div>
-                <div id="unlinkedSeparatorsExtra" style="display: none; flex-direction: column; gap: 8px;">
+                <div id="unlinkedSeparatorsExtra" style="display: none; flex-direction: column; gap: 6px;">
                   <div>
-                    <label for="sep2Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: none;">Separator 2 (Dir ➔ Git)</label>
+                    <label for="sep2Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 2 (Dir ➔ Git)</label>
                     <select id="sep2Select" onchange="onSeparatorChange(1)" style="width: 100%;"></select>
                   </div>
                   <div>
-                    <label for="sep3Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: none;">Separator 3 (Git ➔ Lang)</label>
+                    <label for="sep3Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 3 (Git ➔ Lang)</label>
                     <select id="sep3Select" onchange="onSeparatorChange(2)" style="width: 100%;"></select>
                   </div>
                   <div>
-                    <label for="sep4Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px; text-transform: none;">Separator 4 (Lang ➔ Time)</label>
+                    <label for="sep4Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 4 (Lang ➔ Time)</label>
                     <select id="sep4Select" onchange="onSeparatorChange(3)" style="width: 100%;"></select>
                   </div>
                 </div>
@@ -4549,6 +4687,13 @@
       rightCap: "",
       themeKey: "firewatch",
       iconSymbol: "󰣇",
+      moduleIcons: {
+        os: "󰣇",
+        dir: "󰲋",
+        git: "",
+        lang: "",
+        time: ""
+      },
       activePreset: "classic_pill",
       customColors: null,
       promptHeight: 30,
@@ -4563,20 +4708,34 @@
       }
     };
 
-  // ── Start Segment Icons (Nerd Font Glyphs) ──────────────────────────────────
-  const startIcons = [
-    "󰣇", "", "󱃽", "", "", "", "", "󱓞", "󰊗", "󰔉",
-    "󰈸", "󱢗", "󰚌", "󰯈", "", "󱙝", "", "", "", "",
-    "", "", "", "󰯇", "󰭟", "", "󱗆", "󰯉", "󰇥", "",
-    "", "", "", "", "", "", "󱍢", "", "", "",
-    "", "", "", "󱐌", "", "", "", "󰫣", "󰫤", "󰫥",
-    "", "", "󰙴", "", "", "󰣙", "󰣘", "", "", "󰓎",
-    "", "", "", "", "", "󱓟", "󰺹", "󰅏", "", "",
-    "", "󱃏", "", "", "", "󰷗", "󰀻", "󰔌", "󰂵", "󰢶",
-    "󱝊", "󱪶", "󱪷", "", "󱑻", "󰕤", "󰹪",
-    "󱑺", "󱑼", "󰊠", "🚀", "",
-    "▲", "🧙", "", "", "", "➤", "❱", "󰉋", "󰘬", ""
-  ];
+  // ── Curated Module Icons & Start Icons Catalog ──────────────────────────────
+  const moduleIconCatalog = {
+    os: [
+      "󰣇", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "󱃽", "", "", "", "", "󱓞", "󰊗", "󰔉", "󰈸", "󱢗", "󰚌", "󰯈", "", "󱙝", "", "", "", "", "", "", "", "󰯇", "󰭟", "", "󱗆", "󰯉", "󰇥", "", "", "", "", "", "", "", "󱍢", "", "", "", "", "", "", "󱐌", "", "", "", "󰫣", "󰫤", "󰫥", "", "", "󰙴", "", "", "󰣙", "󰣘", "", "", "󰓎", "", "", "", "", "", "󱓟", "󰺹", "󰅏", "", "", "", "󱃏", "", "", "", "󰷗", "󰀻", "󰔌", "󰂵", "󰢶", "󱝊", "󱪶", "󱪷", "", "󱑻", "󰕤", "󰹪", "󱑺", "󱑼", "󰊠", "🚀", "▲", "🧙", "", "", "", "➤", "❱", "󰉋", "󰘬", ""
+    ],
+    dir: [
+      "󰲋", "", "", "", "", "", "󰉋", "󰉖", "󰷏", "", "", "", "", "󰋜", "󰉌", "", "", "󰀶", "", "󰆧", "📁", "📂", "🏠", ""
+    ],
+    git: [
+      "", "", "󰘬", "", "", "", "", "", "󰊢", "", "󰓁", "󰜘", "", "", "", "󰳏", "🌱", "🌿"
+    ],
+    lang: [
+      "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "󱃾", "", "󰅩", "", "⚡"
+    ],
+    time: [
+      "", "󱑺", "󱑻", "󱑼", "", "󰥔", "", "󰅐", "⌛", "⌚", "♥", "󰣐", "", "󰃭", "", "󰔛", "⏰"
+    ]
+  };
+
+  const moduleNames = {
+    os: "Start Icon",
+    dir: "Directory",
+    git: "Git Branch",
+    lang: "Language",
+    time: "Time"
+  };
+
+  const startIcons = moduleIconCatalog.os;
 
   // ── DOM Elements ──────────────────────────────────────────────────────────
   const terminalPreview = document.getElementById("terminalPreview");
@@ -4600,6 +4759,7 @@
   let currentSidebarMode = "customizer";
   let currentGlyphTarget = "middle";
   let presetSearchQuery = "";
+  let activeIconDrawerModule = "os";
 
   function togglePinPreview() {
     isPreviewPinned = !isPreviewPinned;
@@ -4652,18 +4812,82 @@
     }
   }
 
-  function toggleVisualIconDrawer() {
+  function toggleModuleIconDrawer(modKey) {
     const drawer = document.getElementById("visualIconDrawer");
-    if (drawer) {
-      drawer.classList.toggle("open");
+    if (!drawer) return;
+    if (drawer.style.display === "block" && activeIconDrawerModule === modKey) {
+      drawer.style.display = "none";
+      document.querySelectorAll(".seg-icon-select-btn").forEach(b => b.classList.remove("active"));
+      return;
+    }
+    activeIconDrawerModule = modKey;
+    document.querySelectorAll(".seg-icon-select-btn").forEach(b => {
+      b.classList.toggle("active", b.id === `iconBtn-${modKey}`);
+    });
+    drawer.style.display = "block";
+    renderModuleIconDrawer(modKey);
+  }
+
+  function closeModuleIconDrawer() {
+    const drawer = document.getElementById("visualIconDrawer");
+    if (drawer) drawer.style.display = "none";
+    document.querySelectorAll(".seg-icon-select-btn").forEach(b => b.classList.remove("active"));
+  }
+
+  function renderModuleIconDrawer(modKey) {
+    const titleEl = document.getElementById("activeDrawerModuleName");
+    if (titleEl) titleEl.textContent = moduleNames[modKey] || "Module Icon";
+
+    const selectEl = document.getElementById("moduleIconSelect");
+    const gridEl = document.getElementById("visualIconGrid");
+    const list = moduleIconCatalog[modKey] || moduleIconCatalog.os;
+    const currentVal = (currentConfig.moduleIcons && currentConfig.moduleIcons[modKey] !== undefined)
+      ? currentConfig.moduleIcons[modKey]
+      : (modKey === "os" ? currentConfig.iconSymbol : "");
+
+    if (selectEl) {
+      selectEl.innerHTML = "";
+      list.forEach(icon => {
+        const opt = document.createElement("option");
+        opt.value = icon;
+        opt.textContent = icon ? icon : "∅ None";
+        if (icon === currentVal) opt.selected = true;
+        selectEl.appendChild(opt);
+      });
+    }
+
+    if (gridEl) {
+      gridEl.innerHTML = "";
+      list.forEach(icon => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "icon-grid-btn" + (icon === currentVal ? " active" : "");
+        btn.setAttribute("data-icon", icon);
+        btn.setAttribute("title", icon ? `Select ${icon}` : "No icon (text only)");
+        btn.textContent = icon ? icon : "∅";
+        btn.onclick = () => selectModuleIcon(modKey, icon);
+        gridEl.appendChild(btn);
+      });
     }
   }
 
-  function selectStartIcon(icon) {
-    currentConfig.iconSymbol = icon;
-    if (iconSelect) iconSelect.value = icon;
+  function onModuleIconSelectChange(val) {
+    selectModuleIcon(activeIconDrawerModule, val);
+  }
+
+  function selectModuleIcon(modKey, icon) {
+    if (!currentConfig.moduleIcons) {
+      currentConfig.moduleIcons = { os: "󰣇", dir: "󰲋", git: "", lang: "", time: "" };
+    }
+    currentConfig.moduleIcons[modKey] = icon;
+    if (modKey === "os") {
+      currentConfig.iconSymbol = icon;
+      if (iconSelect) iconSelect.value = icon;
+    }
+    syncColorPickers();
     updateCustomizer();
-    showToast(`Start icon set to ${icon}`);
+    renderModuleIconDrawer(modKey);
+    showToast(`${moduleNames[modKey] || 'Module'} icon updated!`);
   }
 
   function focusSegmentCustomizer(segId) {
@@ -4678,11 +4902,29 @@
       row.classList.add("highlight-pulse");
       setTimeout(() => row.classList.remove("highlight-pulse"), 1200);
     }
-    if (segId === "os") {
-      const drawer = document.getElementById("visualIconDrawer");
-      if (drawer && !drawer.classList.contains("open")) {
-        drawer.classList.add("open");
-      }
+    toggleModuleIconDrawer(segId);
+  }
+
+  function focusCapCustomizer(target) {
+    setGlyphTarget(target);
+    if (currentSidebarMode === "toml") {
+      switchSidebarMode("customizer");
+    }
+    const sec = document.getElementById("capsSeparatorsSection");
+    if (sec) {
+      sec.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      sec.classList.remove("highlight-pulse");
+      void sec.offsetWidth;
+      sec.classList.add("highlight-pulse");
+      setTimeout(() => sec.classList.remove("highlight-pulse"), 1200);
+    }
+  }
+
+  function randomizePreset() {
+    const randomPreset = presets[Math.floor(Math.random() * presets.length)];
+    if (randomPreset) {
+      applyPreset(randomPreset);
+      showToast(`Shuffled to preset: ${randomPreset.name}`);
     }
   }
 
@@ -4828,6 +5070,20 @@
         pill.setAttribute("aria-pressed", isEnabled ? "true" : "false");
       }
 
+      const modIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons[mod] !== undefined)
+        ? currentConfig.moduleIcons[mod]
+        : (mod === "os" ? currentConfig.iconSymbol : "");
+
+      const iconBtnSpan = document.getElementById(`colorIcon-${mod}`);
+      if (iconBtnSpan) {
+        iconBtnSpan.textContent = modIcon || "∅";
+      }
+
+      const pillIcon = document.getElementById(`pillIcon-${mod}`);
+      if (pillIcon) {
+        pillIcon.textContent = modIcon || (mod === 'os' ? '󰣇' : (mod === 'dir' ? '󰲋' : (mod === 'git' ? '' : (mod === 'lang' ? '' : ''))));
+      }
+
       ['bg', 'fg'].forEach(type => {
         const input = document.getElementById(`colorInput-${mod}-${type}`);
         const hex = document.getElementById(`colorHex-${mod}-${type}`);
@@ -4837,15 +5093,6 @@
           if (hex) hex.textContent = val;
         }
       });
-    });
-
-    const pillIconOs = document.getElementById("pillIcon-os");
-    if (pillIconOs) {
-      pillIconOs.textContent = currentConfig.iconSymbol;
-    }
-
-    document.querySelectorAll(".icon-grid-btn").forEach(btn => {
-      btn.classList.toggle("active", btn.getAttribute("data-icon") === currentConfig.iconSymbol);
     });
 
     const isPowerline = currentConfig.promptStyle === "powerline";
@@ -5048,17 +5295,7 @@
 
     const visualGrid = document.getElementById("visualIconGrid");
     if (visualGrid) {
-      visualGrid.innerHTML = "";
-      startIcons.forEach(icon => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "icon-grid-btn" + (currentConfig.iconSymbol === icon ? " active" : "");
-        btn.setAttribute("data-icon", icon);
-        btn.setAttribute("aria-label", `Select start icon ${icon}`);
-        btn.textContent = icon;
-        btn.onclick = () => selectStartIcon(icon);
-        visualGrid.appendChild(btn);
-      });
+      renderModuleIconDrawer(activeIconDrawerModule || "os");
     }
   }
 
@@ -5092,7 +5329,7 @@
     }
   }
 
-  // Render Presets Grid
+  // Render Presets Grid (Clean items without author links - creator credit stays in prompt preview)
   function renderPresetButtons() {
     if (!presetsGrid) return;
     presetsGrid.innerHTML = "";
@@ -5143,10 +5380,6 @@
         }
       };
 
-      const authorHtml = p.authorUrl
-        ? '<a href="' + p.authorUrl + '" target="_blank" rel="noopener noreferrer" class="preset-author-link" onclick="event.stopPropagation()" title="Creator: ' + p.author + '"><span class="author-name">' + p.author + '</span><span class="author-ext">↗</span></a>'
-        : '<span class="author-name">' + (p.author || 'Starship Studio') + '</span>';
-
       const t = themes[p.theme] || themes.firewatch;
       const swatches = [t.os && t.os.bg, t.dir && t.dir.bg, t.git && t.git.bg, t.lang && t.lang.bg, t.time && t.time.bg]
         .filter(Boolean)
@@ -5157,10 +5390,6 @@
         <button type="button" class="preset-quick-copy-btn" title="Apply preset & copy starship.toml">Copy</button>
         <div class="preset-header">
           <span class="preset-name">${p.name}</span>
-          <div class="preset-author-row">
-            <span class="author-by">by</span>
-            ${authorHtml}
-          </div>
         </div>
         <span class="preset-preview">${p.preview}</span>
         <div class="preset-palette-strip" aria-hidden="true">${swatches}</div>
@@ -5341,9 +5570,9 @@
     clean: {
       name: "Clean Main",
       dir: "~/.dotfiles",
-      git: " main",
-      lang: " v1.78.0",
-      time: " 14:32",
+      git: "main",
+      lang: "v1.78.0",
+      time: "14:32",
       charSymbol: "❯",
       charColor: "#10b981",
       command: "git status"
@@ -5351,9 +5580,9 @@
     dirty: {
       name: "Dirty Git",
       dir: "~/dev/starship-studio",
-      git: " feat/live-editor ⇡1 *",
-      lang: " v20.10.0",
-      time: " 18:45",
+      git: "feat/live-editor ⇡1 *",
+      lang: "v20.10.0",
+      time: "18:45",
       charSymbol: "❯",
       charColor: "#10b981",
       command: "git diff --stat"
@@ -5361,9 +5590,9 @@
     error: {
       name: "Exit Error",
       dir: "~/services/api-gateway",
-      git: " staging !",
-      lang: " v3.12.3",
-      time: " 03:12",
+      git: "staging !",
+      lang: "v3.12.3",
+      time: "03:12",
       charSymbol: "❯",
       charColor: "#ef4444",
       command: "systemctl restart nginx (exit 1)"
@@ -5371,9 +5600,9 @@
     deep: {
       name: "Deep Project",
       dir: "~/projects/core/pkg/engine/v2",
-      git: " release/v2.4",
-      lang: " v1.22.4",
-      time: " 09:00",
+      git: "release/v2.4",
+      lang: "v1.22.4",
+      time: "09:00",
       charSymbol: "❯",
       charColor: "#10b981",
       command: "go test -v ./..."
@@ -5561,11 +5790,17 @@
 
     // Build active segment chain
     const activeSegs = [];
-    if (currentConfig.modules.os) activeSegs.push({ id: 'os', name: 'Start Icon', label: currentConfig.iconSymbol, bg: theme.os.bg, fg: theme.os.fg });
-    if (currentConfig.modules.dir) activeSegs.push({ id: 'dir', name: 'Directory', label: `󰲋 ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
-    if (currentConfig.modules.git) activeSegs.push({ id: 'git', name: 'Git Branch', label: scen.git, bg: theme.git.bg, fg: theme.git.fg });
-    if (currentConfig.modules.lang) activeSegs.push({ id: 'lang', name: 'Language', label: scen.lang, bg: theme.lang.bg, fg: theme.lang.fg });
-    if (currentConfig.modules.time) activeSegs.push({ id: 'time', name: 'Time', label: scen.time, bg: theme.time.bg, fg: theme.time.fg });
+    const osIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.os) || currentConfig.iconSymbol || "󰣇";
+    const dirIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.dir) || "󰲋";
+    const gitIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.git) || "";
+    const langIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.lang) || "";
+    const timeIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.time) || "";
+
+    if (currentConfig.modules.os) activeSegs.push({ id: 'os', name: 'Start Icon', label: osIcon, bg: theme.os.bg, fg: theme.os.fg });
+    if (currentConfig.modules.dir) activeSegs.push({ id: 'dir', name: 'Directory', label: `${dirIcon} ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
+    if (currentConfig.modules.git) activeSegs.push({ id: 'git', name: 'Git Branch', label: `${gitIcon} ${scen.git}`, bg: theme.git.bg, fg: theme.git.fg });
+    if (currentConfig.modules.lang) activeSegs.push({ id: 'lang', name: 'Language', label: `${langIcon} ${scen.lang}`, bg: theme.lang.bg, fg: theme.lang.fg });
+    if (currentConfig.modules.time) activeSegs.push({ id: 'time', name: 'Time', label: `${timeIcon} ${scen.time}`, bg: theme.time.bg, fg: theme.time.fg });
 
     promptContainer.innerHTML = "";
 
@@ -5634,10 +5869,12 @@
 
     // Left Cap Symbol
     const leftCapSpan = document.createElement("span");
-    leftCapSpan.className = "separator-glyph";
+    leftCapSpan.className = "separator-glyph interactive-cap";
     leftCapSpan.style.color = activeSegs[0].bg;
     leftCapSpan.style.backgroundColor = "transparent";
     leftCapSpan.textContent = currentConfig.leftCap;
+    leftCapSpan.title = "Click to customize Left Cap glyph";
+    leftCapSpan.onclick = () => focusCapCustomizer("left");
     promptContainer.appendChild(leftCapSpan);
 
     // Render segments with middle separators
@@ -5658,7 +5895,7 @@
 
       // Separator between segments or Right Cap
       const sepSpan = document.createElement("span");
-      sepSpan.className = "separator-glyph";
+      sepSpan.className = "separator-glyph interactive-cap";
 
       if (i < activeSegs.length - 1) {
         // Middle Separator: foreground = current segment bg, background = next segment bg
@@ -5666,11 +5903,15 @@
         sepSpan.style.color = seg.bg;
         sepSpan.style.backgroundColor = nextSeg.bg;
         sepSpan.textContent = getSeparator(i);
+        sepSpan.title = `Click to customize Separator ${i + 1}`;
+        sepSpan.onclick = () => focusCapCustomizer(`sep${i + 1}`);
       } else {
         // Right Cap: foreground = last segment bg, background = transparent
         sepSpan.style.color = seg.bg;
         sepSpan.style.backgroundColor = "transparent";
         sepSpan.textContent = currentConfig.rightCap;
+        sepSpan.title = "Click to customize Right Cap glyph";
+        sepSpan.onclick = () => focusCapCustomizer("right");
       }
 
       promptContainer.appendChild(sepSpan);
@@ -5678,7 +5919,7 @@
   }
 
   // Generate Starship TOML Config Text
-    function generateToml() {
+  function generateToml() {
     const theme = getActiveColors();
     const styleMode = currentConfig.promptStyle || "powerline";
     const activeP = presets.find(item => item.id === currentConfig.activePreset);
@@ -5686,6 +5927,11 @@
     const authorUrlText = activeP && activeP.authorUrl ? (" (" + activeP.authorUrl + ")") : "";
     const pName = activeP ? activeP.name : "Custom Prompt";
     const headerComment = "# ==============================================================================\n# Preset: " + pName + "\n# Created by: " + authorText + authorUrlText + "\n# Configured with Starship Studio: https://github.com/felipecm-br/starship-studio\n# ==============================================================================\n\n";
+
+    const osIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.os) || currentConfig.iconSymbol || "󰣇";
+    const dirIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.dir) || "󰲋";
+    const gitIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.git) || "";
+    const timeIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.time) || "";
 
     if (styleMode === "transparent") {
       const activeVars = [];
@@ -5715,17 +5961,17 @@ color_time = '${theme.time.bg}'
 [os]
 disabled = ${!currentConfig.modules.os}
 style = "bold fg:color_os"
-format = '[${currentConfig.iconSymbol} ]($style)'
+format = '[${osIcon} ]($style)'
 
 [directory]
 disabled = ${!currentConfig.modules.dir}
 style = "bold fg:color_dir"
-format = '[$path]($style) '
+format = '[${dirIcon} $path]($style) '
 truncation_length = 3
 
 [git_branch]
 disabled = ${!currentConfig.modules.git}
-symbol = " "
+symbol = "${gitIcon} "
 style = "bold fg:color_git"
 format = '[$symbol$branch]($style) '
 
@@ -5733,7 +5979,7 @@ format = '[$symbol$branch]($style) '
 disabled = ${!currentConfig.modules.time}
 time_format = "%R"
 style = "fg:color_time"
-format = '[♥ $time]($style) '
+format = '[${timeIcon} $time]($style) '
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -5771,25 +6017,25 @@ color_time = '${theme.time.bg}'
 [os]
 disabled = ${!currentConfig.modules.os}
 style = "bold fg:color_os"
-format = '[\[](bright-black)[${currentConfig.iconSymbol} ]($style)[\]](bright-black)'
+format = '[\\[](bright-black)[${osIcon} ]($style)[\\]](bright-black)'
 
 [directory]
 disabled = ${!currentConfig.modules.dir}
 style = "bold fg:color_dir"
-format = '[\[](bright-black)[$path]($style)[\]](bright-black)'
+format = '[\\[](bright-black)[${dirIcon} $path]($style)[\\]](bright-black)'
 truncation_length = 3
 
 [git_branch]
 disabled = ${!currentConfig.modules.git}
-symbol = " "
+symbol = "${gitIcon} "
 style = "bold fg:color_git"
-format = '[\[](bright-black)[$symbol$branch]($style)[\]](bright-black)'
+format = '[\\[](bright-black)[$symbol$branch]($style)[\\]](bright-black)'
 
 [time]
 disabled = ${!currentConfig.modules.time}
 time_format = "%R"
 style = "fg:color_time"
-format = '[\[](bright-black)[♥ $time]($style)[\]](bright-black)'
+format = '[\\[](bright-black)[${timeIcon} $time]($style)[\\]](bright-black)'
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -5846,15 +6092,15 @@ color_time = '${theme.time.bg}'
 [os]
 disabled = ${!currentConfig.modules.os}
 style = "bg:color_os fg:${theme.os.fg}"
-format = '[${currentConfig.iconSymbol} ]($style)'
+format = '[${osIcon} ]($style)'
 
 [directory]
 style = "fg:${theme.dir.fg} bg:color_dir"
-format = "[ $path ]($style)"
+format = "[ ${dirIcon} $path ]($style)"
 truncation_length = 3
 
 [git_branch]
-symbol = " "
+symbol = "${gitIcon} "
 style = "fg:${theme.git.fg} bg:color_git"
 format = '[[ $symbol$branch ]($style)]($style)'
 
@@ -5862,7 +6108,7 @@ format = '[[ $symbol$branch ]($style)]($style)'
 disabled = ${!currentConfig.modules.time}
 time_format = "%R"
 style = "bg:color_time fg:${theme.time.fg}"
-format = '[ ♥ $time ]($style)'
+format = '[ ${timeIcon} $time ]($style)'
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -5946,6 +6192,18 @@ error_symbol = "[❯](bold red)"
     if (osFormatMatch) {
       result.icon = osFormatMatch[1];
     }
+    const gitSymbolMatch = toml.match(/\[git_branch\][^\[]*?symbol\s*=\s*['"]([^'"]+?)['"]/);
+    if (gitSymbolMatch) {
+      result.gitIcon = gitSymbolMatch[1].trim();
+    }
+    const dirFormatMatch = toml.match(/\[directory\][^\[]*?format\s*=\s*['"][^'"]*?([^\s$a-zA-Z0-9_\\\[\\\]()]+)\s+\$path/);
+    if (dirFormatMatch) {
+      result.dirIcon = dirFormatMatch[1].trim();
+    }
+    const timeFormatMatch = toml.match(/\[time\][^\[]*?format\s*=\s*['"][^'"]*?([^\s$a-zA-Z0-9_\\\[\\\]()]+)\s+\$time/);
+    if (timeFormatMatch) {
+      result.timeIcon = timeFormatMatch[1].trim();
+    }
 
     const paletteRegex = /color_([a-z_]+)\s*=\s*['"](#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|[a-zA-Z0-9_]+)['"]/g;
     let palMatch;
@@ -5998,11 +6256,24 @@ error_symbol = "[❯](bold red)"
 
     if (parsed.icon) {
       currentConfig.iconSymbol = parsed.icon;
+      if (currentConfig.moduleIcons) currentConfig.moduleIcons.os = parsed.icon;
       if (!startIcons.includes(parsed.icon)) {
         startIcons.unshift(parsed.icon);
         renderIconSelect();
       }
       if (iconSelect) iconSelect.value = parsed.icon;
+      changed = true;
+    }
+    if (parsed.dirIcon && currentConfig.moduleIcons) {
+      currentConfig.moduleIcons.dir = parsed.dirIcon;
+      changed = true;
+    }
+    if (parsed.gitIcon && currentConfig.moduleIcons) {
+      currentConfig.moduleIcons.git = parsed.gitIcon;
+      changed = true;
+    }
+    if (parsed.timeIcon && currentConfig.moduleIcons) {
+      currentConfig.moduleIcons.time = parsed.timeIcon;
       changed = true;
     }
 
@@ -6123,11 +6394,17 @@ error_symbol = "[❯](bold red)"
 
     // Active Segments
     const activeSegs = [];
-    if (currentConfig.modules.os) activeSegs.push({ label: currentConfig.iconSymbol, bg: theme.os.bg, fg: theme.os.fg });
-    if (currentConfig.modules.dir) activeSegs.push({ label: `󰲋 ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
-    if (currentConfig.modules.git) activeSegs.push({ label: scen.git, bg: theme.git.bg, fg: theme.git.fg });
-    if (currentConfig.modules.lang) activeSegs.push({ label: scen.lang, bg: theme.lang.bg, fg: theme.lang.fg });
-    if (currentConfig.modules.time) activeSegs.push({ label: scen.time, bg: theme.time.bg, fg: theme.time.fg });
+    const osIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.os) || currentConfig.iconSymbol || "󰣇";
+    const dirIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.dir) || "󰲋";
+    const gitIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.git) || "";
+    const langIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.lang) || "";
+    const timeIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.time) || "";
+
+    if (currentConfig.modules.os) activeSegs.push({ label: osIcon, bg: theme.os.bg, fg: theme.os.fg });
+    if (currentConfig.modules.dir) activeSegs.push({ label: `${dirIcon} ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
+    if (currentConfig.modules.git) activeSegs.push({ label: `${gitIcon} ${scen.git}`, bg: theme.git.bg, fg: theme.git.fg });
+    if (currentConfig.modules.lang) activeSegs.push({ label: `${langIcon} ${scen.lang}`, bg: theme.lang.bg, fg: theme.lang.fg });
+    if (currentConfig.modules.time) activeSegs.push({ label: `${timeIcon} ${scen.time}`, bg: theme.time.bg, fg: theme.time.fg });
 
     let startX = 24;
     const startY = 85;
@@ -6370,10 +6647,33 @@ error_symbol = "[❯](bold red)"
     });
   }
 
-  // Escape key closes modal
+  // ── Global Keyboard Shortcuts ─────────────────────────────────────────────
   document.addEventListener("keydown", (e) => {
+    // Escape: close modal dialogs and drawer
     if (e.key === "Escape") {
       closeExportModal();
+      closeModuleIconDrawer();
+      return;
+    }
+
+    // Slash (/): Focus preset search if not inside an input/textarea
+    const activeEl = document.activeElement;
+    const isEditing = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.tagName === "SELECT" || activeEl.isContentEditable);
+
+    if (e.key === "/" && !isEditing) {
+      const searchInput = document.getElementById("presetSearchInput");
+      if (searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+      return;
+    }
+
+    // Quick Copy: Ctrl+Shift+C (or Cmd+Shift+C on Mac)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "C" || e.key === "c")) {
+      e.preventDefault();
+      quickCopyToml();
     }
   });
 
@@ -6385,7 +6685,6 @@ error_symbol = "[❯](bold red)"
       <span class="floating-pulse-dot"></span>
       <span class="floating-label">Active:</span>
       <strong id="floatingPresetName" class="floating-name">Powerline Pill</strong>
-      <span id="floatingAuthorWrapper" class="floating-author-text">by <span id="floatingPresetAuthor">Starship Studio</span></span>
     </div>
     <div class="floating-actions">
       <button type="button" class="floating-btn floating-copy-btn" id="floatingCopyBtn" onclick="quickCopyToml(this)" title="Copy active starship.toml directly">
