@@ -489,9 +489,11 @@
     }
 
     /* Terminal Mockup (Sticky by default so prompt is always visible while browsing presets/glyphs) */
+    /* --terminal-stick-top is set from JS so the header and toolbars scroll away
+       and only the live prompt stays pinned */
     .terminal-window {
       position: sticky;
-      top: 12px;
+      top: var(--terminal-stick-top, 12px);
       z-index: 120;
       background: var(--code-bg);
       border: 1px solid var(--terminal-win-border);
@@ -4820,6 +4822,19 @@
     showToast(isPreviewPinned ? "Terminal preview pinned to top while scrolling" : "Terminal preview unpinned");
   }
 
+  // Pin only the prompt body: offset the sticky top by the chrome above it
+  function initCompactStickyPreview() {
+    const previewWin = document.getElementById("preview");
+    const body = document.getElementById("terminalPreview");
+    if (!previewWin || !body || typeof ResizeObserver === "undefined") return;
+    const update = () => {
+      previewWin.style.setProperty("--terminal-stick-top", `${-body.offsetTop}px`);
+    };
+    const ro = new ResizeObserver(update);
+    Array.from(previewWin.children).forEach(child => ro.observe(child));
+    update();
+  }
+
   function switchSidebarMode(mode) {
     currentSidebarMode = mode;
     const custCard = document.getElementById("customizer");
@@ -5276,6 +5291,7 @@
     if (hInput) hInput.value = currentConfig.promptHeight;
 
     updateCustomizer();
+    initCompactStickyPreview();
   }
 
   // Populate Select Dropdowns
