@@ -13,6 +13,7 @@
   <meta name="author" content="Felipe Miranda">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
   <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="color-scheme" content="dark light">
   <meta name="theme-color" id="metaThemeColor" content="#0f111a">
   <meta name="application-name" content="Starship Studio">
   <meta name="apple-mobile-web-app-title" content="Starship Studio">
@@ -220,6 +221,7 @@
     }
 
     :root {
+      color-scheme: dark;
       --bg-dark: #0f111a;
       --bg-card: #181b28;
       --bg-card-hover: #222638;
@@ -239,6 +241,7 @@
       --scenario-bar-bg: rgba(13, 14, 21, 0.6);
       --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
       --accent-primary: #6366f1;
+      --accent-primary-hover: #4f46e5;
       --accent-glow: #818cf8;
       --accent-cyan: #06b6d4;
       --accent-green: #10b981;
@@ -253,6 +256,7 @@
     }
 
     [data-theme="light"] {
+      color-scheme: light;
       --bg-dark: #f8fafc;
       --bg-card: #ffffff;
       --bg-card-hover: #f1f5f9;
@@ -272,11 +276,17 @@
       --scenario-bar-bg: #f8fafc;
       --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       --accent-primary: #4f46e5;
+      --accent-primary-hover: #4338ca;
       --accent-glow: #6366f1;
       --accent-cyan: #0891b2;
       --accent-green: #059669;
       --accent-amber: #d97706;
       --accent-pink: #db2777;
+    }
+
+    :where(a, button, input, select, textarea, [tabindex="0"]):focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
     }
 
     * {
@@ -389,12 +399,61 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 24px;
+      align-items: start;
     }
 
     @media (min-width: 1024px) {
       .container {
-        grid-template-columns: 1fr 380px;
+        grid-template-columns: minmax(0, 1fr) 390px;
+        gap: 20px;
       }
+
+      aside {
+        position: sticky;
+        top: 12px;
+      }
+    }
+
+    /* Sidebar Mode Switcher (Customizer vs Live TOML vs Split) */
+    .sidebar-mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 5px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 8px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .sidebar-tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .sidebar-tab-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-tertiary);
+    }
+
+    .sidebar-tab-btn.active {
+      background: var(--accent-primary);
+      color: #ffffff;
+      border-color: var(--accent-primary);
+      box-shadow: 0 2px 10px var(--border-glow);
     }
 
     .card {
@@ -429,15 +488,31 @@
       gap: 8px;
     }
 
-    /* Terminal Mockup */
+    /* Terminal Mockup (Sticky by default so prompt is always visible while browsing presets/glyphs) */
     .terminal-window {
+      position: sticky;
+      top: 12px;
+      z-index: 120;
       background: var(--code-bg);
       border: 1px solid var(--terminal-win-border);
       border-radius: var(--radius-md);
       overflow: hidden;
-      box-shadow: var(--card-shadow);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), var(--card-shadow);
       margin-bottom: 24px;
       transition: all 0.25s ease;
+    }
+
+    .terminal-window.unpinned {
+      position: relative;
+      top: 0;
+      z-index: 1;
+    }
+
+    @media (max-height: 620px), (max-width: 767px) {
+      .terminal-window:not(.force-pinned) {
+        position: relative;
+        top: 0;
+      }
     }
 
     .terminal-header {
@@ -553,23 +628,25 @@
       font-weight: 600;
     }
 
-    /* Floating Quick Actions Bar */
+    /* Floating Quick Actions Bar (Centered bottom so it never covers the sidebar on laptops) */
     .floating-quick-bar {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 850;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 999px;
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 20px var(--border-glow);
-      padding: 6px 8px 6px 14px;
+      padding: 6px 10px 6px 14px;
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       display: flex;
       align-items: center;
       gap: 12px;
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: calc(100vw - 32px);
     }
 
     .floating-preset-info {
@@ -1047,6 +1124,88 @@
       font-weight: 600;
     }
 
+    /* Quick Modules Toolbar inside Terminal */
+    .modules-toolbar {
+      background: var(--scenario-bar-bg);
+      border-bottom: 1px solid var(--terminal-bar-border);
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      transition: all 0.25s ease;
+    }
+
+    .module-pills {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .module-pill {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.18s ease;
+      opacity: 0.55;
+      user-select: none;
+    }
+
+    .module-pill:hover {
+      opacity: 0.9;
+      border-color: var(--accent-cyan);
+      color: var(--text-main);
+    }
+
+    .module-pill.active {
+      opacity: 1;
+      background: rgba(6, 182, 212, 0.14);
+      border-color: rgba(6, 182, 212, 0.45);
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .module-pill-icon {
+      font-family: var(--font-nerd), var(--font-code);
+      font-size: 13px;
+      color: var(--accent-cyan);
+      line-height: 1;
+    }
+
+    .terminal-hint-text {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      opacity: 0.85;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .interactive-segment, .interactive-cap {
+      cursor: pointer;
+      position: relative;
+      transition: filter 0.15s ease, transform 0.15s ease;
+    }
+
+    .interactive-segment:hover {
+      filter: brightness(1.12);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35) inset;
+    }
+
+    .interactive-cap:hover {
+      filter: brightness(1.35) drop-shadow(0 0 4px var(--accent));
+      transform: scale(1.05);
+    }
+
     .toml-sync-badge {
       position: absolute;
       top: 10px;
@@ -1162,6 +1321,10 @@
       box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
     }
 
+    [data-theme="light"] .style-toggle-btn.active {
+      color: var(--accent-primary);
+    }
+
     .prompt-segment-minimal {
       display: inline-flex;
       align-items: center;
@@ -1190,11 +1353,37 @@
       user-select: none;
     }
 
-    /* Segment & Start Icon Color Customizer */
+    /* Segment & Module Color Customizer (Ultra-compact for notebook screens) */
+    #customizer.card,
+    #config.card {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+    }
+
+    #customizer .card-title,
+    #config .card-title {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    #customizer .controls-grid {
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    #segmentColorsSection {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+    }
+
     .segment-colors-grid {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       margin-top: 4px;
     }
 
@@ -1202,16 +1391,51 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 5px 8px;
+      padding: 3px 6px;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
       transition: all 0.2s ease;
+      gap: 4px;
     }
 
     .seg-color-row:hover {
       border-color: var(--accent-primary);
       background: var(--bg-card-hover);
+    }
+
+    .seg-color-row.is-disabled {
+      opacity: 0.45;
+      background: var(--bg-secondary);
+    }
+
+    .seg-color-row.is-disabled .seg-color-pickers,
+    .seg-color-row.is-disabled .seg-icon-select-btn {
+      pointer-events: none;
+    }
+
+    @keyframes rowHighlightPulse {
+      0%, 100% {
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.35);
+      }
+      50% {
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 14px rgba(99, 102, 241, 0.55);
+      }
+    }
+
+    .seg-color-row.highlight-pulse {
+      animation: rowHighlightPulse 0.75s ease 2;
+    }
+
+    .seg-mod-toggle {
+      accent-color: var(--accent-primary);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+      margin: 0;
+      flex-shrink: 0;
     }
 
     .seg-color-label {
@@ -1220,40 +1444,197 @@
       color: var(--text-main);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      min-width: 0;
+      flex-shrink: 0;
+    }
+
+    .seg-label-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .seg-icon-select-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--accent-cyan);
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-size: 13px;
+      font-family: var(--font-nerd), var(--font-code);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      transition: all 0.15s ease;
+      min-width: 30px;
+      height: 22px;
+      justify-content: center;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .seg-icon-select-btn:hover,
+    .seg-icon-select-btn.active {
+      border-color: var(--accent-cyan);
+      background: var(--bg-card-hover);
+      transform: scale(1.05);
+    }
+
+    .seg-icon-caret {
+      font-size: 8px;
+      opacity: 0.65;
+      font-family: var(--font-ui);
     }
 
     .seg-color-icon {
       font-family: var(--font-nerd), var(--font-code);
-      font-size: 15px;
+      font-size: 13px;
       line-height: 1;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 18px;
-      min-height: 18px;
+      min-width: 14px;
+      min-height: 14px;
       color: var(--accent-cyan);
       vertical-align: middle;
       flex-shrink: 0;
       transition: color 0.2s ease, background-color 0.2s ease;
     }
 
-    .seg-color-pickers {
+    /* Unified Module Icon Picker Drawer */
+    .visual-icon-drawer {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-top: 4px;
+      margin-bottom: 4px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .icon-drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .icon-drawer-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .icon-drawer-sub {
+      font-size: 10px;
+      font-weight: normal;
+      color: var(--text-muted);
+    }
+
+    .icon-drawer-actions {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
+    .module-icon-select {
+      font-size: 12px !important;
+      padding: 2px 6px !important;
+      font-family: var(--font-nerd), var(--font-code) !important;
+      max-width: 140px;
+      height: 24px;
+    }
+
+    .icon-drawer-close-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 4px;
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .icon-drawer-close-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-tertiary);
+      border-color: var(--accent-pink);
+    }
+
+    .visual-icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(28px, 1fr));
+      gap: 3px;
+      max-height: 120px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .icon-grid-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 4px;
+      height: 28px;
+      font-family: var(--font-nerd), var(--font-code);
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .icon-grid-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      transform: scale(1.08);
+    }
+
+    .icon-grid-btn.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: var(--accent-primary);
+      color: var(--accent-primary);
+    }
+
+    .caps-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .seg-color-pickers {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
     .color-picker-wrapper {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       cursor: pointer;
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 4px;
-      padding: 2px 5px;
-      transition: all 0.2s ease;
+      padding: 1px 3px;
+      transition: all 0.15s ease;
       position: relative;
     }
 
@@ -1262,7 +1643,7 @@
     }
 
     .color-picker-tag {
-      font-size: 9px;
+      font-size: 8.5px;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
@@ -1270,18 +1651,18 @@
     }
 
     .color-hex-label {
-      font-size: 10px;
+      font-size: 9px;
       font-family: monospace;
       color: var(--text-main);
-      min-width: 48px;
+      min-width: 42px;
     }
 
     .color-picker-wrapper input[type="color"] {
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 15px;
+      height: 15px;
       border: none;
       border-radius: 3px;
       cursor: pointer;
@@ -1345,8 +1726,8 @@
     .controls-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: 14px;
+      margin-bottom: 12px;
     }
 
     .control-group {
@@ -1365,14 +1746,15 @@
 
     select,
     input[type="text"],
+    input[type="search"],
     input[type="number"] {
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 9px 12px;
+      padding: 8px 10px;
       border-radius: var(--radius-sm);
       font-family: var(--font-code);
-      font-size: 14px;
+      font-size: 13px;
       outline: none;
       transition: all 0.2s ease;
     }
@@ -1383,18 +1765,40 @@
       box-shadow: 0 0 0 2px var(--border-glow);
     }
 
-    /* Preset Filter Bar & Spacious Pill Buttons */
+    /* Preset Filter Bar, Search Input & Spacious Pill Buttons */
     .preset-filter-bar {
       margin-bottom: 16px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--border-color);
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
-    .preset-filter-bar::-webkit-scrollbar {
-      display: none;
+    .preset-search-wrap {
+      position: relative;
+      flex: 1 1 210px;
+      max-width: 300px;
+    }
+
+    .preset-search-input {
+      width: 100%;
+      padding: 6px 12px 6px 30px !important;
+      border-radius: 999px !important;
+      font-family: var(--font-ui) !important;
+      font-size: 12px !important;
+    }
+
+    .preset-search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      font-size: 12px;
     }
 
     .preset-filter-group {
@@ -1461,9 +1865,9 @@
     /* Preset Buttons Grid */
     .preset-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
       gap: 10px;
-      margin-bottom: 24px;
+      margin-bottom: 8px;
     }
 
     .preset-btn {
@@ -1479,7 +1883,9 @@
       transition: all 0.2s ease;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      justify-content: space-between;
+      gap: 8px;
+      position: relative;
     }
 
     .preset-btn:hover {
@@ -1494,15 +1900,63 @@
       box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
     }
 
+    .preset-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
     .preset-header {
       display: flex;
       flex-direction: column;
       gap: 3px;
+      min-width: 0;
     }
 
     .preset-btn .preset-name {
       font-weight: 600;
       line-height: 1.25;
+    }
+
+    .preset-quick-copy-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .preset-btn:hover .preset-quick-copy-btn,
+    .preset-btn:focus-within .preset-quick-copy-btn,
+    .preset-btn.active .preset-quick-copy-btn {
+      opacity: 1;
+    }
+
+    .preset-quick-copy-btn:hover {
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+      background: var(--bg-card);
+    }
+
+    .preset-palette-strip {
+      display: flex;
+      height: 5px;
+      border-radius: 999px;
+      overflow: hidden;
+      gap: 1px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .preset-palette-swatch {
+      flex: 1;
+      height: 100%;
     }
 
     .preset-author-row {
@@ -1556,14 +2010,69 @@
 
     .preset-btn .preset-preview {
       font-family: var(--font-code);
-      font-size: 12px;
+      font-size: 11.5px;
       color: var(--accent-cyan);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      background: var(--code-bg);
+      padding: 4px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* Glyphs Explorer Grid */
+    /* Glyphs Explorer Target Bar & Grid */
+    .glyph-target-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      margin-bottom: 16px;
+    }
+
+    .glyph-target-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .glyph-target-pills {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .glyph-target-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .glyph-target-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+    }
+
+    .glyph-target-btn.active {
+      background: rgba(6, 182, 212, 0.18);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
     .glyphs-category {
       margin-bottom: 20px;
     }
@@ -1598,12 +2107,20 @@
       cursor: pointer;
       transition: all 0.15s ease;
       position: relative;
+      font-family: inherit;
+      color: inherit;
     }
 
     .glyph-card:hover {
       background: var(--bg-card-hover);
       border-color: var(--accent-cyan);
       transform: translateY(-2px);
+    }
+
+    .glyph-card.active {
+      background: rgba(6, 182, 212, 0.15);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
     }
 
     .glyph-symbol {
@@ -1690,26 +2207,28 @@
       justify-content: flex-end;
     }
 
-    /* Toast Notification */
+    /* Toast Notification (Positioned above Floating Quick Bar to prevent collision) */
     .toast {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 74px;
+      left: 50%;
+      transform: translate(-50%, 80px);
       background: var(--accent-green);
       color: #042f2e;
-      padding: 12px 20px;
+      padding: 9px 18px;
       border-radius: var(--radius-md);
       font-weight: 600;
-      font-size: 14px;
-      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-      transform: translateY(100px);
+      font-size: 13px;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
       opacity: 0;
+      pointer-events: none;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 1000;
+      z-index: 1100;
+      white-space: nowrap;
     }
 
     .toast.show {
-      transform: translateY(0);
+      transform: translate(-50%, 0);
       opacity: 1;
     }
 
@@ -2112,7 +2631,8 @@
       <a href="#preview" class="header-nav-link">Preview</a>
       <a href="#presets" class="header-nav-link">Presets</a>
       <a href="#glyphs" class="header-nav-link">Separators</a>
-      <a href="#customizer" class="header-nav-link">Customizer</a>
+      <a href="#customizer" class="header-nav-link" onclick="switchSidebarMode('customizer')">Customizer</a>
+      <a href="#config" class="header-nav-link" onclick="switchSidebarMode('toml')">TOML Editor</a>
       <a href="#install" class="header-nav-link">Install</a>
       <a href="#faq" class="header-nav-link">FAQ</a>
     </nav>
@@ -2153,25 +2673,29 @@
     <!-- Main Interactive Area -->
     <main>
 
-      <!-- Terminal Live Preview -->
+      <!-- Terminal Live Preview (Sticky by default) -->
       <div class="terminal-window" id="preview">
         <div class="terminal-header">
-          <div class="window-dots">
+          <div class="window-dots" aria-hidden="true">
             <div class="dot dot-red"></div>
             <div class="dot dot-yellow"></div>
             <div class="dot dot-green"></div>
           </div>
           <div class="terminal-title">zsh — starship prompt preview</div>
           <div class="terminal-actions-group">
-            <button class="terminal-action-btn terminal-btn-copy" id="terminalCopyBtn" onclick="quickCopyToml(this)" title="Directly copy current starship.toml to clipboard">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button type="button" class="terminal-action-btn" id="pinPreviewBtn" onclick="togglePinPreview()" aria-pressed="true" title="Pin/Unpin terminal preview while scrolling">
+              <span id="pinPreviewIcon">📌</span>
+              <span id="pinPreviewLabel">Pinned</span>
+            </button>
+            <button type="button" class="terminal-action-btn terminal-btn-copy" id="terminalCopyBtn" onclick="quickCopyToml(this)" title="Directly copy current starship.toml to clipboard">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
               </svg>
               <span class="btn-copy-label">Copy TOML</span>
             </button>
-            <button class="terminal-action-btn terminal-btn-export" onclick="openExportModal()" title="Open modal dialog with full starship.toml configuration and install steps">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button type="button" class="terminal-action-btn terminal-btn-export" onclick="openExportModal()" title="Open modal dialog with full starship.toml configuration and install steps">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -2179,8 +2703,8 @@
               </svg>
               <span>Export Config</span>
             </button>
-            <button class="terminal-action-btn" onclick="exportTerminalPng()" title="Download live terminal prompt as a PNG image">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button type="button" class="terminal-action-btn" onclick="exportTerminalPng()" title="Download live terminal prompt as a PNG image">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
                 <line x1="12" y1="15" x2="12" y2="3"></line>
@@ -2192,18 +2716,47 @@
         <!-- Interactive Terminal Scenario Playground -->
         <div class="scenario-toolbar">
           <div class="scenario-left-group">
-            <span class="scenario-title">Playground Scenario:</span>
-            <div class="scenario-pills">
-              <button class="scenario-btn active" id="btn-scen-clean" onclick="setScenario('clean')">🌿 Clean Main</button>
-              <button class="scenario-btn" id="btn-scen-dirty" onclick="setScenario('dirty')">⚡ Dirty Git (+1*)</button>
-              <button class="scenario-btn" id="btn-scen-error" onclick="setScenario('error')">🚨 Error (127)</button>
-              <button class="scenario-btn" id="btn-scen-deep" onclick="setScenario('deep')">📂 Deep Project</button>
+            <span class="scenario-title">Scenario:</span>
+            <div class="scenario-pills" role="group" aria-label="Playground Scenarios">
+              <button type="button" class="scenario-btn active" id="btn-scen-clean" onclick="setScenario('clean')" aria-pressed="true">🌿 Clean Main</button>
+              <button type="button" class="scenario-btn" id="btn-scen-dirty" onclick="setScenario('dirty')" aria-pressed="false">⚡ Dirty Git (+1*)</button>
+              <button type="button" class="scenario-btn" id="btn-scen-error" onclick="setScenario('error')" aria-pressed="false">🚨 Error (127)</button>
+              <button type="button" class="scenario-btn" id="btn-scen-deep" onclick="setScenario('deep')" aria-pressed="false">📂 Deep Project</button>
             </div>
           </div>
           <div class="terminal-creator-credit" id="terminalCreatorCredit">
             <span class="credit-label">Preset by:</span>
             <a id="terminalCreatorLink" href="#" target="_blank" rel="noopener noreferrer" class="creator-link">Starship Team ↗</a>
           </div>
+        </div>
+        <!-- Quick One-Click Active Modules Bar -->
+        <div class="modules-toolbar">
+          <div class="scenario-left-group">
+            <span class="scenario-title">Modules:</span>
+            <div class="module-pills" role="group" aria-label="Toggle Prompt Modules">
+              <button type="button" class="module-pill active" id="pillMod-os" onclick="toggleModuleQuick('os')" aria-pressed="true" title="Toggle Start Icon module">
+                <span class="module-pill-icon" id="pillIcon-os">󰣇</span>
+                <span>Start Icon</span>
+              </button>
+              <button type="button" class="module-pill active" id="pillMod-dir" onclick="toggleModuleQuick('dir')" aria-pressed="true" title="Toggle Directory module">
+                <span class="module-pill-icon">󰲋</span>
+                <span>Directory</span>
+              </button>
+              <button type="button" class="module-pill active" id="pillMod-git" onclick="toggleModuleQuick('git')" aria-pressed="true" title="Toggle Git Branch module">
+                <span class="module-pill-icon"></span>
+                <span>Git</span>
+              </button>
+              <button type="button" class="module-pill active" id="pillMod-lang" onclick="toggleModuleQuick('lang')" aria-pressed="true" title="Toggle Language module">
+                <span class="module-pill-icon"></span>
+                <span>Language</span>
+              </button>
+              <button type="button" class="module-pill active" id="pillMod-time" onclick="toggleModuleQuick('time')" aria-pressed="true" title="Toggle Time module">
+                <span class="module-pill-icon"></span>
+                <span>Time</span>
+              </button>
+            </div>
+          </div>
+          <span class="terminal-hint-text">💡 Click any segment in the prompt to customize</span>
         </div>
         <div class="terminal-body" id="terminalPreview">
           <div class="prompt-preview-container" id="promptContainer">
@@ -2212,7 +2765,7 @@
           <div class="prompt-line-2">
             <span class="char-symbol" id="charSymbol">❯</span>
             <span id="demoCommand">git commit -m "feat: add starship prompt"</span>
-            <span class="cursor-blink"></span>
+            <span class="cursor-blink" aria-hidden="true"></span>
           </div>
         </div>
       </div>
@@ -2225,7 +2778,7 @@
             <span class="presets-count-badge" id="presetsTotalBadge" style="font-size: 11px; font-weight: normal; color: var(--text-muted); background: var(--bg-tertiary); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color);">35 presets</span>
           </div>
           <button type="button" class="btn btn-sm btn-primary export-header-btn" onclick="openExportModal()" title="View and copy active starship.toml configuration">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline>
               <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -2235,25 +2788,29 @@
           </button>
         </h2>
 
-        <!-- Dedicated Filter Bar with spacious, unsquished pill buttons -->
+        <!-- Dedicated Filter Bar with spacious pill buttons & instant search -->
         <div class="preset-filter-bar">
-          <div class="preset-filter-group" id="presetFilterGroup" role="tablist">
-            <button type="button" class="preset-filter-btn active" data-filter="all" onclick="setPresetFilter('all')">
+          <div class="preset-filter-group" id="presetFilterGroup" role="tablist" aria-label="Filter Presets by Category">
+            <button type="button" class="preset-filter-btn active" role="tab" aria-selected="true" data-filter="all" onclick="setPresetFilter('all')">
               <span>All</span>
               <span class="filter-count" id="count-all">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" data-filter="powerline" onclick="setPresetFilter('powerline')">
+            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="powerline" onclick="setPresetFilter('powerline')">
               <span>⚡ Powerline</span>
               <span class="filter-count" id="count-powerline">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" data-filter="minimal" onclick="setPresetFilter('minimal')">
+            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="minimal" onclick="setPresetFilter('minimal')">
               <span>✨ Minimal</span>
               <span class="filter-count" id="count-minimal">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" data-filter="light" onclick="setPresetFilter('light')">
+            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="light" onclick="setPresetFilter('light')">
               <span>☀️ Light</span>
               <span class="filter-count" id="count-light">0</span>
             </button>
+          </div>
+          <div class="preset-search-wrap">
+            <span class="preset-search-icon" aria-hidden="true">🔍</span>
+            <input type="search" id="presetSearchInput" class="preset-search-input" placeholder="Search preset, palette, or author... (Press /)" oninput="onPresetSearch(this.value)" aria-label="Search presets by name, palette, or author">
           </div>
         </div>
 
@@ -2266,9 +2823,23 @@
       <div class="card" id="glyphs">
         <h2 class="card-title">
           <span>❖ Separator Glyphs Library</span>
-          <span style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Click any glyph to insert as
-            separator</span>
+          <span style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Click any glyph to apply to target</span>
         </h2>
+
+        <!-- Target Selector for Glyph Clicks -->
+        <div class="glyph-target-bar" role="group" aria-label="Select target position for clicked glyph">
+          <span class="glyph-target-label">Apply clicked glyph to:</span>
+          <div class="glyph-target-pills">
+            <button type="button" class="glyph-target-btn active" data-target="middle" onclick="setGlyphTarget('middle')" aria-pressed="true">Middle Separators</button>
+            <button type="button" class="glyph-target-btn" data-target="leftCap" onclick="setGlyphTarget('leftCap')" aria-pressed="false">Left Cap (Start)</button>
+            <button type="button" class="glyph-target-btn" data-target="rightCap" onclick="setGlyphTarget('rightCap')" aria-pressed="false">Right Cap (End)</button>
+            <button type="button" class="glyph-target-btn" data-target="sep0" onclick="setGlyphTarget('sep0')" aria-pressed="false">Sep 1</button>
+            <button type="button" class="glyph-target-btn" data-target="sep1" onclick="setGlyphTarget('sep1')" aria-pressed="false">Sep 2</button>
+            <button type="button" class="glyph-target-btn" data-target="sep2" onclick="setGlyphTarget('sep2')" aria-pressed="false">Sep 3</button>
+            <button type="button" class="glyph-target-btn" data-target="sep3" onclick="setGlyphTarget('sep3')" aria-pressed="false">Sep 4</button>
+          </div>
+        </div>
+
         <div id="glyphsContainer">
           <!-- Glyph categories rendered by JS -->
         </div>
@@ -2279,72 +2850,45 @@
     <!-- Sidebar Customizer & Code Output -->
     <aside>
 
+      <!-- Quick Mode Switcher so TOML Editor & Customizer are 1 click away without scrolling -->
+      <div class="sidebar-mode-tabs" role="tablist" aria-label="Sidebar View Mode">
+        <button type="button" class="sidebar-tab-btn active" id="sidebarTab-customizer" role="tab" aria-selected="true" onclick="switchSidebarMode('customizer')">
+          <span>⚙️ Customizer</span>
+        </button>
+        <button type="button" class="sidebar-tab-btn" id="sidebarTab-toml" role="tab" aria-selected="false" onclick="switchSidebarMode('toml')">
+          <span>📄 Live TOML</span>
+        </button>
+        <button type="button" class="sidebar-tab-btn" id="sidebarTab-both" role="tab" aria-selected="false" onclick="switchSidebarMode('both')" title="Show both Customizer and TOML Editor stacked">
+          <span>⬍ Both</span>
+        </button>
+      </div>
+
       <!-- Customizer Controls -->
-      <div class="card" id="customizer" style="margin-bottom: 24px;">
+      <div class="card" id="customizer">
         <h2 class="card-title">
           <span>⚙️ Customizer</span>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button type="button" class="btn btn-secondary" style="padding: 2px 7px; font-size: 11px; height: auto;" onclick="randomizePreset()" title="Shuffle random prompt combination">
+              <span>🎲 Shuffle</span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 11px; height: auto;" onclick="quickCopyToml(this)" title="Copy current starship.toml">
+              <span class="btn-copy-label">📋 Copy TOML</span>
+            </button>
+          </div>
         </h2>
 
         <div class="controls-grid" style="grid-template-columns: 1fr;">
           <div class="control-group">
             <label>Prompt Style Mode</label>
-            <div class="style-toggle-group">
-              <button type="button" class="style-toggle-btn active" id="styleBtn-powerline" onclick="setPromptStyle('powerline')">Powerline (Fill)</button>
-              <button type="button" class="style-toggle-btn" id="styleBtn-transparent" onclick="setPromptStyle('transparent')">Transparent Minimal</button>
-              <button type="button" class="style-toggle-btn" id="styleBtn-bracketed" onclick="setPromptStyle('bracketed')">Bracketed [ ]</button>
+            <div class="style-toggle-group" role="group" aria-label="Prompt Style Mode">
+              <button type="button" class="style-toggle-btn active" id="styleBtn-powerline" onclick="setPromptStyle('powerline')" aria-pressed="true">Powerline (Fill)</button>
+              <button type="button" class="style-toggle-btn" id="styleBtn-transparent" onclick="setPromptStyle('transparent')" aria-pressed="false">Transparent Minimal</button>
+              <button type="button" class="style-toggle-btn" id="styleBtn-bracketed" onclick="setPromptStyle('bracketed')" aria-pressed="false">Bracketed [ ]</button>
             </div>
           </div>
 
-          <div id="minimalStyleNotice" style="display: none; padding: 10px 12px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">
+          <div id="minimalStyleNotice" style="display: none; padding: 6px 10px; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-sm); font-size: 11px; color: var(--text-muted); line-height: 1.35; margin-bottom: 2px;">
             ✨ <strong>Minimalist Mode</strong>: Segments render with clean spacing, vibrant foreground colors, and optional brackets without Powerline block fills or cap glyphs.
-          </div>
-
-          <div id="capsSeparatorsSection">
-            <div class="control-group">
-              <label for="leftCapSelect">Left Cap Symbol (Start)</label>
-              <select id="leftCapSelect" onchange="updateCustomizer()"></select>
-            </div>
-
-            <div class="control-group">
-              <label for="rightCapSelect">Right Cap Symbol (End)</label>
-              <select id="rightCapSelect" onchange="updateCustomizer()"></select>
-            </div>
-
-            <!-- Individual Middle Separators Section -->
-            <div class="control-group" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 1rem;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <span style="font-weight: 600; font-size: 0.85rem; color: var(--text-primary);">Middle Separators</span>
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; user-select: none;">
-                  <input type="checkbox" id="linkSeparators" onchange="toggleLinkSeparators()" checked>
-                  <span>Link all</span>
-                </label>
-              </div>
-
-              <div style="display: flex; flex-direction: column; gap: 8px;">
-                <div>
-                  <label for="sep1Select" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Separator 1 (OS ➔ Dir)</label>
-                  <select id="sep1Select" onchange="onSeparatorChange(0)"></select>
-                </div>
-                <div>
-                  <label for="sep2Select" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Separator 2 (Dir ➔ Git)</label>
-                  <select id="sep2Select" onchange="onSeparatorChange(1)"></select>
-                </div>
-                <div>
-                  <label for="sep3Select" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Separator 3 (Git ➔ Lang)</label>
-                  <select id="sep3Select" onchange="onSeparatorChange(2)"></select>
-                </div>
-                <div>
-                  <label for="sep4Select" style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Separator 4 (Lang ➔ Time)</label>
-                  <select id="sep4Select" onchange="onSeparatorChange(3)"></select>
-                </div>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <label for="scaleInput">Separator Vertical Scale</label>
-              <input type="range" id="scaleInput" value="1" min="0.75" max="1.25" step="0.01"
-                onchange="updateCustomizer()" oninput="updateCustomizer()">
-            </div>
           </div>
 
           <div class="control-group">
@@ -2352,30 +2896,35 @@
             <select id="themeSelect" onchange="onThemeSelectChange()"></select>
           </div>
 
-          <!-- Segment & Start Icon Color Customizer -->
-          <div class="control-group" id="segmentColorsSection" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 1rem;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-              <span style="font-weight: 600; font-size: 0.85rem; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
-                <span>🎨</span> Segment & Icon Colors
+          <!-- Unified Modules, Start Icon & Segment Colors Section -->
+          <div class="control-group" id="segmentColorsSection">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-weight: 600; font-size: 0.82rem; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                <span>🎨</span> Modules, Icons &amp; Colors
               </span>
-              <button type="button" class="btn btn-secondary" style="padding: 2px 8px; font-size: 10px; height: auto;" onclick="resetColorsToPalette()" title="Reset to palette defaults">Reset</button>
+              <button type="button" class="btn btn-secondary" style="padding: 1px 7px; font-size: 10px; height: auto;" onclick="resetColorsToPalette()" title="Reset segment colors to palette defaults">Reset Colors</button>
             </div>
 
             <div class="segment-colors-grid">
               <!-- Start Icon Row -->
               <div class="seg-color-row" id="colorRow-os">
                 <span class="seg-color-label">
-                  <span class="seg-color-icon" id="colorPreviewIcon">󰣇</span> Start Icon
+                  <input type="checkbox" id="modOS" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Start Icon module" title="Toggle Start Icon module">
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-os" onclick="toggleModuleIconDrawer('os')" title="Change icon for Start module">
+                    <span class="seg-color-icon" id="colorIcon-os">󰣇</span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Start</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-os-bg" title="Segment Fill Color (Powerline) or Icon Color (Transparent)">
                     <span class="color-picker-tag" id="colorTag-os-bg">BG</span>
-                    <input type="color" id="colorInput-os-bg" oninput="onColorChange('os', 'bg', this.value)">
+                    <input type="color" id="colorInput-os-bg" oninput="onColorChange('os', 'bg', this.value)" aria-label="Start Icon Background Color">
                     <span class="color-hex-label" id="colorHex-os-bg">#352a3e</span>
                   </label>
                   <label class="color-picker-wrapper fg-picker" id="colorWrapper-os-fg" title="Icon Foreground Color">
                     <span class="color-picker-tag">FG</span>
-                    <input type="color" id="colorInput-os-fg" oninput="onColorChange('os', 'fg', this.value)">
+                    <input type="color" id="colorInput-os-fg" oninput="onColorChange('os', 'fg', this.value)" aria-label="Start Icon Foreground Color">
                     <span class="color-hex-label" id="colorHex-os-fg">#ffffff</span>
                   </label>
                 </div>
@@ -2384,17 +2933,22 @@
               <!-- Directory Row -->
               <div class="seg-color-row" id="colorRow-dir">
                 <span class="seg-color-label">
-                  <span class="seg-color-icon" id="colorIcon-dir">󰲋</span> Directory
+                  <input type="checkbox" id="modDir" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Directory module" title="Toggle Directory module">
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-dir" onclick="toggleModuleIconDrawer('dir')" title="Change icon for Directory module">
+                    <span class="seg-color-icon" id="colorIcon-dir">󰲋</span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Directory</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-dir-bg" title="Segment Fill Color (Powerline) or Directory Color (Transparent)">
                     <span class="color-picker-tag" id="colorTag-dir-bg">BG</span>
-                    <input type="color" id="colorInput-dir-bg" oninput="onColorChange('dir', 'bg', this.value)">
+                    <input type="color" id="colorInput-dir-bg" oninput="onColorChange('dir', 'bg', this.value)" aria-label="Directory Background Color">
                     <span class="color-hex-label" id="colorHex-dir-bg">#e8608a</span>
                   </label>
                   <label class="color-picker-wrapper fg-picker" id="colorWrapper-dir-fg" title="Directory Text Color">
                     <span class="color-picker-tag">FG</span>
-                    <input type="color" id="colorInput-dir-fg" oninput="onColorChange('dir', 'fg', this.value)">
+                    <input type="color" id="colorInput-dir-fg" oninput="onColorChange('dir', 'fg', this.value)" aria-label="Directory Foreground Color">
                     <span class="color-hex-label" id="colorHex-dir-fg">#1a0a2e</span>
                   </label>
                 </div>
@@ -2403,17 +2957,22 @@
               <!-- Git Branch Row -->
               <div class="seg-color-row" id="colorRow-git">
                 <span class="seg-color-label">
-                  <span class="seg-color-icon" id="colorIcon-git"></span> Git Branch
+                  <input type="checkbox" id="modGit" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Git Branch module" title="Toggle Git Branch module">
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-git" onclick="toggleModuleIconDrawer('git')" title="Change icon for Git module">
+                    <span class="seg-color-icon" id="colorIcon-git"></span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Git</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-git-bg" title="Segment Fill Color (Powerline) or Git Color (Transparent)">
                     <span class="color-picker-tag" id="colorTag-git-bg">BG</span>
-                    <input type="color" id="colorInput-git-bg" oninput="onColorChange('git', 'bg', this.value)">
+                    <input type="color" id="colorInput-git-bg" oninput="onColorChange('git', 'bg', this.value)" aria-label="Git Branch Background Color">
                     <span class="color-hex-label" id="colorHex-git-bg">#9b59b6</span>
                   </label>
                   <label class="color-picker-wrapper fg-picker" id="colorWrapper-git-fg" title="Git Text Color">
                     <span class="color-picker-tag">FG</span>
-                    <input type="color" id="colorInput-git-fg" oninput="onColorChange('git', 'fg', this.value)">
+                    <input type="color" id="colorInput-git-fg" oninput="onColorChange('git', 'fg', this.value)" aria-label="Git Branch Foreground Color">
                     <span class="color-hex-label" id="colorHex-git-fg">#ffffff</span>
                   </label>
                 </div>
@@ -2422,17 +2981,22 @@
               <!-- Language Row -->
               <div class="seg-color-row" id="colorRow-lang">
                 <span class="seg-color-label">
-                  <span class="seg-color-icon" id="colorIcon-lang"></span> Language
+                  <input type="checkbox" id="modLang" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Language module" title="Toggle Language module">
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-lang" onclick="toggleModuleIconDrawer('lang')" title="Change icon for Language module">
+                    <span class="seg-color-icon" id="colorIcon-lang"></span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Language</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-lang-bg" title="Segment Fill Color (Powerline) or Language Color (Transparent)">
                     <span class="color-picker-tag" id="colorTag-lang-bg">BG</span>
-                    <input type="color" id="colorInput-lang-bg" oninput="onColorChange('lang', 'bg', this.value)">
+                    <input type="color" id="colorInput-lang-bg" oninput="onColorChange('lang', 'bg', this.value)" aria-label="Language Background Color">
                     <span class="color-hex-label" id="colorHex-lang-bg">#f7c96e</span>
                   </label>
                   <label class="color-picker-wrapper fg-picker" id="colorWrapper-lang-fg" title="Language Text Color">
                     <span class="color-picker-tag">FG</span>
-                    <input type="color" id="colorInput-lang-fg" oninput="onColorChange('lang', 'fg', this.value)">
+                    <input type="color" id="colorInput-lang-fg" oninput="onColorChange('lang', 'fg', this.value)" aria-label="Language Foreground Color">
                     <span class="color-hex-label" id="colorHex-lang-fg">#1a0a2e</span>
                   </label>
                 </div>
@@ -2441,67 +3005,131 @@
               <!-- Time Row -->
               <div class="seg-color-row" id="colorRow-time">
                 <span class="seg-color-label">
-                  <span class="seg-color-icon" id="colorIcon-time"></span> Time
+                  <input type="checkbox" id="modTime" class="seg-mod-toggle" checked onchange="updateCustomizer()" aria-label="Enable Time module" title="Toggle Time module">
+                  <button type="button" class="seg-icon-select-btn" id="iconBtn-time" onclick="toggleModuleIconDrawer('time')" title="Change icon for Time module">
+                    <span class="seg-color-icon" id="colorIcon-time"></span>
+                    <span class="seg-icon-caret">▾</span>
+                  </button>
+                  <span class="seg-label-text">Time</span>
                 </span>
                 <div class="seg-color-pickers">
                   <label class="color-picker-wrapper" id="colorWrapper-time-bg" title="Segment Fill Color (Powerline) or Time Color (Transparent)">
                     <span class="color-picker-tag" id="colorTag-time-bg">BG</span>
-                    <input type="color" id="colorInput-time-bg" oninput="onColorChange('time', 'bg', this.value)">
+                    <input type="color" id="colorInput-time-bg" oninput="onColorChange('time', 'bg', this.value)" aria-label="Time Background Color">
                     <span class="color-hex-label" id="colorHex-time-bg">#2d1b4e</span>
                   </label>
                   <label class="color-picker-wrapper fg-picker" id="colorWrapper-time-fg" title="Time Text Color">
                     <span class="color-picker-tag">FG</span>
-                    <input type="color" id="colorInput-time-fg" oninput="onColorChange('time', 'fg', this.value)">
+                    <input type="color" id="colorInput-time-fg" oninput="onColorChange('time', 'fg', this.value)" aria-label="Time Foreground Color">
                     <span class="color-hex-label" id="colorHex-time-fg">#f0c0e0</span>
                   </label>
                 </div>
               </div>
+
+              <!-- Unified Visual Icon Picker Drawer for Active Module -->
+              <div class="visual-icon-drawer" id="visualIconDrawer" style="display: none;">
+                <div class="icon-drawer-header">
+                  <div class="icon-drawer-title">
+                    <span id="activeDrawerModuleName">Start Icon</span>
+                    <span class="icon-drawer-sub">Select icon:</span>
+                  </div>
+                  <div class="icon-drawer-actions">
+                    <select id="moduleIconSelect" class="module-icon-select" onchange="onModuleIconSelectChange(this.value)" aria-label="Select icon from dropdown"></select>
+                    <button type="button" class="icon-drawer-close-btn" onclick="closeModuleIconDrawer()" title="Close icon picker" aria-label="Close icon picker">✕</button>
+                  </div>
+                </div>
+                <div class="visual-icon-grid" id="visualIconGrid">
+                  <!-- Populated by JS for the currently active module -->
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <div class="control-group">
-            <label for="heightInput">Prompt Line Height (px)</label>
-            <input type="number" id="heightInput" value="30" min="20" max="50" onchange="updateCustomizer()"
-              oninput="updateCustomizer()">
-          </div>
+          <div id="capsSeparatorsSection">
+            <!-- Side-by-side Start & End Caps -->
+            <div class="caps-two-col">
+              <div class="control-group">
+                <label for="leftCapSelect">Left Cap (Start)</label>
+                <select id="leftCapSelect" onchange="updateCustomizer()"></select>
+              </div>
 
-          <div class="control-group">
-            <label for="iconSelect">Start Icon (First Segment)</label>
-            <select id="iconSelect" onchange="updateCustomizer()" style="font-size: 18px;"></select>
-          </div>
+              <div class="control-group">
+                <label for="rightCapSelect">Right Cap (End)</label>
+                <select id="rightCapSelect" onchange="updateCustomizer()"></select>
+              </div>
+            </div>
 
-          <div class="control-group">
-            <label>Active Modules</label>
-            <div class="checkbox-grid">
-              <label class="checkbox-label"><input type="checkbox" id="modOS" checked onchange="updateCustomizer()"> Start
-                Icon</label>
-              <label class="checkbox-label"><input type="checkbox" id="modDir" checked onchange="updateCustomizer()">
-                Directory</label>
-              <label class="checkbox-label"><input type="checkbox" id="modGit" checked onchange="updateCustomizer()">
-                Git Branch</label>
-              <label class="checkbox-label"><input type="checkbox" id="modLang" checked onchange="updateCustomizer()">
-                Language</label>
-              <label class="checkbox-label"><input type="checkbox" id="modTime" checked onchange="updateCustomizer()">
-                Time</label>
+            <!-- Smart Collapsible Middle Separators Section -->
+            <div class="control-group" style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 7px 10px; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                <span style="font-weight: 600; font-size: 0.8rem; color: var(--text-main);">Middle Separators</span>
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; user-select: none; text-transform: none;">
+                  <input type="checkbox" id="linkSeparators" onchange="toggleLinkSeparators()" checked style="accent-color: var(--accent-primary);">
+                  <span>Link all</span>
+                </label>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div>
+                  <label id="sep1Label" for="sep1Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">All Middle Separators (Linked)</label>
+                  <select id="sep1Select" onchange="onSeparatorChange(0)" style="width: 100%;"></select>
+                </div>
+                <div id="unlinkedSeparatorsExtra" style="display: none; flex-direction: column; gap: 6px;">
+                  <div>
+                    <label for="sep2Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 2 (Dir ➔ Git)</label>
+                    <select id="sep2Select" onchange="onSeparatorChange(1)" style="width: 100%;"></select>
+                  </div>
+                  <div>
+                    <label for="sep3Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 3 (Git ➔ Lang)</label>
+                    <select id="sep3Select" onchange="onSeparatorChange(2)" style="width: 100%;"></select>
+                  </div>
+                  <div>
+                    <label for="sep4Select" style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 2px; text-transform: none;">Separator 4 (Lang ➔ Time)</label>
+                    <select id="sep4Select" onchange="onSeparatorChange(3)" style="width: 100%;"></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Compact Side-by-Side Line Height & Vertical Scale -->
+            <div class="caps-two-col" style="margin-bottom: 0;">
+              <div class="control-group">
+                <label for="heightInput" style="display: flex; justify-content: space-between;">
+                  <span>Line Height</span>
+                  <span id="heightValueReadout" style="color: var(--accent-cyan);">30px</span>
+                </label>
+                <input type="number" id="heightInput" value="30" min="20" max="50" onchange="updateCustomizer()"
+                  oninput="updateCustomizer()">
+              </div>
+
+              <div class="control-group">
+                <label for="scaleInput" style="display: flex; justify-content: space-between;">
+                  <span>Sep Scale</span>
+                  <span id="scaleValueReadout" style="color: var(--accent-cyan);">1.00×</span>
+                </label>
+                <input type="range" id="scaleInput" value="1" min="0.75" max="1.25" step="0.01"
+                  onchange="updateCustomizer()" oninput="updateCustomizer()" style="margin-top: 8px; accent-color: var(--accent-primary);">
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Generated TOML Output & Two-Way Editor -->
-      <div class="card" id="config">
+      <div class="card" id="config" style="display: none;">
         <h2 class="card-title">
           <span>📄 starship.toml Config</span>
           <span style="font-size: 11px; font-weight: normal; color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1); padding: 2px 8px; border-radius: 999px;">Two-Way Live Editor</span>
         </h2>
         <div class="toml-box">
-          <textarea id="tomlOutput" class="toml-editor" placeholder="Edit or paste your starship.toml here to update the live preview..." oninput="onTomlInput()"></textarea>
+          <textarea id="tomlOutput" class="toml-editor" aria-label="starship.toml configuration editor" placeholder="Edit or paste your starship.toml here to update the live preview..." oninput="onTomlInput()"></textarea>
           <span id="tomlSyncBadge" class="toml-sync-badge">Live Synced</span>
         </div>
         <div class="actions-bar">
-          <button class="btn btn-secondary" onclick="applyTomlFromEditor()" title="Parse and apply edited TOML to the UI preview">⚡ Apply TOML</button>
-          <button class="btn btn-secondary" onclick="downloadToml()">Download .toml</button>
-          <button class="btn" onclick="copyToml()">Copy Config</button>
+          <button type="button" class="btn btn-secondary" onclick="applyTomlFromEditor()" title="Parse and apply edited TOML to the UI preview">⚡ Apply TOML</button>
+          <button type="button" class="btn btn-secondary" onclick="downloadToml()">Download .toml</button>
+          <button type="button" class="btn" onclick="copyToml()">Copy Config</button>
         </div>
       </div>
 
@@ -2634,7 +3262,7 @@
   </footer>
 
   <!-- Toast Notification -->
-  <div class="toast" id="toast">Copied to clipboard!</div>
+  <div class="toast" id="toast" role="status" aria-live="polite">Copied to clipboard!</div>
 
   <script>
     // ── Glyphs Database from separators.md & Powerline standard ──────────────────
@@ -4059,6 +4687,13 @@
       rightCap: "",
       themeKey: "firewatch",
       iconSymbol: "󰣇",
+      moduleIcons: {
+        os: "󰣇",
+        dir: "󰲋",
+        git: "",
+        lang: "",
+        time: ""
+      },
       activePreset: "classic_pill",
       customColors: null,
       promptHeight: 30,
@@ -4073,20 +4708,34 @@
       }
     };
 
-  // ── Start Segment Icons (Nerd Font Glyphs) ──────────────────────────────────
-  const startIcons = [
-    "󰣇", "", "󱃽", "", "", "", "", "󱓞", "󰊗", "󰔉",
-    "󰈸", "󱢗", "󰚌", "󰯈", "", "󱙝", "", "", "", "",
-    "", "", "", "󰯇", "󰭟", "", "󱗆", "󰯉", "󰇥", "",
-    "", "", "", "", "", "", "󱍢", "", "", "",
-    "", "", "", "󱐌", "", "", "", "󰫣", "󰫤", "󰫥",
-    "", "", "󰙴", "", "", "󰣙", "󰣘", "", "", "󰓎",
-    "", "", "", "", "", "󱓟", "󰺹", "󰅏", "", "",
-    "", "󱃏", "", "", "", "󰷗", "󰀻", "󰔌", "󰂵", "󰢶",
-    "󱝊", "󱪶", "󱪷", "", "󱑻", "󰕤", "󰹪",
-    "󱑺", "󱑼", "󰊠", "🚀", "",
-    "▲", "🧙", "", "", "", "➤", "❱", "󰉋", "󰘬", ""
-  ];
+  // ── Curated Module Icons & Start Icons Catalog ──────────────────────────────
+  const moduleIconCatalog = {
+    os: [
+      "󰣇", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "󱃽", "", "", "", "", "󱓞", "󰊗", "󰔉", "󰈸", "󱢗", "󰚌", "󰯈", "", "󱙝", "", "", "", "", "", "", "", "󰯇", "󰭟", "", "󱗆", "󰯉", "󰇥", "", "", "", "", "", "", "", "󱍢", "", "", "", "", "", "", "󱐌", "", "", "", "󰫣", "󰫤", "󰫥", "", "", "󰙴", "", "", "󰣙", "󰣘", "", "", "󰓎", "", "", "", "", "", "󱓟", "󰺹", "󰅏", "", "", "", "󱃏", "", "", "", "󰷗", "󰀻", "󰔌", "󰂵", "󰢶", "󱝊", "󱪶", "󱪷", "", "󱑻", "󰕤", "󰹪", "󱑺", "󱑼", "󰊠", "🚀", "▲", "🧙", "", "", "", "➤", "❱", "󰉋", "󰘬", ""
+    ],
+    dir: [
+      "󰲋", "", "", "", "", "", "󰉋", "󰉖", "󰷏", "", "", "", "", "󰋜", "󰉌", "", "", "󰀶", "", "󰆧", "📁", "📂", "🏠", ""
+    ],
+    git: [
+      "", "", "󰘬", "", "", "", "", "", "󰊢", "", "󰓁", "󰜘", "", "", "", "󰳏", "🌱", "🌿"
+    ],
+    lang: [
+      "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "󱃾", "", "󰅩", "", "⚡"
+    ],
+    time: [
+      "", "󱑺", "󱑻", "󱑼", "", "󰥔", "", "󰅐", "⌛", "⌚", "♥", "󰣐", "", "󰃭", "", "󰔛", "⏰"
+    ]
+  };
+
+  const moduleNames = {
+    os: "Start Icon",
+    dir: "Directory",
+    git: "Git Branch",
+    lang: "Language",
+    time: "Time"
+  };
+
+  const startIcons = moduleIconCatalog.os;
 
   // ── DOM Elements ──────────────────────────────────────────────────────────
   const terminalPreview = document.getElementById("terminalPreview");
@@ -4104,6 +4753,180 @@
   const iconSelect = document.getElementById("iconSelect");
   const tomlOutput = document.getElementById("tomlOutput");
   const toast = document.getElementById("toast");
+
+  // ── UX Ergonomics: Sticky Preview Pin, Sidebar Mode, Module Pills & Icon Drawer ──
+  let isPreviewPinned = true;
+  let currentSidebarMode = "customizer";
+  let currentGlyphTarget = "middle";
+  let presetSearchQuery = "";
+  let activeIconDrawerModule = "os";
+
+  function togglePinPreview() {
+    isPreviewPinned = !isPreviewPinned;
+    const previewWin = document.getElementById("preview");
+    const pinBtn = document.getElementById("pinPreviewBtn");
+    const pinLabel = document.getElementById("pinPreviewLabel");
+    if (previewWin) {
+      previewWin.classList.toggle("unpinned", !isPreviewPinned);
+    }
+    if (pinBtn) {
+      pinBtn.setAttribute("aria-pressed", isPreviewPinned ? "true" : "false");
+    }
+    if (pinLabel) {
+      pinLabel.textContent = isPreviewPinned ? "Pinned" : "Unpinned";
+    }
+    showToast(isPreviewPinned ? "Terminal preview pinned to top while scrolling" : "Terminal preview unpinned");
+  }
+
+  function switchSidebarMode(mode) {
+    currentSidebarMode = mode;
+    const custCard = document.getElementById("customizer");
+    const confCard = document.getElementById("config");
+    ["customizer", "toml", "both"].forEach(m => {
+      const btn = document.getElementById(`sidebarTab-${m}`);
+      if (btn) {
+        btn.classList.toggle("active", m === mode);
+        btn.setAttribute("aria-selected", m === mode ? "true" : "false");
+      }
+    });
+    if (custCard) {
+      custCard.style.display = (mode === "customizer" || mode === "both") ? "block" : "none";
+    }
+    if (confCard) {
+      confCard.style.display = (mode === "toml" || mode === "both") ? "block" : "none";
+    }
+  }
+
+  function toggleModuleQuick(modKey) {
+    const idMap = {
+      os: "modOS",
+      dir: "modDir",
+      git: "modGit",
+      lang: "modLang",
+      time: "modTime"
+    };
+    const checkbox = document.getElementById(idMap[modKey]);
+    if (checkbox) {
+      checkbox.checked = !checkbox.checked;
+      updateCustomizer();
+    }
+  }
+
+  function toggleModuleIconDrawer(modKey) {
+    const drawer = document.getElementById("visualIconDrawer");
+    if (!drawer) return;
+    if (drawer.style.display === "block" && activeIconDrawerModule === modKey) {
+      drawer.style.display = "none";
+      document.querySelectorAll(".seg-icon-select-btn").forEach(b => b.classList.remove("active"));
+      return;
+    }
+    activeIconDrawerModule = modKey;
+    document.querySelectorAll(".seg-icon-select-btn").forEach(b => {
+      b.classList.toggle("active", b.id === `iconBtn-${modKey}`);
+    });
+    drawer.style.display = "block";
+    renderModuleIconDrawer(modKey);
+  }
+
+  function closeModuleIconDrawer() {
+    const drawer = document.getElementById("visualIconDrawer");
+    if (drawer) drawer.style.display = "none";
+    document.querySelectorAll(".seg-icon-select-btn").forEach(b => b.classList.remove("active"));
+  }
+
+  function renderModuleIconDrawer(modKey) {
+    const titleEl = document.getElementById("activeDrawerModuleName");
+    if (titleEl) titleEl.textContent = moduleNames[modKey] || "Module Icon";
+
+    const selectEl = document.getElementById("moduleIconSelect");
+    const gridEl = document.getElementById("visualIconGrid");
+    const list = moduleIconCatalog[modKey] || moduleIconCatalog.os;
+    const currentVal = (currentConfig.moduleIcons && currentConfig.moduleIcons[modKey] !== undefined)
+      ? currentConfig.moduleIcons[modKey]
+      : (modKey === "os" ? currentConfig.iconSymbol : "");
+
+    if (selectEl) {
+      selectEl.innerHTML = "";
+      list.forEach(icon => {
+        const opt = document.createElement("option");
+        opt.value = icon;
+        opt.textContent = icon ? icon : "∅ None";
+        if (icon === currentVal) opt.selected = true;
+        selectEl.appendChild(opt);
+      });
+    }
+
+    if (gridEl) {
+      gridEl.innerHTML = "";
+      list.forEach(icon => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "icon-grid-btn" + (icon === currentVal ? " active" : "");
+        btn.setAttribute("data-icon", icon);
+        btn.setAttribute("title", icon ? `Select ${icon}` : "No icon (text only)");
+        btn.textContent = icon ? icon : "∅";
+        btn.onclick = () => selectModuleIcon(modKey, icon);
+        gridEl.appendChild(btn);
+      });
+    }
+  }
+
+  function onModuleIconSelectChange(val) {
+    selectModuleIcon(activeIconDrawerModule, val);
+  }
+
+  function selectModuleIcon(modKey, icon) {
+    if (!currentConfig.moduleIcons) {
+      currentConfig.moduleIcons = { os: "󰣇", dir: "󰲋", git: "", lang: "", time: "" };
+    }
+    currentConfig.moduleIcons[modKey] = icon;
+    if (modKey === "os") {
+      currentConfig.iconSymbol = icon;
+      if (iconSelect) iconSelect.value = icon;
+    }
+    syncColorPickers();
+    updateCustomizer();
+    renderModuleIconDrawer(modKey);
+    showToast(`${moduleNames[modKey] || 'Module'} icon updated!`);
+  }
+
+  function focusSegmentCustomizer(segId) {
+    if (currentSidebarMode === "toml") {
+      switchSidebarMode("customizer");
+    }
+    const row = document.getElementById(`colorRow-${segId}`);
+    if (row) {
+      row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      row.classList.remove("highlight-pulse");
+      void row.offsetWidth;
+      row.classList.add("highlight-pulse");
+      setTimeout(() => row.classList.remove("highlight-pulse"), 1200);
+    }
+    toggleModuleIconDrawer(segId);
+  }
+
+  function focusCapCustomizer(target) {
+    setGlyphTarget(target);
+    if (currentSidebarMode === "toml") {
+      switchSidebarMode("customizer");
+    }
+    const sec = document.getElementById("capsSeparatorsSection");
+    if (sec) {
+      sec.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      sec.classList.remove("highlight-pulse");
+      void sec.offsetWidth;
+      sec.classList.add("highlight-pulse");
+      setTimeout(() => sec.classList.remove("highlight-pulse"), 1200);
+    }
+  }
+
+  function randomizePreset() {
+    const randomPreset = presets[Math.floor(Math.random() * presets.length)];
+    if (randomPreset) {
+      applyPreset(randomPreset);
+      showToast(`Shuffled to preset: ${randomPreset.name}`);
+    }
+  }
 
   // ── Helpers for Separators & Multi-Separator Synchronization ──────────────
   function getSeparator(index) {
@@ -4128,6 +4951,7 @@
       if (index > 0 && isLinked && selects[index] && sep1Select && selects[index].value !== sep1Select.value) {
         if (linkSeparators) linkSeparators.checked = false;
         currentConfig.linkSeparators = false;
+        syncSeparatorUI();
       }
     }
     updateCustomizer();
@@ -4142,8 +4966,9 @@
       if (sep2Select) sep2Select.value = val;
       if (sep3Select) sep3Select.value = val;
       if (sep4Select) sep4Select.value = val;
-      updateCustomizer();
     }
+    syncSeparatorUI();
+    updateCustomizer();
   }
 
   function syncSeparatorUI() {
@@ -4155,6 +4980,17 @@
     if (sep4Select) sep4Select.value = currentConfig.separators[3] || "";
     if (linkSeparators) linkSeparators.checked = currentConfig.linkSeparators;
     if (themeSelect) themeSelect.value = currentConfig.themeKey;
+
+    const unlinkedExtra = document.getElementById("unlinkedSeparatorsExtra");
+    const sep1Label = document.getElementById("sep1Label");
+    if (unlinkedExtra) {
+      unlinkedExtra.style.display = currentConfig.linkSeparators ? "none" : "flex";
+    }
+    if (sep1Label) {
+      sep1Label.textContent = currentConfig.linkSeparators
+        ? "All Middle Separators (Linked)"
+        : "Separator 1 (OS ➔ Dir)";
+    }
   }
 
   function normalizeHex(color, fallback = "#ffffff") {
@@ -4221,9 +5057,31 @@
     const colors = getActiveColors();
     const mods = ['os', 'dir', 'git', 'lang', 'time'];
     mods.forEach(mod => {
+      const isEnabled = Boolean(currentConfig.modules && currentConfig.modules[mod]);
       const row = document.getElementById(`colorRow-${mod}`);
-      if (row && currentConfig.modules) {
-        row.style.display = currentConfig.modules[mod] ? "flex" : "none";
+      if (row) {
+        row.style.display = "flex";
+        row.classList.toggle("is-disabled", !isEnabled);
+      }
+
+      const pill = document.getElementById(`pillMod-${mod}`);
+      if (pill) {
+        pill.classList.toggle("active", isEnabled);
+        pill.setAttribute("aria-pressed", isEnabled ? "true" : "false");
+      }
+
+      const modIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons[mod] !== undefined)
+        ? currentConfig.moduleIcons[mod]
+        : (mod === "os" ? currentConfig.iconSymbol : "");
+
+      const iconBtnSpan = document.getElementById(`colorIcon-${mod}`);
+      if (iconBtnSpan) {
+        iconBtnSpan.textContent = modIcon || "∅";
+      }
+
+      const pillIcon = document.getElementById(`pillIcon-${mod}`);
+      if (pillIcon) {
+        pillIcon.textContent = modIcon || (mod === 'os' ? '󰣇' : (mod === 'dir' ? '󰲋' : (mod === 'git' ? '' : (mod === 'lang' ? '' : ''))));
       }
 
       ['bg', 'fg'].forEach(type => {
@@ -4292,7 +5150,10 @@
     currentConfig.promptStyle = style;
     ["powerline", "transparent", "bracketed"].forEach(s => {
       const btn = document.getElementById(`styleBtn-${s}`);
-      if (btn) btn.classList.toggle("active", s === style);
+      if (btn) {
+        btn.classList.toggle("active", s === style);
+        btn.setAttribute("aria-pressed", s === style ? "true" : "false");
+      }
     });
 
     const capGroup = document.getElementById("capsSeparatorsSection");
@@ -4420,30 +5281,55 @@
     });
   }
 
-  // Render Icon Options (Just the icon itself, no names)
+  // Render Icon Options (Select + Visual Icon Grid Drawer)
   function renderIconSelect() {
-    if (!iconSelect) return;
-    iconSelect.innerHTML = "";
-    startIcons.forEach(icon => {
-      const opt = document.createElement("option");
-      opt.value = icon;
-      opt.textContent = icon;
-      iconSelect.appendChild(opt);
-    });
+    if (iconSelect) {
+      iconSelect.innerHTML = "";
+      startIcons.forEach(icon => {
+        const opt = document.createElement("option");
+        opt.value = icon;
+        opt.textContent = icon;
+        iconSelect.appendChild(opt);
+      });
+    }
+
+    const visualGrid = document.getElementById("visualIconGrid");
+    if (visualGrid) {
+      renderModuleIconDrawer(activeIconDrawerModule || "os");
+    }
   }
 
-  // ── Preset Filters & Render ───────────────────────────────────────────────
+  // ── Preset Filters, Search & Render ───────────────────────────────────────
   let currentPresetFilter = "all";
 
   function setPresetFilter(filter) {
     currentPresetFilter = filter;
     document.querySelectorAll(".preset-filter-btn").forEach(btn => {
-      btn.classList.toggle("active", btn.getAttribute("data-filter") === filter);
+      const isMatch = btn.getAttribute("data-filter") === filter;
+      btn.classList.toggle("active", isMatch);
+      btn.setAttribute("aria-selected", isMatch ? "true" : "false");
     });
     renderPresetButtons();
   }
 
-  // Render Presets Grid
+  function onPresetSearch(query) {
+    presetSearchQuery = (query || "").trim().toLowerCase();
+    renderPresetButtons();
+  }
+
+  function quickCopyPreset(p, btnEl) {
+    applyPreset(p);
+    copyToml();
+    if (btnEl) {
+      const orig = btnEl.innerHTML;
+      btnEl.textContent = "✓ Copied";
+      setTimeout(() => {
+        btnEl.innerHTML = orig;
+      }, 1500);
+    }
+  }
+
+  // Render Presets Grid (Clean items without author links - creator credit stays in prompt preview)
   function renderPresetButtons() {
     if (!presetsGrid) return;
     presetsGrid.innerHTML = "";
@@ -4461,38 +5347,94 @@
     if (presetsTotalBadge) presetsTotalBadge.textContent = presets.length + " presets";
 
     const filtered = presets.filter(p => {
-      if (currentPresetFilter === "all") return true;
-      if (currentPresetFilter === "powerline") return p.category === "powerline";
-      if (currentPresetFilter === "minimal") return p.category === "minimal";
-      if (currentPresetFilter === "light") return p.category === "light";
-      return true;
+      const catMatch =
+        currentPresetFilter === "all" ||
+        (currentPresetFilter === "powerline" && p.category === "powerline") ||
+        (currentPresetFilter === "minimal" && p.category === "minimal") ||
+        (currentPresetFilter === "light" && p.category === "light");
+      if (!catMatch) return false;
+      if (!presetSearchQuery) return true;
+      const themeName = (themes[p.theme] && themes[p.theme].name) ? themes[p.theme].name : "";
+      const haystack = `${p.name} ${p.author || ""} ${p.theme || ""} ${themeName} ${p.category || ""}`.toLowerCase();
+      return haystack.includes(presetSearchQuery);
     });
 
-    filtered.forEach(p => {
-      const btn = document.createElement("div");
-      btn.className = "preset-btn " + (currentConfig.activePreset === p.id ? "active" : "");
-      btn.setAttribute("data-preset-id", p.id);
-      btn.onclick = () => applyPreset(p);
+    if (filtered.length === 0) {
+      presetsGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 28px 16px; color: var(--text-muted); font-size: 0.85rem;">No presets match "${presetSearchQuery}". Try clearing the search filter.</div>`;
+      return;
+    }
 
-      const authorHtml = p.authorUrl
-        ? '<a href="' + p.authorUrl + '" target="_blank" rel="noopener noreferrer" class="preset-author-link" onclick="event.stopPropagation()" title="Creator: ' + p.author + '"><span class="author-name">' + p.author + '</span><span class="author-ext">↗</span></a>'
-        : '<span class="author-name">' + (p.author || 'Starship Studio') + '</span>';
+    filtered.forEach(p => {
+      const isActive = currentConfig.activePreset === p.id;
+      const btn = document.createElement("div");
+      btn.className = "preset-btn " + (isActive ? "active" : "");
+      btn.setAttribute("data-preset-id", p.id);
+      btn.setAttribute("role", "button");
+      btn.setAttribute("tabindex", "0");
+      btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+      btn.onclick = () => applyPreset(p);
+      btn.onkeydown = (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          applyPreset(p);
+        }
+      };
+
+      const t = themes[p.theme] || themes.firewatch;
+      const swatches = [t.os && t.os.bg, t.dir && t.dir.bg, t.git && t.git.bg, t.lang && t.lang.bg, t.time && t.time.bg]
+        .filter(Boolean)
+        .map(c => `<span class="preset-swatch-dot" style="background:${c}"></span>`)
+        .join("");
 
       btn.innerHTML = `
+        <button type="button" class="preset-quick-copy-btn" title="Apply preset & copy starship.toml">Copy</button>
         <div class="preset-header">
           <span class="preset-name">${p.name}</span>
-          <div class="preset-author-row">
-            <span class="author-by">by</span>
-            ${authorHtml}
-          </div>
         </div>
         <span class="preset-preview">${p.preview}</span>
+        <div class="preset-palette-strip" aria-hidden="true">${swatches}</div>
       `;
+
+      const copyBtn = btn.querySelector(".preset-quick-copy-btn");
+      if (copyBtn) {
+        copyBtn.onclick = (e) => {
+          e.stopPropagation();
+          quickCopyPreset(p, copyBtn);
+        };
+      }
+
       presetsGrid.appendChild(btn);
     });
   }
 
-  // Render Glyphs Library
+  // ── Glyphs Library & Target Selector ──────────────────────────────────────
+  function setGlyphTarget(target) {
+    currentGlyphTarget = target;
+    document.querySelectorAll(".glyph-target-btn").forEach(btn => {
+      const isMatch = btn.getAttribute("data-target") === target;
+      btn.classList.toggle("active", isMatch);
+      btn.setAttribute("aria-pressed", isMatch ? "true" : "false");
+    });
+    updateActiveGlyphCards();
+  }
+
+  function getActiveTargetGlyph() {
+    if (currentGlyphTarget === "leftCap") return currentConfig.leftCap;
+    if (currentGlyphTarget === "rightCap") return currentConfig.rightCap;
+    if (currentGlyphTarget === "sep0") return currentConfig.separators[0];
+    if (currentGlyphTarget === "sep1") return currentConfig.separators[1];
+    if (currentGlyphTarget === "sep2") return currentConfig.separators[2];
+    if (currentGlyphTarget === "sep3") return currentConfig.separators[3];
+    return currentConfig.separators[0];
+  }
+
+  function updateActiveGlyphCards() {
+    const activeGlyph = getActiveTargetGlyph();
+    document.querySelectorAll(".glyph-card").forEach(card => {
+      card.classList.toggle("active", card.getAttribute("data-glyph") === activeGlyph);
+    });
+  }
+
   function renderGlyphLibrary() {
     glyphsContainer.innerHTML = "";
     glyphCategories.forEach(cat => {
@@ -4504,19 +5446,34 @@
       grid.className = "glyphs-grid";
 
       cat.items.forEach(item => {
-        const card = document.createElement("div");
+        const card = document.createElement("button");
+        card.type = "button";
         card.className = "glyph-card";
+        card.setAttribute("data-glyph", item.glyph);
         card.onclick = () => {
-          if (sep1Select) sep1Select.value = item.glyph;
-          if (linkSeparators && linkSeparators.checked) {
-            if (sep2Select) sep2Select.value = item.glyph;
-            if (sep3Select) sep3Select.value = item.glyph;
-            if (sep4Select) sep4Select.value = item.glyph;
-            currentConfig.separators = [item.glyph, item.glyph, item.glyph, item.glyph];
-            showToast(`Selected '${item.name}' for all separators`);
+          if (currentConfig.promptStyle !== "powerline") {
+            setPromptStyle("powerline", true);
+          }
+          if (currentGlyphTarget === "leftCap") {
+            currentConfig.leftCap = item.glyph;
+            if (leftCapSelect) leftCapSelect.value = item.glyph;
+            showToast(`Applied '${item.name}' to Left Cap (Start)`);
+          } else if (currentGlyphTarget === "rightCap") {
+            currentConfig.rightCap = item.glyph;
+            if (rightCapSelect) rightCapSelect.value = item.glyph;
+            showToast(`Applied '${item.name}' to Right Cap (End)`);
+          } else if (currentGlyphTarget.startsWith("sep")) {
+            const idx = parseInt(currentGlyphTarget.replace("sep", ""), 10) || 0;
+            currentConfig.separators[idx] = item.glyph;
+            const allSame = currentConfig.separators.every(s => s === currentConfig.separators[0]);
+            currentConfig.linkSeparators = allSame;
+            syncSeparatorUI();
+            showToast(`Applied '${item.name}' to Separator ${idx + 1}`);
           } else {
-            currentConfig.separators[0] = item.glyph;
-            showToast(`Selected '${item.name}' for Separator 1`);
+            currentConfig.separators = [item.glyph, item.glyph, item.glyph, item.glyph];
+            currentConfig.linkSeparators = true;
+            syncSeparatorUI();
+            showToast(`Applied '${item.name}' to all Middle Separators`);
           }
           updateCustomizer();
         };
@@ -4530,6 +5487,7 @@
       catDiv.appendChild(grid);
       glyphsContainer.appendChild(catDiv);
     });
+    updateActiveGlyphCards();
   }
 
   // Apply Preset
@@ -4612,9 +5570,9 @@
     clean: {
       name: "Clean Main",
       dir: "~/.dotfiles",
-      git: " main",
-      lang: " v1.78.0",
-      time: " 14:32",
+      git: "main",
+      lang: "v1.78.0",
+      time: "14:32",
       charSymbol: "❯",
       charColor: "#10b981",
       command: "git status"
@@ -4622,9 +5580,9 @@
     dirty: {
       name: "Dirty Git",
       dir: "~/dev/starship-studio",
-      git: " feat/live-editor ⇡1 *",
-      lang: " v20.10.0",
-      time: " 18:45",
+      git: "feat/live-editor ⇡1 *",
+      lang: "v20.10.0",
+      time: "18:45",
       charSymbol: "❯",
       charColor: "#10b981",
       command: "git diff --stat"
@@ -4632,9 +5590,9 @@
     error: {
       name: "Exit Error",
       dir: "~/services/api-gateway",
-      git: " staging !",
-      lang: " v3.12.3",
-      time: " 03:12",
+      git: "staging !",
+      lang: "v3.12.3",
+      time: "03:12",
       charSymbol: "❯",
       charColor: "#ef4444",
       command: "systemctl restart nginx (exit 1)"
@@ -4642,9 +5600,9 @@
     deep: {
       name: "Deep Project",
       dir: "~/projects/core/pkg/engine/v2",
-      git: " release/v2.4",
-      lang: " v1.22.4",
-      time: " 09:00",
+      git: "release/v2.4",
+      lang: "v1.22.4",
+      time: "09:00",
       charSymbol: "❯",
       charColor: "#10b981",
       command: "go test -v ./..."
@@ -4656,7 +5614,9 @@
     if (!scenarios[scenKey]) return;
     currentScenario = scenKey;
     document.querySelectorAll(".scenario-btn").forEach(btn => {
-      btn.classList.toggle("active", btn.id === `btn-scen-${scenKey}`);
+      const isMatch = btn.id === `btn-scen-${scenKey}`;
+      btn.classList.toggle("active", isMatch);
+      btn.setAttribute("aria-pressed", isMatch ? "true" : "false");
     });
     renderPromptPreview();
   }
@@ -4707,6 +5667,11 @@
     document.documentElement.style.setProperty('--prompt-height', currentConfig.promptHeight + 'px');
     document.documentElement.style.setProperty('--sep-scale', currentConfig.sepScale);
 
+    const heightReadout = document.getElementById("heightValueReadout");
+    if (heightReadout) heightReadout.textContent = currentConfig.promptHeight + "px";
+    const scaleReadout = document.getElementById("scaleValueReadout");
+    if (scaleReadout) scaleReadout.textContent = Number(currentConfig.sepScale).toFixed(2) + "×";
+
     // Sync active state on preset buttons
     let matched = presets.find(p => p.id === currentConfig.activePreset);
     if (matched) {
@@ -4753,7 +5718,9 @@
     currentConfig.activePreset = matched ? matched.id : null;
     document.querySelectorAll(".preset-btn").forEach((btn) => {
       const pId = btn.getAttribute("data-preset-id");
-      btn.classList.toggle("active", pId === currentConfig.activePreset);
+      const isMatch = pId === currentConfig.activePreset;
+      btn.classList.toggle("active", isMatch);
+      btn.setAttribute("aria-pressed", isMatch ? "true" : "false");
     });
 
     const previewIcon = document.getElementById("colorPreviewIcon");
@@ -4793,6 +5760,7 @@
     }
 
     syncColorPickers();
+    updateActiveGlyphCards();
     renderPromptPreview();
     if (!skipTomlSync) {
       generateToml();
@@ -4822,25 +5790,33 @@
 
     // Build active segment chain
     const activeSegs = [];
-    if (currentConfig.modules.os) activeSegs.push({ id: 'os', label: currentConfig.iconSymbol, bg: theme.os.bg, fg: theme.os.fg });
-    if (currentConfig.modules.dir) activeSegs.push({ id: 'dir', label: `󰲋 ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
-    if (currentConfig.modules.git) activeSegs.push({ id: 'git', label: scen.git, bg: theme.git.bg, fg: theme.git.fg });
-    if (currentConfig.modules.lang) activeSegs.push({ id: 'lang', label: scen.lang, bg: theme.lang.bg, fg: theme.lang.fg });
-    if (currentConfig.modules.time) activeSegs.push({ id: 'time', label: scen.time, bg: theme.time.bg, fg: theme.time.fg });
+    const osIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.os) || currentConfig.iconSymbol || "󰣇";
+    const dirIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.dir) || "󰲋";
+    const gitIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.git) || "";
+    const langIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.lang) || "";
+    const timeIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.time) || "";
+
+    if (currentConfig.modules.os) activeSegs.push({ id: 'os', name: 'Start Icon', label: osIcon, bg: theme.os.bg, fg: theme.os.fg });
+    if (currentConfig.modules.dir) activeSegs.push({ id: 'dir', name: 'Directory', label: `${dirIcon} ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
+    if (currentConfig.modules.git) activeSegs.push({ id: 'git', name: 'Git Branch', label: `${gitIcon} ${scen.git}`, bg: theme.git.bg, fg: theme.git.fg });
+    if (currentConfig.modules.lang) activeSegs.push({ id: 'lang', name: 'Language', label: `${langIcon} ${scen.lang}`, bg: theme.lang.bg, fg: theme.lang.fg });
+    if (currentConfig.modules.time) activeSegs.push({ id: 'time', name: 'Time', label: `${timeIcon} ${scen.time}`, bg: theme.time.bg, fg: theme.time.fg });
 
     promptContainer.innerHTML = "";
 
     if (activeSegs.length === 0) {
-      promptContainer.innerHTML = `<span style="color: ${theme.fg};">Empty Prompt Line</span>`;
+      promptContainer.innerHTML = `<span style="color: ${theme.fg};">Empty Prompt Line — Toggle a module above to preview</span>`;
       return;
     }
 
     if (currentConfig.promptStyle === "transparent") {
       activeSegs.forEach((seg, i) => {
         const segSpan = document.createElement("span");
-        segSpan.className = "prompt-segment-minimal";
+        segSpan.className = "prompt-segment-minimal interactive-segment";
         segSpan.style.color = seg.bg;
         segSpan.textContent = seg.label;
+        segSpan.title = `Click to customize ${seg.name}`;
+        segSpan.onclick = () => focusSegmentCustomizer(seg.id);
         promptContainer.appendChild(segSpan);
 
         if (i < activeSegs.length - 1) {
@@ -4856,7 +5832,9 @@
     if (currentConfig.promptStyle === "bracketed") {
       activeSegs.forEach((seg, i) => {
         const segSpan = document.createElement("span");
-        segSpan.className = "prompt-segment-bracketed";
+        segSpan.className = "prompt-segment-bracketed interactive-segment";
+        segSpan.title = `Click to customize ${seg.name}`;
+        segSpan.onclick = () => focusSegmentCustomizer(seg.id);
 
         const openBracket = document.createElement("span");
         openBracket.style.color = "var(--text-muted)";
@@ -4891,18 +5869,22 @@
 
     // Left Cap Symbol
     const leftCapSpan = document.createElement("span");
-    leftCapSpan.className = "separator-glyph";
+    leftCapSpan.className = "separator-glyph interactive-cap";
     leftCapSpan.style.color = activeSegs[0].bg;
     leftCapSpan.style.backgroundColor = "transparent";
     leftCapSpan.textContent = currentConfig.leftCap;
+    leftCapSpan.title = "Click to customize Left Cap glyph";
+    leftCapSpan.onclick = () => focusCapCustomizer("left");
     promptContainer.appendChild(leftCapSpan);
 
     // Render segments with middle separators
     activeSegs.forEach((seg, i) => {
       const segSpan = document.createElement("span");
-      segSpan.className = "prompt-segment";
+      segSpan.className = "prompt-segment interactive-segment";
       segSpan.style.backgroundColor = seg.bg;
       segSpan.style.color = seg.fg;
+      segSpan.title = `Click to customize ${seg.name}`;
+      segSpan.onclick = () => focusSegmentCustomizer(seg.id);
 
       const contentSpan = document.createElement("span");
       contentSpan.className = "segment-content";
@@ -4913,7 +5895,7 @@
 
       // Separator between segments or Right Cap
       const sepSpan = document.createElement("span");
-      sepSpan.className = "separator-glyph";
+      sepSpan.className = "separator-glyph interactive-cap";
 
       if (i < activeSegs.length - 1) {
         // Middle Separator: foreground = current segment bg, background = next segment bg
@@ -4921,11 +5903,15 @@
         sepSpan.style.color = seg.bg;
         sepSpan.style.backgroundColor = nextSeg.bg;
         sepSpan.textContent = getSeparator(i);
+        sepSpan.title = `Click to customize Separator ${i + 1}`;
+        sepSpan.onclick = () => focusCapCustomizer(`sep${i + 1}`);
       } else {
         // Right Cap: foreground = last segment bg, background = transparent
         sepSpan.style.color = seg.bg;
         sepSpan.style.backgroundColor = "transparent";
         sepSpan.textContent = currentConfig.rightCap;
+        sepSpan.title = "Click to customize Right Cap glyph";
+        sepSpan.onclick = () => focusCapCustomizer("right");
       }
 
       promptContainer.appendChild(sepSpan);
@@ -4933,7 +5919,7 @@
   }
 
   // Generate Starship TOML Config Text
-    function generateToml() {
+  function generateToml() {
     const theme = getActiveColors();
     const styleMode = currentConfig.promptStyle || "powerline";
     const activeP = presets.find(item => item.id === currentConfig.activePreset);
@@ -4941,6 +5927,11 @@
     const authorUrlText = activeP && activeP.authorUrl ? (" (" + activeP.authorUrl + ")") : "";
     const pName = activeP ? activeP.name : "Custom Prompt";
     const headerComment = "# ==============================================================================\n# Preset: " + pName + "\n# Created by: " + authorText + authorUrlText + "\n# Configured with Starship Studio: https://github.com/felipecm-br/starship-studio\n# ==============================================================================\n\n";
+
+    const osIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.os) || currentConfig.iconSymbol || "󰣇";
+    const dirIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.dir) || "󰲋";
+    const gitIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.git) || "";
+    const timeIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.time) || "";
 
     if (styleMode === "transparent") {
       const activeVars = [];
@@ -4970,17 +5961,17 @@ color_time = '${theme.time.bg}'
 [os]
 disabled = ${!currentConfig.modules.os}
 style = "bold fg:color_os"
-format = '[${currentConfig.iconSymbol} ]($style)'
+format = '[${osIcon} ]($style)'
 
 [directory]
 disabled = ${!currentConfig.modules.dir}
 style = "bold fg:color_dir"
-format = '[$path]($style) '
+format = '[${dirIcon} $path]($style) '
 truncation_length = 3
 
 [git_branch]
 disabled = ${!currentConfig.modules.git}
-symbol = " "
+symbol = "${gitIcon} "
 style = "bold fg:color_git"
 format = '[$symbol$branch]($style) '
 
@@ -4988,7 +5979,7 @@ format = '[$symbol$branch]($style) '
 disabled = ${!currentConfig.modules.time}
 time_format = "%R"
 style = "fg:color_time"
-format = '[♥ $time]($style) '
+format = '[${timeIcon} $time]($style) '
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -5026,25 +6017,25 @@ color_time = '${theme.time.bg}'
 [os]
 disabled = ${!currentConfig.modules.os}
 style = "bold fg:color_os"
-format = '[\[](bright-black)[${currentConfig.iconSymbol} ]($style)[\]](bright-black)'
+format = '[\\[](bright-black)[${osIcon} ]($style)[\\]](bright-black)'
 
 [directory]
 disabled = ${!currentConfig.modules.dir}
 style = "bold fg:color_dir"
-format = '[\[](bright-black)[$path]($style)[\]](bright-black)'
+format = '[\\[](bright-black)[${dirIcon} $path]($style)[\\]](bright-black)'
 truncation_length = 3
 
 [git_branch]
 disabled = ${!currentConfig.modules.git}
-symbol = " "
+symbol = "${gitIcon} "
 style = "bold fg:color_git"
-format = '[\[](bright-black)[$symbol$branch]($style)[\]](bright-black)'
+format = '[\\[](bright-black)[$symbol$branch]($style)[\\]](bright-black)'
 
 [time]
 disabled = ${!currentConfig.modules.time}
 time_format = "%R"
 style = "fg:color_time"
-format = '[\[](bright-black)[♥ $time]($style)[\]](bright-black)'
+format = '[\\[](bright-black)[${timeIcon} $time]($style)[\\]](bright-black)'
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -5101,15 +6092,15 @@ color_time = '${theme.time.bg}'
 [os]
 disabled = ${!currentConfig.modules.os}
 style = "bg:color_os fg:${theme.os.fg}"
-format = '[${currentConfig.iconSymbol} ]($style)'
+format = '[${osIcon} ]($style)'
 
 [directory]
 style = "fg:${theme.dir.fg} bg:color_dir"
-format = "[ $path ]($style)"
+format = "[ ${dirIcon} $path ]($style)"
 truncation_length = 3
 
 [git_branch]
-symbol = " "
+symbol = "${gitIcon} "
 style = "fg:${theme.git.fg} bg:color_git"
 format = '[[ $symbol$branch ]($style)]($style)'
 
@@ -5117,7 +6108,7 @@ format = '[[ $symbol$branch ]($style)]($style)'
 disabled = ${!currentConfig.modules.time}
 time_format = "%R"
 style = "bg:color_time fg:${theme.time.fg}"
-format = '[ ♥ $time ]($style)'
+format = '[ ${timeIcon} $time ]($style)'
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -5201,6 +6192,18 @@ error_symbol = "[❯](bold red)"
     if (osFormatMatch) {
       result.icon = osFormatMatch[1];
     }
+    const gitSymbolMatch = toml.match(/\[git_branch\][^\[]*?symbol\s*=\s*['"]([^'"]+?)['"]/);
+    if (gitSymbolMatch) {
+      result.gitIcon = gitSymbolMatch[1].trim();
+    }
+    const dirFormatMatch = toml.match(/\[directory\][^\[]*?format\s*=\s*['"][^'"]*?([^\s$a-zA-Z0-9_\\\[\\\]()]+)\s+\$path/);
+    if (dirFormatMatch) {
+      result.dirIcon = dirFormatMatch[1].trim();
+    }
+    const timeFormatMatch = toml.match(/\[time\][^\[]*?format\s*=\s*['"][^'"]*?([^\s$a-zA-Z0-9_\\\[\\\]()]+)\s+\$time/);
+    if (timeFormatMatch) {
+      result.timeIcon = timeFormatMatch[1].trim();
+    }
 
     const paletteRegex = /color_([a-z_]+)\s*=\s*['"](#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|[a-zA-Z0-9_]+)['"]/g;
     let palMatch;
@@ -5253,11 +6256,24 @@ error_symbol = "[❯](bold red)"
 
     if (parsed.icon) {
       currentConfig.iconSymbol = parsed.icon;
+      if (currentConfig.moduleIcons) currentConfig.moduleIcons.os = parsed.icon;
       if (!startIcons.includes(parsed.icon)) {
         startIcons.unshift(parsed.icon);
         renderIconSelect();
       }
       if (iconSelect) iconSelect.value = parsed.icon;
+      changed = true;
+    }
+    if (parsed.dirIcon && currentConfig.moduleIcons) {
+      currentConfig.moduleIcons.dir = parsed.dirIcon;
+      changed = true;
+    }
+    if (parsed.gitIcon && currentConfig.moduleIcons) {
+      currentConfig.moduleIcons.git = parsed.gitIcon;
+      changed = true;
+    }
+    if (parsed.timeIcon && currentConfig.moduleIcons) {
+      currentConfig.moduleIcons.time = parsed.timeIcon;
       changed = true;
     }
 
@@ -5378,11 +6394,17 @@ error_symbol = "[❯](bold red)"
 
     // Active Segments
     const activeSegs = [];
-    if (currentConfig.modules.os) activeSegs.push({ label: currentConfig.iconSymbol, bg: theme.os.bg, fg: theme.os.fg });
-    if (currentConfig.modules.dir) activeSegs.push({ label: `󰲋 ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
-    if (currentConfig.modules.git) activeSegs.push({ label: scen.git, bg: theme.git.bg, fg: theme.git.fg });
-    if (currentConfig.modules.lang) activeSegs.push({ label: scen.lang, bg: theme.lang.bg, fg: theme.lang.fg });
-    if (currentConfig.modules.time) activeSegs.push({ label: scen.time, bg: theme.time.bg, fg: theme.time.fg });
+    const osIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.os) || currentConfig.iconSymbol || "󰣇";
+    const dirIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.dir) || "󰲋";
+    const gitIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.git) || "";
+    const langIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.lang) || "";
+    const timeIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.time) || "";
+
+    if (currentConfig.modules.os) activeSegs.push({ label: osIcon, bg: theme.os.bg, fg: theme.os.fg });
+    if (currentConfig.modules.dir) activeSegs.push({ label: `${dirIcon} ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
+    if (currentConfig.modules.git) activeSegs.push({ label: `${gitIcon} ${scen.git}`, bg: theme.git.bg, fg: theme.git.fg });
+    if (currentConfig.modules.lang) activeSegs.push({ label: `${langIcon} ${scen.lang}`, bg: theme.lang.bg, fg: theme.lang.fg });
+    if (currentConfig.modules.time) activeSegs.push({ label: `${timeIcon} ${scen.time}`, bg: theme.time.bg, fg: theme.time.fg });
 
     let startX = 24;
     const startY = 85;
@@ -5625,10 +6647,33 @@ error_symbol = "[❯](bold red)"
     });
   }
 
-  // Escape key closes modal
+  // ── Global Keyboard Shortcuts ─────────────────────────────────────────────
   document.addEventListener("keydown", (e) => {
+    // Escape: close modal dialogs and drawer
     if (e.key === "Escape") {
       closeExportModal();
+      closeModuleIconDrawer();
+      return;
+    }
+
+    // Slash (/): Focus preset search if not inside an input/textarea
+    const activeEl = document.activeElement;
+    const isEditing = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.tagName === "SELECT" || activeEl.isContentEditable);
+
+    if (e.key === "/" && !isEditing) {
+      const searchInput = document.getElementById("presetSearchInput");
+      if (searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+        searchInput.select();
+      }
+      return;
+    }
+
+    // Quick Copy: Ctrl+Shift+C (or Cmd+Shift+C on Mac)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "C" || e.key === "c")) {
+      e.preventDefault();
+      quickCopyToml();
     }
   });
 
@@ -5640,7 +6685,6 @@ error_symbol = "[❯](bold red)"
       <span class="floating-pulse-dot"></span>
       <span class="floating-label">Active:</span>
       <strong id="floatingPresetName" class="floating-name">Powerline Pill</strong>
-      <span id="floatingAuthorWrapper" class="floating-author-text">by <span id="floatingPresetAuthor">Starship Studio</span></span>
     </div>
     <div class="floating-actions">
       <button type="button" class="floating-btn floating-copy-btn" id="floatingCopyBtn" onclick="quickCopyToml(this)" title="Copy active starship.toml directly">
