@@ -2833,7 +2833,7 @@
         <h2 class="card-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <span><span class="ui-glyph" aria-hidden="true">󰏘</span> Presets Gallery</span>
-            <span class="presets-count-badge" id="presetsTotalBadge" style="font-size: 11px; font-weight: normal; color: var(--text-muted); background: var(--bg-tertiary); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color);">35 presets</span>
+            <span class="presets-count-badge" id="presetsTotalBadge" aria-live="polite" style="font-size: 11px; font-weight: normal; color: var(--text-muted); background: var(--bg-tertiary); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border-color);">35 presets</span>
           </div>
           <button type="button" class="btn btn-sm btn-primary export-header-btn" onclick="openExportModal()" title="View and copy active starship.toml configuration">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -2848,20 +2848,20 @@
 
         <!-- Dedicated Filter Bar with spacious pill buttons & instant search -->
         <div class="preset-filter-bar">
-          <div class="preset-filter-group" id="presetFilterGroup" role="tablist" aria-label="Filter Presets by Category">
-            <button type="button" class="preset-filter-btn active" role="tab" aria-selected="true" data-filter="all" onclick="setPresetFilter('all')">
+          <div class="preset-filter-group" id="presetFilterGroup" role="group" aria-label="Filter presets by category">
+            <button type="button" class="preset-filter-btn active" aria-pressed="true" data-filter="all" onclick="setPresetFilter('all')">
               <span>All</span>
               <span class="filter-count" id="count-all">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="powerline" onclick="setPresetFilter('powerline')">
+            <button type="button" class="preset-filter-btn" aria-pressed="false" data-filter="powerline" onclick="setPresetFilter('powerline')">
               <span><span class="ui-glyph" aria-hidden="true"></span> Powerline</span>
               <span class="filter-count" id="count-powerline">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="minimal" onclick="setPresetFilter('minimal')">
+            <button type="button" class="preset-filter-btn" aria-pressed="false" data-filter="minimal" onclick="setPresetFilter('minimal')">
               <span><span class="ui-glyph" aria-hidden="true">❯</span> Minimal</span>
               <span class="filter-count" id="count-minimal">0</span>
             </button>
-            <button type="button" class="preset-filter-btn" role="tab" aria-selected="false" data-filter="light" onclick="setPresetFilter('light')">
+            <button type="button" class="preset-filter-btn" aria-pressed="false" data-filter="light" onclick="setPresetFilter('light')">
               <span><span class="ui-glyph" aria-hidden="true"></span> Light</span>
               <span class="filter-count" id="count-light">0</span>
             </button>
@@ -5383,7 +5383,7 @@
     document.querySelectorAll(".preset-filter-btn").forEach(btn => {
       const isMatch = btn.getAttribute("data-filter") === filter;
       btn.classList.toggle("active", isMatch);
-      btn.setAttribute("aria-selected", isMatch ? "true" : "false");
+      btn.setAttribute("aria-pressed", isMatch ? "true" : "false");
     });
     renderPresetButtons();
   }
@@ -5419,8 +5419,6 @@
     if (countPowerline) countPowerline.textContent = presets.filter(p => p.category === "powerline").length;
     if (countMinimal) countMinimal.textContent = presets.filter(p => p.category === "minimal").length;
     if (countLight) countLight.textContent = presets.filter(p => p.category === "light").length;
-    const presetsTotalBadge = document.getElementById("presetsTotalBadge");
-    if (presetsTotalBadge) presetsTotalBadge.textContent = presets.length + " presets";
 
     const filtered = presets.filter(p => {
       const catMatch =
@@ -5434,6 +5432,13 @@
       const haystack = `${p.name} ${p.author || ""} ${p.theme || ""} ${themeName} ${p.category || ""}`.toLowerCase();
       return haystack.includes(presetSearchQuery);
     });
+
+    const presetsTotalBadge = document.getElementById("presetsTotalBadge");
+    if (presetsTotalBadge) {
+      presetsTotalBadge.textContent = filtered.length === presets.length
+        ? `${presets.length} presets`
+        : `${filtered.length} of ${presets.length} presets`;
+    }
 
     if (filtered.length === 0) {
       const empty = document.createElement("div");
