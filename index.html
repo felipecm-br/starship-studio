@@ -1254,6 +1254,29 @@
       overflow-x: auto;
     }
 
+    .terminal-body {
+      position: relative;
+    }
+
+    .preview-peek-badge {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: var(--accent-primary);
+      pointer-events: none;
+    }
+
+    .preview-peek-badge[hidden] {
+      display: none;
+    }
+
     :root {
       --prompt-height: 30px;
       --sep-scale: 1;
@@ -2935,6 +2958,7 @@
           <span class="terminal-hint-text"><span class="ui-glyph" aria-hidden="true"></span> Click any segment in the prompt to customize</span>
         </div>
         <div class="terminal-body" id="terminalPreview">
+          <span class="preview-peek-badge" id="previewPeekBadge" role="status" hidden></span>
           <div class="prompt-preview-container" id="promptContainer">
             <!-- Dynamically Rendered Segments -->
           </div>
@@ -5581,6 +5605,10 @@
       btn.setAttribute("data-preset-id", p.id);
       btn.setAttribute("aria-pressed", isActive ? "true" : "false");
       btn.onclick = () => applyPreset(p);
+      btn.onpointerenter = (e) => { if (e.pointerType === "mouse") peekPreset(p); };
+      btn.onpointerleave = endPresetPeek;
+      btn.onfocus = () => { if (btn.matches(":focus-visible")) peekPreset(p); };
+      btn.onblur = endPresetPeek;
 
       const header = document.createElement("span");
       header.className = "preset-header";
@@ -5748,47 +5776,94 @@
   }
 
   // Apply Preset
-  function applyPreset(p) {
-    const style = p.promptStyle || "powerline";
-    setPromptStyle(style, true);
-    currentConfig.activePreset = p.id;
-    if (p.leftCap !== undefined) currentConfig.leftCap = p.leftCap;
-    if (p.rightCap !== undefined) currentConfig.rightCap = p.rightCap;
+  // Hover/focus a preset card to see it in the terminal without applying it.
+  // Swaps the preset's fields in only for the duration of one render.
+  let peekPresetId = null;
+
+  function peekPreset(p) {
+    if (peekPresetId === p.id || currentConfig.activePreset === p.id) return;
+    peekPresetId = p.id;
+    const cfg = presetConfig(p);
+    const saved = {};
+    Object.keys(cfg).forEach(k => { saved[k] = currentConfig[k]; });
+    Object.assign(currentConfig, cfg);
+    try {
+      renderPromptPreview();
+    } finally {
+      Object.assign(currentConfig, saved);
+    }
+    const badge = document.getElementById("previewPeekBadge");
+    if (badge) {
+      badge.textContent = `Previewing ${p.name} · click to apply`;
+      badge.hidden = false;
+    }
+  }
+
+  function endPresetPeek() {
+    if (peekPresetId === null) return;
+    peekPresetId = null;
+    const badge = document.getElementById("previewPeekBadge");
+    if (badge) badge.hidden = true;
+    renderPromptPreview();
+  }
+
+  // Config fields a preset sets (shared by applyPreset and the hover preview)
+  function presetConfig(p) {
+    const cfg = {
+      promptStyle: p.promptStyle || "powerline",
+      activePreset: p.id,
+      themeKey: p.theme,
+      charSymbol: p.charSymbol || null,
+      charColor: p.charColor || null,
+      customColors: null
+    };
+    if (p.leftCap !== undefined) cfg.leftCap = p.leftCap;
+    if (p.rightCap !== undefined) cfg.rightCap = p.rightCap;
     if (p.sep !== undefined) {
       if (Array.isArray(p.sep)) {
-        currentConfig.separators = [
-          p.sep[0] || "",
-          p.sep[1] || p.sep[0] || "",
-          p.sep[2] || p.sep[0] || "",
-          p.sep[3] || p.sep[1] || p.sep[0] || ""
+        cfg.separators = [
+          p.sep[0] || "",
+          p.sep[1] || p.sep[0] || "",
+          p.sep[2] || p.sep[0] || "",
+          p.sep[3] || p.sep[1] || p.sep[0] || ""
         ];
-        currentConfig.linkSeparators = false;
+        cfg.linkSeparators = false;
       } else {
-        currentConfig.separators = [p.sep, p.sep, p.sep, p.sep];
-        currentConfig.linkSeparators = true;
+        cfg.separators = [p.sep, p.sep, p.sep, p.sep];
+        cfg.linkSeparators = true;
       }
     }
-    currentConfig.themeKey = p.theme;
     if (p.icon) {
-      currentConfig.iconSymbol = p.icon;
-      if (currentConfig.moduleIcons) currentConfig.moduleIcons.os = p.icon;
-      if (!startIcons.includes(p.icon)) {
-        startIcons.unshift(p.icon);
-        renderIconSelect();
-      }
-      if (iconSelect) iconSelect.value = p.icon;
+      cfg.iconSymbol = p.icon;
+      cfg.moduleIcons = { ...currentConfig.moduleIcons, os: p.icon };
     }
-    currentConfig.charSymbol = p.charSymbol || null;
-    currentConfig.charColor = p.charColor || null;
-
     if (p.modules) {
-      currentConfig.modules = {
+      cfg.modules = {
         os: p.modules.os !== undefined ? p.modules.os : true,
         dir: p.modules.dir !== undefined ? p.modules.dir : true,
         git: p.modules.git !== undefined ? p.modules.git : true,
         lang: p.modules.lang !== undefined ? p.modules.lang : true,
         time: p.modules.time !== undefined ? p.modules.time : true
       };
+    }
+    return cfg;
+  }
+
+  function applyPreset(p) {
+    endPresetPeek();
+    const cfg = presetConfig(p);
+    setPromptStyle(cfg.promptStyle, true);
+    Object.assign(currentConfig, cfg);
+
+    if (p.icon) {
+      if (!startIcons.includes(p.icon)) {
+        startIcons.unshift(p.icon);
+        renderIconSelect();
+      }
+      if (iconSelect) iconSelect.value = p.icon;
+    }
+
+    if (p.modules) {
       const modOS = document.getElementById("modOS");
       const modDir = document.getElementById("modDir");
       const modGit = document.getElementById("modGit");
@@ -5801,7 +5876,6 @@
       if (modTime) modTime.checked = currentConfig.modules.time;
     }
 
-    currentConfig.customColors = null;
     syncColorPickers();
     syncSeparatorUI();
     renderPresetButtons();
