@@ -5771,6 +5771,7 @@
     currentConfig.themeKey = p.theme;
     if (p.icon) {
       currentConfig.iconSymbol = p.icon;
+      if (currentConfig.moduleIcons) currentConfig.moduleIcons.os = p.icon;
       if (!startIcons.includes(p.icon)) {
         startIcons.unshift(p.icon);
         renderIconSelect();
