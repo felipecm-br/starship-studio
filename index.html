@@ -3785,9 +3785,20 @@
         ai: { bg: "#2f5f87", fg: "#eef4f6" },
         time: { bg: "#9c7a46", fg: "#1c1208" }
       },
+      kanagawa_great_wave: {
+        name: "The Great Wave of Kanagawa (Ukiyo-e)",
+        bg: "#1a1b26",
+        fg: "#f2f5f7",
+        os: { bg: "#071e3d", fg: "#f2f5f7" },
+        dir: { bg: "#1f4e70", fg: "#f2f5f7" },
+        git: { bg: "#6d94a6", fg: "#051329" },
+        lang: { bg: "#f2f5f7", fg: "#071e3d" },
+        ai: { bg: "#1f4e70", fg: "#f2f5f7" },
+        time: { bg: "#c7ad7f", fg: "#051329" }
+      },
       hokusai_deep_abyss: {
         name: "Hokusai Deep Abyss",
-        bg: "#051329",
+        bg: "#1a1b26",
         fg: "#f2f5f7",
         os: { bg: "#071e3d", fg: "#f2f5f7" },
         dir: { bg: "#1f4e70", fg: "#f2f5f7" },
@@ -5087,19 +5098,30 @@
         "rawToml": "\"$schema\" = 'https://starship.rs/config-schema.json'\n\nformat = \"\"\"\n[\ue0ce](color_sky)\\\n$os\\\n[\ue0ce](fg:color_sky bg:color_crest)\\\n$directory\\\n[\ue0ce](fg:color_crest bg:color_wave)\\\n$git_branch\\\n$git_status\\\n[\ue0ce](fg:color_wave bg:color_foam)\\\n$rust\\\n$nodejs\\\n$python\\\n[\ue0ce](fg:color_foam bg:color_boat)\\\n$time\\\n[\ue0ce](fg:color_boat)\\\n\\n$character\"\"\"\n\npalette = 'great_wave'\n\n[palettes.great_wave]\ncolor_sky = '#cdbd93'\ncolor_crest = '#1b3b57'\ncolor_wave = '#2f5f87'\ncolor_foam = '#d7e6ec'\ncolor_boat = '#9c7a46'\ntext_dark = '#16222d'\ntext_light = '#eef4f6'\ntext_umber = '#1c1208'\n\n[os]\ndisabled = false\nstyle = \"bg:color_sky fg:text_dark\"\nformat = '[ \udb82\udcc7 ]($style)'\n\n[directory]\nstyle = \"fg:text_light bg:color_crest\"\nformat = \"[ \udb83\udc8b $path ]($style)\"\ntruncation_length = 3\ntruncation_symbol = \"\u2026/\"\n\n[git_branch]\nsymbol = \"\uf418 \"\nstyle = \"fg:text_light bg:color_wave\"\nformat = '[[ $symbol$branch ]($style)]($style)'\n\n[git_status]\nstyle = \"fg:text_light bg:color_wave\"\nformat = '[[($all_status$ahead_behind )]($style)]($style)'\n\n[rust]\nsymbol = \"\ue7a8 \"\nstyle = \"fg:text_dark bg:color_foam\"\nformat = '[ $symbol($version) ]($style)'\n\n[nodejs]\nsymbol = \"\ue718 \"\nstyle = \"fg:text_dark bg:color_foam\"\nformat = '[ $symbol($version) ]($style)'\n\n[python]\nsymbol = \"\ue606 \"\nstyle = \"fg:text_dark bg:color_foam\"\nformat = '[ $symbol($version) ]($style)'\n\n[time]\ndisabled = false\ntime_format = \"%R\"\nstyle = \"bg:color_boat fg:text_umber\"\nformat = '[ \uf43a $time ]($style)'\n\n[character]\nsuccess_symbol = \"[\u276f](bold green)\"\nerror_symbol = \"[\u276f](bold red)\""
       },
       {
-        "id": "ukiyoe_crest_edition",
-        "name": "Ukiyo-e Floating Crest",
-        "preview": " \u2588  \u2588 ",
-        "leftCap": "\ue0b6",
-        "sep": ["\ue0c0", "\ue0c0", "\ue0c6", "\ue0c0"],
-        "rightCap": "\ue0c0",
-        "theme": "hokusai_deep_abyss",
-        "icon": "\udb82\udcc7",
+        "id": "kanagawa_great_wave",
+        "alias": "ukiyoe_crest_edition",
+        "name": "The Great Wave of Kanagawa (Ukiyo-e Crest)",
+        "preview": " █  █ ",
+        "leftCap": "",
+        "sep": ["", "", "", ""],
+        "rightCap": "",
+        "theme": "kanagawa_great_wave",
+        "icon": "󰣇",
+        "charSymbol": "≈❯",
+        "charColor": "#6d94a6",
+        "errorCharColor": "#c84b31",
+        "moduleIcons": {
+          "os": "󰣇",
+          "dir": "󰲋",
+          "git": "",
+          "lang": "",
+          "time": ""
+        },
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
         "authorUrl": "https://github.com/felipecm-br/starship-studio",
-        "rawToml": "# ==============================================================================\n#  Preset: The Great Wave of Kanagawa (Ukiyo-e Crest Edition - UTF Escaped)\n#  Created by: Starship Studio (https://github.com/felipecm-br/starship-studio)\n#  Configured with Starship Studio: https://github.com/felipecm-br/starship-studio\n# ==============================================================================\n\n\"$schema\" = \"https://starship.rs/config-schema.json\"\n\n# Note: Double quotes are required around the format string to parse \\u and \\U escapes\nformat = \"\"\"\n[\ue0b6](fg:color_os)\\\n$os\\\n[\ue0c0](fg:color_os bg:color_dir)\\\n$directory\\\n[\ue0c0](fg:color_dir bg:color_git)\\\n$git_branch$git_status\\\n[\ue0c6](fg:color_git bg:color_lang)\\\n$rust$nodejs$python\\\n[\ue0c0](fg:color_lang bg:color_time)\\\n$time\\\n[\ue0c0](fg:color_time)\\\n\\n$character\"\"\"\n\npalette = \"kanagawa_great_wave\"\n\n[palettes.kanagawa_great_wave]\ncolor_bg   = \"#051329\" # Deepest Midnight Trench (High-contrast dark text)\ncolor_os   = \"#071e3d\" # Deep Prussian Blue (Base of the Great Wave)\ncolor_dir  = \"#1f4e70\" # Mid-Wave Indigo (Rising swell)\ncolor_git  = \"#6d94a6\" # Seafoam Slate (Curling wave claws)\ncolor_lang = \"#f2f5f7\" # Crisp White Foam (Breaking crest & Mt. Fuji snow)\ncolor_time = \"#c7ad7f\" # Warm Ochre Sand (Rowboats & warm sky horizon)\ncolor_fuji = \"#58636d\" # Stormy Grey (Mist behind Mount Fuji)\n\n# 1. THE DEEP ABYSS\n[os]\ndisabled = false\nstyle = \"bg:color_os fg:color_lang bold\"\nformat = \"[ \\U000F08C7 ]($style)\"\n\n# 2. THE RISING SWELL\n[directory]\nstyle = \"bg:color_dir fg:color_lang bold\"\nformat = \"[ \\U000F0C8B $path ]($style)\"\ntruncation_length = 3\ntruncation_symbol = \"\u2248/\" # Wave tilde truncation (\u2248/)\n\n# 3. THE CURLING SEAFOAM\n[git_branch]\nsymbol = \"\uf418 \"\nstyle = \"bg:color_git fg:color_bg bold\"\nformat = \"[ $symbol$branch ]($style)\"\n\n[git_status]\nstyle = \"bg:color_git fg:color_bg bold\"\nformat = \"([$all_status$ahead_behind ]($style))\"\n\n# 4. THE BREAKING WHITE CREST (Languages)\n[rust]\nsymbol = \"\ue7a8 \"\nstyle = \"bg:color_lang fg:color_os bold\"\nformat = \"[ $symbol($version) ]($style)\"\n\n[nodejs]\nsymbol = \"\ue718 \"\nstyle = \"bg:color_lang fg:color_os bold\"\nformat = \"[ $symbol($version) ]($style)\"\n\n[python]\nsymbol = \"\ue606 \"\nstyle = \"bg:color_lang fg:color_os bold\"\nformat = \"[ $symbol($version) ]($style)\"\n\n# 5. THE WOODEN BOATS & HORIZON SKY\n[time]\ndisabled = false\ntime_format = \"%R\"\nstyle = \"bg:color_time fg:color_bg bold\"\nformat = \"[ \uf43a $time ]($style)\"\n\n# THE SWELL PROMPT\n[character]\nsuccess_symbol = \"[\u2248\u276f](bold #6d94a6)\"\nerror_symbol = \"[\u2248\u276f](bold #c84b31)\""
+        "rawToml": "# ==============================================================================\n#  Preset: The Great Wave of Kanagawa (Ukiyo-e Crest Edition)\n#  Created by: Starship Studio (https://github.com/felipecm-br/starship-studio)\n#  Configured with Starship Studio: https://github.com/felipecm-br/starship-studio\n# ==============================================================================\n\n\"$schema\" = 'https://starship.rs/config-schema.json'\n\n# The modules cascade from Deep Ocean -> Swell -> Seafoam -> White Crest -> Sandy Horizon\nformat = \"\"\"\n[](fg:color_os)\\\n$os\\\n[](fg:color_os bg:color_dir)\\\n$directory\\\n[](fg:color_dir bg:color_git)\\\n$git_branch$git_status\\\n[](fg:color_git bg:color_lang)\\\n$rust$nodejs$python\\\n[](fg:color_lang bg:color_time)\\\n$time\\\n[](fg:color_time)\\\n\\n$character\"\"\"\n\npalette = 'kanagawa_great_wave'\n\n[palettes.kanagawa_great_wave]\ncolor_bg   = '#051329' # Deepest Midnight Trench (High-contrast dark text)\ncolor_os   = '#071e3d' # Deep Prussian Blue (Base of the Great Wave)\ncolor_dir  = '#1f4e70' # Mid-Wave Indigo (Rising swell)\ncolor_git  = '#6d94a6' # Seafoam Slate (Curling wave claws)\ncolor_lang = '#f2f5f7' # Crisp White Foam (Breaking crest & Mt. Fuji snow)\ncolor_time = '#c7ad7f' # Warm Ochre Sand (Rowboats & warm sky horizon)\ncolor_fuji = '#58636d' # Stormy Grey (Mist behind Mount Fuji)\n\n# 1. THE DEEP ABYSS\n[os]\ndisabled = false\nstyle = \"bg:color_os fg:color_lang bold\"\nformat = '[ 󰣇 ]($style)'\n\n# 2. THE RISING SWELL\n[directory]\nstyle = \"bg:color_dir fg:color_lang bold\"\nformat = \"[ 󰲋 $path ]($style)\"\ntruncation_length = 3\ntruncation_symbol = \"≈/\" # Wave tilde truncation!\n\n# 3. THE CURLING SEAFOAM\n[git_branch]\nsymbol = \" \"\nstyle = \"bg:color_git fg:color_bg bold\"\nformat = '[ $symbol$branch ]($style)'\n\n[git_status]\nstyle = \"bg:color_git fg:color_bg bold\"\nformat = '([$all_status$ahead_behind ]($style))'\n\n# 4. THE BREAKING WHITE CREST (Languages)\n[rust]\nsymbol = \" \"\nstyle = \"bg:color_lang fg:color_os bold\"\nformat = '[ $symbol($version) ]($style)'\n\n[nodejs]\nsymbol = \" \"\nstyle = \"bg:color_lang fg:color_os bold\"\nformat = '[ $symbol($version) ]($style)'\n\n[python]\nsymbol = \" \"\nstyle = \"bg:color_lang fg:color_os bold\"\nformat = '[ $symbol($version) ]($style)'\n\n# 5. THE WOODEN BOATS & HORIZON SKY\n[time]\ndisabled = false\ntime_format = \"%R\"\nstyle = \"bg:color_time fg:color_bg bold\"\nformat = '[  $time ]($style)'\n\n# THE SWELL PROMPT\n[character]\nsuccess_symbol = \"[≈❯](bold #6d94a6)\"\nerror_symbol = \"[≈❯](bold #c84b31)\""
       },
       {
         "id": "van_gogh_starry_night",
@@ -6083,6 +6105,7 @@
         themeKey: p.theme,
         charSymbol: p.charSymbol || null,
         charColor: p.charColor || null,
+        errorCharColor: p.errorCharColor || null,
         customColors: null
       };
       if (p.leftCap !== undefined) cfg.leftCap = p.leftCap;
@@ -6104,6 +6127,9 @@
       if (p.icon) {
         cfg.iconSymbol = p.icon;
         cfg.moduleIcons = { ...currentConfig.moduleIcons, os: p.icon };
+      }
+      if (p.moduleIcons) {
+        cfg.moduleIcons = { ...(cfg.moduleIcons || currentConfig.moduleIcons), ...p.moduleIcons };
       }
       if (p.modules) {
         cfg.modules = {
@@ -6378,7 +6404,11 @@
       const demoCommand = document.getElementById("demoCommand");
       if (charSymbol) {
         charSymbol.textContent = currentConfig.charSymbol || scen.charSymbol;
-        charSymbol.style.color = currentConfig.charColor || scen.charColor;
+        if (currentScenario === "error" && currentConfig.errorCharColor) {
+          charSymbol.style.color = currentConfig.errorCharColor;
+        } else {
+          charSymbol.style.color = currentConfig.charColor || scen.charColor;
+        }
       }
       if (demoCommand) {
         demoCommand.textContent = scen.command;
@@ -6533,6 +6563,10 @@
       const gitIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.git) || "";
       const timeIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.time) || "";
 
+      const charSym = currentConfig.charSymbol || "❯";
+      const charCol = currentConfig.charColor || "bold green";
+      const errCol = currentConfig.errorCharColor || "bold red";
+
       if (styleMode === "transparent") {
         const activeVars = [];
         if (currentConfig.modules.os) activeVars.push('$os');
@@ -6582,8 +6616,8 @@ style = "fg:color_time"
 format = '[${timeIcon} $time]($style) '
 
 [character]
-success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)"
+success_symbol = "[${charSym}](${charCol})"
+error_symbol = "[${charSym}](${errCol})"
 `;
         tomlOutput.value = headerComment + tomlText;
         return;
@@ -6638,8 +6672,8 @@ style = "fg:color_time"
 format = '[\\[](bright-black)[${timeIcon} $time]($style)[\\]](bright-black)'
 
 [character]
-success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)"
+success_symbol = "[${charSym}](${charCol})"
+error_symbol = "[${charSym}](${errCol})"
 `;
         tomlOutput.value = headerComment + tomlText;
         return;
@@ -6711,8 +6745,8 @@ style = "bg:color_time fg:${theme.time.fg}"
 format = '[ ${timeIcon} $time ]($style)'
 
 [character]
-success_symbol = "[❯](bold green)"
-error_symbol = "[❯](bold red)"
+success_symbol = "[${charSym}](${charCol})"
+error_symbol = "[${charSym}](${errCol})"
 `;
 
       tomlOutput.value = headerComment + tomlText;
@@ -6820,6 +6854,24 @@ error_symbol = "[❯](bold red)"
       const timeFgMatch = toml.match(/\[time\][^\[]*?style\s*=\s*['"][^'"]*fg:([^'" ]+)/);
       if (timeFgMatch) result.timeFg = timeFgMatch[1];
 
+      const charMatch = toml.match(/\[character\][^\[]*?success_symbol\s*=\s*['"]\[([^\]]+)\]\(([^)]*)\)['"]/);
+      if (charMatch) {
+        result.charSymbol = charMatch[1];
+        const style = charMatch[2];
+        const colMatch = style.match(/(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|bold\s+(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|[a-zA-Z]+)|[a-zA-Z]+)/);
+        if (colMatch) {
+          result.charColor = colMatch[2] || colMatch[1];
+        }
+      }
+      const errMatch = toml.match(/\[character\][^\[]*?error_symbol\s*=\s*['"]\[([^\]]+)\]\(([^)]*)\)['"]/);
+      if (errMatch) {
+        const style = errMatch[2];
+        const colMatch = style.match(/(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|bold\s+(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|[a-zA-Z]+)|[a-zA-Z]+)/);
+        if (colMatch) {
+          result.errorCharColor = colMatch[2] || colMatch[1];
+        }
+      }
+
       return result;
     }
 
@@ -6874,6 +6926,18 @@ error_symbol = "[❯](bold red)"
       }
       if (parsed.timeIcon && currentConfig.moduleIcons) {
         currentConfig.moduleIcons.time = parsed.timeIcon;
+        changed = true;
+      }
+      if (parsed.charSymbol) {
+        currentConfig.charSymbol = parsed.charSymbol;
+        changed = true;
+      }
+      if (parsed.charColor) {
+        currentConfig.charColor = parsed.charColor;
+        changed = true;
+      }
+      if (parsed.errorCharColor) {
+        currentConfig.errorCharColor = parsed.errorCharColor;
         changed = true;
       }
 
@@ -7082,10 +7146,14 @@ error_symbol = "[❯](bold red)"
       // Line 2: Prompt symbol and command
       const line2Y = 160;
       ctx.font = "15px monospace";
-      ctx.fillStyle = scen.charColor;
-      ctx.fillText(scen.charSymbol + " ", 24, line2Y);
+      const pSym = currentConfig.charSymbol || scen.charSymbol;
+      const pCol = (currentScenario === "error" && currentConfig.errorCharColor)
+        ? currentConfig.errorCharColor
+        : (currentConfig.charColor || scen.charColor);
+      ctx.fillStyle = pCol;
+      ctx.fillText(pSym + " ", 24, line2Y);
 
-      const charWidth = ctx.measureText(scen.charSymbol + " ").width;
+      const charWidth = ctx.measureText(pSym + " ").width;
       ctx.fillStyle = theme.fg || "#a9b1d6";
       ctx.fillText(scen.command, 24 + charWidth, line2Y);
 
