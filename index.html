@@ -1696,6 +1696,13 @@
       min-width: 42px;
     }
 
+    /* On very narrow phones the swatch alone carries the color */
+    @media (max-width: 360px) {
+      .color-hex-label {
+        display: none;
+      }
+    }
+
     .color-picker-wrapper input[type="color"] {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -2584,7 +2591,7 @@
 
     .seo-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 28px;
       margin-bottom: 32px;
     }
@@ -2664,7 +2671,7 @@
 
     .faq-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 18px;
     }
 
@@ -2679,6 +2686,7 @@
       border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
       padding: 18px;
+      overflow-wrap: anywhere;
     }
 
     .faq-item h3 {
