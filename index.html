@@ -397,7 +397,7 @@
       max-width: 1300px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 24px;
       align-items: start;
     }
@@ -1734,6 +1734,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      min-width: 0;
     }
 
     label {
@@ -1870,22 +1871,28 @@
       margin-bottom: 8px;
     }
 
+    .preset-card {
+      position: relative;
+      display: flex;
+    }
+
     .preset-btn {
+      flex: 1;
+      min-width: 0;
       background: var(--bg-tertiary);
       border: 1px solid var(--border-color);
       color: var(--text-main);
-      padding: 10px 12px;
+      padding: 10px;
       border-radius: var(--radius-sm);
       cursor: pointer;
+      font: inherit;
       font-size: 13px;
       font-weight: 500;
       text-align: left;
-      transition: all 0.2s ease;
+      transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       gap: 8px;
-      position: relative;
     }
 
     .preset-btn:hover {
@@ -1894,32 +1901,38 @@
       transform: translateY(-1px);
     }
 
+    .preset-btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
     .preset-btn.active {
       background: rgba(99, 102, 241, 0.15);
       border-color: var(--accent-primary);
       box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
     }
 
-    .preset-top-row {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
     .preset-header {
       display: flex;
-      flex-direction: column;
-      gap: 3px;
+      flex: 1;
       min-width: 0;
+      /* keep room for the absolutely positioned Copy button */
+      padding-right: 44px;
     }
 
     .preset-btn .preset-name {
       font-weight: 600;
       line-height: 1.25;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
 
     .preset-quick-copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
@@ -1929,34 +1942,74 @@
       font-weight: 600;
       cursor: pointer;
       opacity: 0;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
+      transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
-    .preset-btn:hover .preset-quick-copy-btn,
-    .preset-btn:focus-within .preset-quick-copy-btn,
-    .preset-btn.active .preset-quick-copy-btn {
+    .preset-card:hover .preset-quick-copy-btn,
+    .preset-card:focus-within .preset-quick-copy-btn,
+    .preset-card .preset-btn.active + .preset-quick-copy-btn {
       opacity: 1;
     }
 
-    .preset-quick-copy-btn:hover {
+    @media (hover: none) {
+      .preset-quick-copy-btn {
+        opacity: 1;
+      }
+    }
+
+    .preset-quick-copy-btn:hover,
+    .preset-quick-copy-btn:focus-visible {
       border-color: var(--accent-green);
       color: var(--accent-green);
       background: var(--bg-card);
     }
 
-    .preset-palette-strip {
+    /* Colored mini prompt rendered from the preset's own palette & glyphs */
+    .preset-mini-prompt {
       display: flex;
-      height: 5px;
-      border-radius: 999px;
+      align-items: center;
+      height: 30px;
+      padding: 0 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(127, 127, 127, 0.18);
+      font-family: var(--font-code);
+      font-size: 11.5px;
+      line-height: 1;
+      white-space: nowrap;
       overflow: hidden;
-      gap: 1px;
-      background: rgba(0, 0, 0, 0.2);
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent);
+      mask-image: linear-gradient(to right, #000 calc(100% - 14px), transparent);
     }
 
-    .preset-palette-swatch {
-      flex: 1;
-      height: 100%;
+    .mini-seg {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      padding: 0 5px;
+      font-weight: 600;
+    }
+
+    .mini-sep {
+      display: inline-flex;
+      align-items: center;
+      height: 18px;
+      font-size: 18px;
+      line-height: 1;
+      overflow: hidden;
+    }
+
+    .mini-text {
+      font-weight: 600;
+    }
+
+    .mini-gap {
+      width: 0.6ch;
+      flex-shrink: 0;
+    }
+
+    .mini-char {
+      margin-left: 0.6ch;
+      font-weight: 700;
     }
 
     .preset-author-row {
@@ -2008,18 +2061,6 @@
       opacity: 0.7;
     }
 
-    .preset-btn .preset-preview {
-      font-family: var(--font-code);
-      font-size: 11.5px;
-      color: var(--accent-cyan);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      background: var(--code-bg);
-      padding: 4px 7px;
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
 
     /* Glyphs Explorer Target Bar & Grid */
     .glyph-target-bar {
@@ -2602,6 +2643,7 @@
     .footer-links {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 12px;
     }
 
@@ -2877,7 +2919,7 @@
           </div>
         </h2>
 
-        <div class="controls-grid" style="grid-template-columns: 1fr;">
+        <div class="controls-grid" style="grid-template-columns: minmax(0, 1fr);">
           <div class="control-group">
             <label>Prompt Style Mode</label>
             <div class="style-toggle-group" role="group" aria-label="Prompt Style Mode">
@@ -5360,51 +5402,105 @@
     });
 
     if (filtered.length === 0) {
-      presetsGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 28px 16px; color: var(--text-muted); font-size: 0.85rem;">No presets match "${presetSearchQuery}". Try clearing the search filter.</div>`;
+      const empty = document.createElement("div");
+      empty.style.cssText = "grid-column: 1 / -1; text-align: center; padding: 28px 16px; color: var(--text-muted); font-size: 0.85rem;";
+      empty.textContent = `No presets match "${presetSearchQuery}". Try clearing the search filter.`;
+      presetsGrid.appendChild(empty);
       return;
     }
 
     filtered.forEach(p => {
       const isActive = currentConfig.activePreset === p.id;
-      const btn = document.createElement("div");
+      const card = document.createElement("div");
+      card.className = "preset-card";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
       btn.className = "preset-btn " + (isActive ? "active" : "");
       btn.setAttribute("data-preset-id", p.id);
-      btn.setAttribute("role", "button");
-      btn.setAttribute("tabindex", "0");
       btn.setAttribute("aria-pressed", isActive ? "true" : "false");
       btn.onclick = () => applyPreset(p);
-      btn.onkeydown = (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          applyPreset(p);
-        }
+
+      const header = document.createElement("span");
+      header.className = "preset-header";
+      const name = document.createElement("span");
+      name.className = "preset-name";
+      name.textContent = p.name;
+      header.appendChild(name);
+      btn.appendChild(header);
+      btn.appendChild(buildPresetMiniPrompt(p));
+
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "preset-quick-copy-btn";
+      copyBtn.textContent = "Copy";
+      copyBtn.title = "Apply preset & copy starship.toml";
+      copyBtn.setAttribute("aria-label", `Apply ${p.name} and copy starship.toml`);
+      copyBtn.onclick = (e) => {
+        e.stopPropagation();
+        quickCopyPreset(p, copyBtn);
       };
 
-      const t = themes[p.theme] || themes.firewatch;
-      const swatches = [t.os && t.os.bg, t.dir && t.dir.bg, t.git && t.git.bg, t.lang && t.lang.bg, t.time && t.time.bg]
-        .filter(Boolean)
-        .map(c => `<span class="preset-swatch-dot" style="background:${c}"></span>`)
-        .join("");
-
-      btn.innerHTML = `
-        <button type="button" class="preset-quick-copy-btn" title="Apply preset & copy starship.toml">Copy</button>
-        <div class="preset-header">
-          <span class="preset-name">${p.name}</span>
-        </div>
-        <span class="preset-preview">${p.preview}</span>
-        <div class="preset-palette-strip" aria-hidden="true">${swatches}</div>
-      `;
-
-      const copyBtn = btn.querySelector(".preset-quick-copy-btn");
-      if (copyBtn) {
-        copyBtn.onclick = (e) => {
-          e.stopPropagation();
-          quickCopyPreset(p, copyBtn);
-        };
-      }
-
-      presetsGrid.appendChild(btn);
+      card.appendChild(btn);
+      card.appendChild(copyBtn);
+      presetsGrid.appendChild(card);
     });
+  }
+
+  // Compact, colored rendering of a preset (same palette, glyphs and style
+  // the terminal preview will show once the preset is applied)
+  function buildPresetMiniPrompt(p) {
+    const t = themes[p.theme] || themes.firewatch;
+    const style = p.promptStyle || "powerline";
+    const mods = p.modules || {};
+    const on = (k) => mods[k] !== false;
+
+    const segs = [];
+    if (on("os")) segs.push({ label: p.icon || "󰣇", c: t.os });
+    if (on("dir")) segs.push({ label: "~", c: t.dir });
+    if (on("git")) segs.push({ label: "\uf418 main", c: t.git });
+    if (on("lang")) segs.push({ label: "\ue7a8", c: t.lang });
+    if (on("time")) segs.push({ label: "\uf43a", c: t.time });
+
+    const box = document.createElement("span");
+    box.className = "preset-mini-prompt";
+    box.setAttribute("aria-hidden", "true");
+    box.style.backgroundColor = t.bg;
+
+    const add = (cls, text, color, bg) => {
+      const el = document.createElement("span");
+      el.className = cls;
+      el.textContent = text;
+      if (color) el.style.color = color;
+      if (bg) el.style.backgroundColor = bg;
+      box.appendChild(el);
+      return el;
+    };
+
+    if (style === "powerline") {
+      const seps = Array.isArray(p.sep) ? p.sep : [p.sep !== undefined ? p.sep : ""];
+      if (segs.length) add("mini-sep", p.leftCap || "", segs[0].c.bg);
+      segs.forEach((seg, i) => {
+        add("mini-seg", seg.label, seg.c.fg, seg.c.bg);
+        const next = segs[i + 1];
+        if (next) add("mini-sep", seps[i % seps.length], seg.c.bg, next.c.bg);
+        else add("mini-sep", p.rightCap || "", seg.c.bg);
+      });
+      return box;
+    }
+
+    segs.forEach((seg, i) => {
+      if (i > 0) add("mini-gap", "");
+      if (style === "bracketed") {
+        add("mini-text", "[", t.fg).style.opacity = "0.6";
+        add("mini-text", seg.label, seg.c.bg);
+        add("mini-text", "]", t.fg).style.opacity = "0.6";
+      } else {
+        add("mini-text", seg.label, seg.c.bg);
+      }
+    });
+    add("mini-char", p.charSymbol || "❯", p.charColor || t.git.bg);
+    return box;
   }
 
   // ── Glyphs Library & Target Selector ──────────────────────────────────────
