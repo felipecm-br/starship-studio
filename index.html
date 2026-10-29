@@ -1400,6 +1400,18 @@
       gap: 1ch;
     }
 
+    /* Full-bleed layout: a gradient band stretches between lang and time ($fill) */
+    .prompt-preview-container.prompt-bleed {
+      display: flex;
+      width: 100%;
+    }
+
+    .bleed-band {
+      flex: 1 1 auto;
+      min-width: 4ch;
+      height: var(--prompt-height);
+    }
+
     .divider-rule {
       flex: 0 0 2ch;
       height: 3px;
@@ -2192,6 +2204,12 @@
     .mini-gap {
       width: 0.6ch;
       flex-shrink: 0;
+    }
+
+    .mini-bleed {
+      flex: 1 1 auto;
+      min-width: 3ch;
+      height: 18px;
     }
 
     .mini-rule {
@@ -5723,6 +5741,8 @@
         "charColor": "#6c0360",
         "errorCharColor": "#38e1ff",
         "moduleIcons": {"os": "󰄛", "dir": "󰉋"},
+        "chains": {"os": [["", "#1f005c", "#33065e"], ["", "#33065e", "#48065f"]], "dir": [["", "#48065f", "#5a0760"], ["", "#5a0760", "#6c0360"]], "git": [["", "#6c0360", "#7b0560"], ["", "#7b0560", "#8b0660"]]},
+        "bleed": ["#9a175f", "#a21e5f", "#ab245e", "#b22d5e", "#b8355e", "#bf3c5d", "#c6445d", "#cc4b5c", "#d1535c", "#d65b5c", "#dc635c", "#e16a5c", "#e5735d", "#e97b5e", "#ed835f", "#f18c60", "#f49461", "#f79c64", "#faa566", "#fcad69"],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5863,6 +5883,7 @@
         "charColor": "#00c2a8",
         "errorCharColor": "#ff4757",
         "moduleIcons": {"os": "󰆧", "dir": "󰉋"},
+        "chains": {"os": [["▇", "#0041a9", "#2f80ed"], ["▆", "#074db6", "#2f80ed"], ["▄", "#1159c2", "#2f80ed"], ["▂", "#1a64cf", "#2f80ed"]], "dir": [["▇", "#460093", "#7b4fd6"], ["▆", "#4f169f", "#7b4fd6"], ["▄", "#5926ac", "#7b4fd6"], ["▂", "#6333b8", "#7b4fd6"]], "git": [["▇", "#990043", "#e0457b"], ["▆", "#a6134d", "#e0457b"], ["▄", "#b32157", "#e0457b"], ["▂", "#c02c62", "#e0457b"]], "lang": [["▇", "#bc7300", "#ffb238"], ["▆", "#c87f0f", "#ffb238"], ["▄", "#d58a1a", "#ffb238"], ["▂", "#e19624", "#ffb238"]]},
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -6836,11 +6857,11 @@
       const on = (k) => mods[k] !== false;
 
       const segs = [];
-      if (on("os")) segs.push({ label: p.icon || "󰣇", c: t.os });
-      if (on("dir")) segs.push({ label: "~", c: t.dir });
-      if (on("git")) segs.push({ label: "\uf418 main", c: t.git });
-      if (on("lang")) segs.push({ label: "\ue7a8", c: t.lang });
-      if (on("time")) segs.push({ label: "\uf43a", c: t.time });
+      if (on("os")) segs.push({ id: "os", label: p.icon || "󰣇", c: t.os });
+      if (on("dir")) segs.push({ id: "dir", label: "~", c: t.dir });
+      if (on("git")) segs.push({ id: "git", label: "\uf418 main", c: t.git });
+      if (on("lang")) segs.push({ id: "lang", label: "\ue7a8", c: t.lang });
+      if (on("time")) segs.push({ id: "time", label: "\uf43a", c: t.time });
 
       const box = document.createElement("span");
       box.className = "preset-mini-prompt";
@@ -6863,7 +6884,10 @@
         segs.forEach((seg, i) => {
           add("mini-seg", seg.label, seg.c.fg, seg.c.bg);
           const next = segs[i + 1];
-          if (next) add("mini-sep", seps[i % seps.length], seg.c.bg, next.c.bg);
+          const tr = next && presetTransition(seg.id, next.id, p);
+          if (tr && tr.bleed) add("mini-bleed", "").style.background = `linear-gradient(to right, ${tr.bleed.join(", ")})`;
+          else if (tr && tr.chain) tr.chain.forEach(([glyph, fg, bg]) => add("mini-sep", glyph, fg, bg));
+          else if (next) add("mini-sep", seps[i % seps.length], seg.c.bg, next.c.bg);
           else add("mini-sep", p.rightCap || "", seg.c.bg);
         });
         return box;
@@ -7019,6 +7043,8 @@
         errorCharColor: p.errorCharColor || null,
         layout: p.layout || null,
         ruleStops: p.ruleStops || null,
+        chains: p.chains || null,
+        bleed: p.bleed || null,
         customColors: null
       };
       if (p.leftCap !== undefined) cfg.leftCap = p.leftCap;
@@ -7346,7 +7372,7 @@
       if (currentConfig.modules.time) activeSegs.push({ id: 'time', name: 'Time', label: `${timeIcon} ${scen.time}`, bg: theme.time.bg, fg: theme.time.fg });
 
       promptContainer.innerHTML = "";
-      promptContainer.classList.remove("prompt-divider");
+      promptContainer.classList.remove("prompt-divider", "prompt-bleed");
       if (promptLine2) promptLine2.querySelectorAll(".line2-module").forEach(el => el.remove());
 
       if (activeSegs.length === 0) {
@@ -7450,6 +7476,29 @@
         if (i < activeSegs.length - 1) {
           // Middle Separator: foreground = current segment bg, background = next segment bg
           const nextSeg = activeSegs[i + 1];
+          const tr = presetTransition(seg.id, nextSeg.id, currentConfig.customColors ? null : currentConfig);
+          if (tr && tr.bleed) {
+            const band = document.createElement("span");
+            band.className = "bleed-band";
+            band.style.background = `linear-gradient(to right, ${tr.bleed.join(", ")})`;
+            band.setAttribute("aria-hidden", "true");
+            promptContainer.classList.add("prompt-bleed");
+            promptContainer.appendChild(band);
+            return;
+          }
+          if (tr && tr.chain) {
+            tr.chain.forEach(([glyph, fg, bg]) => {
+              const cell = document.createElement("span");
+              cell.className = "separator-glyph interactive-cap";
+              cell.style.color = fg;
+              cell.style.backgroundColor = bg;
+              cell.textContent = glyph;
+              cell.title = `Click to customize Separator ${i + 1}`;
+              cell.onclick = () => focusCapCustomizer(`sep${i + 1}`);
+              promptContainer.appendChild(cell);
+            });
+            return;
+          }
           sepSpan.style.color = seg.bg;
           sepSpan.style.backgroundColor = nextSeg.bg;
           sepSpan.textContent = getSeparator(i);
@@ -7466,6 +7515,17 @@
 
         promptContainer.appendChild(sepSpan);
       });
+    }
+
+    // Preset-defined multi-glyph transition between two adjacent modules: a glyph
+    // chain ([glyph, fg, bg] cells) or a full-bleed gradient band before time.
+    // Only valid when the modules are neighbours in the preset's own order.
+    const MODULE_ORDER = ["os", "dir", "git", "lang", "time"];
+    function presetTransition(fromId, toId, src) {
+      if (!src || MODULE_ORDER.indexOf(toId) !== MODULE_ORDER.indexOf(fromId) + 1) return null;
+      if (src.bleed && toId === "time") return { bleed: src.bleed };
+      if (src.chains && src.chains[fromId]) return { chain: src.chains[fromId] };
+      return null;
     }
 
     // Divider layout: directory and time are set into a full-width gradient rule
