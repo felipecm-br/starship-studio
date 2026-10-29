@@ -1400,6 +1400,11 @@
       gap: 1ch;
     }
 
+    /* Keep glyph shapes intact; an overflowing line is zoomed to fit instead (fitPromptToPreview) */
+    .prompt-preview-container > *:not(.bleed-band):not(.divider-fill) {
+      flex-shrink: 0;
+    }
+
     /* Full-bleed layout: a gradient band stretches between lang and time ($fill) */
     .prompt-preview-container.prompt-bleed {
       display: flex;
@@ -1410,6 +1415,24 @@
       flex: 1 1 auto;
       min-width: 4ch;
       height: var(--prompt-height);
+    }
+
+    .bleed-band.bleed-columns {
+      display: flex;
+    }
+
+    .bleed-band.bleed-columns > span {
+      flex: 1 1 0;
+    }
+
+    /* Preset glyph cells that are text, not cell-filling separators (dots, braille, stars) */
+    .chain-text-cell {
+      display: inline-flex;
+      align-items: center;
+      height: var(--prompt-height);
+      font-size: 14px;
+      line-height: 1;
+      user-select: none;
     }
 
     .divider-rule {
@@ -2209,6 +2232,20 @@
     .mini-bleed {
       flex: 1 1 auto;
       min-width: 3ch;
+      height: 18px;
+    }
+
+    .mini-bleed.bleed-columns {
+      display: flex;
+    }
+
+    .mini-bleed.bleed-columns > span {
+      flex: 1 1 0;
+    }
+
+    .mini-cell {
+      display: inline-flex;
+      align-items: center;
       height: 18px;
     }
 
@@ -5479,6 +5516,8 @@
         "charColor": "#5a8bb7",
         "errorCharColor": "#f4efe3",
         "moduleIcons": {"os": "🌊", "dir": "󰲋", "git": "", "lang": "", "time": ""},
+        "chains": {"os": [["", "#4c6381", "#06234a"], ["", "#3d5c82", "#0e3563"], ["", "#0e3563", "#18487e"]], "dir": [["", "#829bb5", "#18487e"], ["", "#7e9cb9", "#39699a"], ["", "#39699a", "#5a8bb7"]], "git": [["", "#d1d8da", "#5a8bb7"], ["", "#dbdfdd", "#a6bdce"], ["", "#a6bdce", "#f4efe3"]], "lang": [["", "#e7e8e2", "#f4efe3"], ["", "#d0dcdf", "#ccd9de"], ["", "#ccd9de", "#a4c3d8"]]},
+        "tail": [["", "#afc6d6", "#a4c3d8"], ["", "#90b1cb", "#7fa7c8"], ["", "#7fa7c8", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5499,6 +5538,8 @@
         "charColor": "#8fb4c9",
         "errorCharColor": "#d9372b",
         "moduleIcons": {"os": "🌊", "dir": "󰲋", "git": "", "lang": "", "time": ""},
+        "chains": {"os": [["", "#3c4560", "#0c1c3e"], ["", "#3a476c", "#1a2c58"], ["", "#1a2c58", "#283d74"]], "dir": [["", "#848196", "#283d74"], ["", "#86849c", "#4b5a8c"], ["", "#4b5a8c", "#6f78a3"]], "git": [["", "#e3c2af", "#6f78a3"], ["", "#eac9b5", "#b4adbb"], ["", "#b4adbb", "#fde3d1"]], "lang": [["", "#fdcbad", "#fde3d1"], ["", "#f9ac8b", "#f7a88a"], ["", "#f7a88a", "#e9693f"]]},
+        "tail": [["", "#e18360", "#e9693f"], ["", "#b95d42", "#b1462b"], ["", "#b1462b", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5519,6 +5560,8 @@
         "charColor": "#9fc3d3",
         "errorCharColor": "#c84b31",
         "moduleIcons": {"os": "🌊", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#5a6e86", "#071e3d"], ["", "#57718a", "#123556"], ["", "#123556", "#1f4e70"]], "dir": [["", "#7894a9", "#1f4e70"], ["", "#819eb1", "#46708b"], ["", "#46708b", "#6d94a6"]], "git": [["", "#b5c8d2", "#6d94a6"], ["", "#d0dce2", "#aec4ce"], ["", "#aec4ce", "#f2f5f7"]], "lang": [["", "#efede6", "#f2f5f7"], ["", "#e4dac7", "#ddd1bb"], ["", "#ddd1bb", "#c7ad7f"]]},
+        "tail": [["", "#c7b599", "#c7ad7f"], ["", "#a59377", "#98825e"], ["", "#98825e", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5539,6 +5582,8 @@
         "charColor": "#fcd884",
         "errorCharColor": "#fa0047",
         "moduleIcons": {"os": "󰇈", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#3a084d", "#b30354"], ["", "#b30354", "#fa4860"], ["", "#fa4860", "#e50136"], ["", "#e50136", "#fc8448"]], "dir": [["", "#fc8448", "#fdcfbf"], ["", "#fdcfbf", "#fe2f89"], ["", "#fe2f89", "#ffa3d2"], ["", "#ffa3d2", "#fe61b0"]], "git": [["", "#fe61b0", "#fcc79f"], ["", "#fcc79f", "#fe2f89"], ["", "#fe2f89", "#fca158"], ["", "#fca158", "#fcd884"]], "lang": [["", "#fcd884", "#f94e47"], ["", "#f94e47", "#fdaf5c"], ["", "#fdaf5c", "#e50136"], ["", "#e50136", "#8f0058"]]},
+        "tail": [["", "#8f0058", "#fd2d8f"], ["", "#fd2d8f", "#69025b"], ["", "#69025b", "#fd2d8f"], ["", "#fd2d8f", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5559,6 +5604,8 @@
         "charColor": "#4cc9f7",
         "errorCharColor": "#fe2f89",
         "moduleIcons": {"os": "󰇈", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#2632a8", "#4ca7f8"], ["", "#4ca7f8", "#2965d5"], ["", "#2965d5", "#589de0"], ["", "#589de0", "#34c7fa"]], "dir": [["", "#34c7fa", "#2965d5"], ["", "#2965d5", "#85c4ed"], ["", "#85c4ed", "#239efc"], ["", "#239efc", "#3b4ecf"]], "git": [["", "#3b4ecf", "#4cc9f7"], ["", "#4cc9f7", "#3431be"], ["", "#3431be", "#4ca7f8"], ["", "#4ca7f8", "#85c4ed"]], "lang": [["", "#85c4ed", "#3b4ecf"], ["", "#3b4ecf", "#849ce2"], ["", "#849ce2", "#2b20aa"], ["", "#2b20aa", "#5538af"]]},
+        "tail": [["", "#5538af", "#21138e"], ["", "#21138e", "#593fc7"], ["", "#593fc7", "#220f83"], ["", "#220f83", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5579,6 +5626,8 @@
         "charColor": "#5af0ff",
         "errorCharColor": "#e6fbff",
         "moduleIcons": {"os": "󰼁", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["⣿", "#56d6dc", "#1f9bbf"], ["⡷", "#56d6dc", "#1f9bbf"], ["⡵", "#56d6dc", "#1f9bbf"], ["⠕", "#56d6dc", "#1f9bbf"], ["⠂", "#56d6dc", "#1f9bbf"]], "dir": [["⣿", "#1f9bbf", "#16609f"], ["⡷", "#1f9bbf", "#16609f"], ["⡵", "#1f9bbf", "#16609f"], ["⠕", "#1f9bbf", "#16609f"], ["⠂", "#1f9bbf", "#16609f"]], "git": [["⣿", "#16609f", "#0c2f66"], ["⡷", "#16609f", "#0c2f66"], ["⡵", "#16609f", "#0c2f66"], ["⠕", "#16609f", "#0c2f66"], ["⠂", "#16609f", "#0c2f66"]], "lang": [["⣿", "#0c2f66", "#050d24"], ["⡷", "#0c2f66", "#050d24"], ["⡵", "#0c2f66", "#050d24"], ["⠕", "#0c2f66", "#050d24"], ["⠂", "#0c2f66", "#050d24"]]},
+        "tail": [["⠂", "#5af0ff", "#050d24"], ["╮", "#e6fbff", "#050d24"], ["●", "#d8ff5a", "#050d24"], ["", "#050d24", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5599,6 +5648,8 @@
         "charColor": "#4a2b1c",
         "errorCharColor": "#a83f18",
         "moduleIcons": {"os": "󰟺", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#4a2b1c", "#e9b44c"], ["", "#e9b44c", "#e8742a"], ["", "#e8742a", "#a83f18"]], "dir": [["", "#a83f18", "#4a2b1c"], ["", "#4a2b1c", "#e9b44c"], ["", "#e9b44c", "#e8742a"]], "git": [["", "#e8742a", "#4a2b1c"], ["", "#4a2b1c", "#a83f18"], ["", "#a83f18", "#f6e7c8"], ["", "#f6e7c8", "#e9b44c"]], "lang": [["", "#e9b44c", "#7c8a2e"], ["", "#7c8a2e", "#a83f18"], ["", "#a83f18", "#e8742a"], ["", "#e8742a", "#f6e7c8"]]},
+        "tail": [["", "#f6e7c8", "#4a2b1c"], ["", "#4a2b1c", "#a83f18"], ["", "#a83f18", "#e8742a"], ["", "#e8742a", "#e9b44c"], ["", "#e9b44c", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5619,6 +5670,8 @@
         "charColor": "#a6e3a1",
         "errorCharColor": "#f38ba8",
         "moduleIcons": {"os": "󰣇", "git": "", "lang": "", "time": ""},
+        "chains": {"dir": [["", "#fab387", "#a6e3a1"]], "git": [["", "#a6e3a1", "#94e2d5"]], "lang": [["", "#94e2d5", "#89b4fa"], ["", "#89b4fa", "#f5c2e7"]]},
+        "tail": [[" ", "#f5c2e7", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5639,6 +5692,7 @@
         "charColor": "#ab447f",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰏘", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#3d1f6e", "#4c2375"], ["", "#4c2375", "#5b267d"], ["", "#5b267d", "#6a2884"]], "dir": [["", "#6a2884", "#7a2a8c"], ["", "#7a2a8c", "#923986"], ["", "#923986", "#ab447f"]], "git": [["", "#ab447f", "#c54e76"], ["", "#c54e76", "#e0566b"], ["", "#e0566b", "#e96f6c"]], "lang": [["", "#e96f6c", "#f1866d"], ["", "#f1866d", "#f89d6c"], ["", "#f89d6c", "#ffb36b"]]},
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5659,6 +5713,9 @@
         "charColor": "#a0e9ff",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰄄", "dir": "󰲋", "git": "", "lang": ""},
+        "lead": [["∙", "#a0e9ff", "transparent"], ["•", "#ffd9a0", "transparent"], ["", "#140c2e", "transparent"]],
+        "chains": {"os": [["●", "#ffd9a0", "#1c113a"], ["∙", "#a0e9ff", "#251546"], ["•", "#ffb0d0", "#2e1a52"]], "dir": [["●", "#ffb0d0", "#3c1d59"], ["∙", "#c9b5ff", "#4b2061"], ["•", "#fff1b8", "#5a2368"]], "git": [["●", "#fff1b8", "#6b2966"], ["∙", "#ffd9a0", "#7d2e63"], ["•", "#a0e9ff", "#8f3260"]], "lang": [["●", "#a0e9ff", "#a0405c"], ["∙", "#ffb0d0", "#b24d57"], ["•", "#c9b5ff", "#c45a4f"]]},
+        "tail": [["", "#c45a4f", "transparent"], ["●", "#fff1b8", "transparent"], ["∙", "#ffb0d0", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5679,6 +5736,8 @@
         "charColor": "#3f78b8",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰞬", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#1b2a40", "#274366"], ["", "#274366", "#335d8e"], ["", "#335d8e", "#3f78b8"]], "dir": [["", "#3f78b8", "#6899cd"], ["", "#6899cd", "#92bae2"], ["", "#92bae2", "#bcdcf7"]], "git": [["", "#bcdcf7", "#ffffff"], ["", "#ffffff", "#4a2f1e"]], "lang": [["", "#4a2f1e", "#724e32"], ["", "#724e32", "#9c6f48"], ["", "#9c6f48", "#c9925f"]]},
+        "tail": [["", "#c9925f", "transparent"], ["✶", "#ffffff", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5699,6 +5758,7 @@
         "charColor": "#df86d7",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󱦙", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#df86d7", "#f57fa7"], ["", "#f57fa7", "#fb8371"], ["", "#fb8371", "#ee9138"]], "dir": [["", "#ee9138", "#cfa508"], ["", "#cfa508", "#9fb83c"], ["", "#9fb83c", "#5ac576"]], "git": [["", "#5ac576", "#00c9ae"], ["", "#00c9ae", "#00c3df"], ["", "#00c3df", "#39b5ff"]], "lang": [["", "#39b5ff", "#86a4ff"], ["", "#86a4ff", "#ba93fb"], ["", "#ba93fb", "#df86d7"]]},
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5783,6 +5843,8 @@
         "charColor": "#e07a3c",
         "errorCharColor": "#2ec4b6",
         "moduleIcons": {"os": "󰋵", "dir": "󰉋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#261a24", "#4b2325"], ["", "#4b2325", "#6e2c26"]], "dir": [["", "#6e2c26", "#8f3325"], ["", "#8f3325", "#b03a24"]], "git": [["", "#b03a24", "#c85a30"], ["", "#c85a30", "#e07a3c"]]},
+        "bleed": [["#ffb86b", "#d96b38"], ["#f79d65", "#c4542d"], ["#ea8264", "#9c3325"], ["#d66967", "#782722"], ["#b8546a", "#3b222c"], ["#4a263a", "#2ec4b6"], ["#422236", "#38d9a9"], ["#69304f", "#542d36"], ["#7c3b66", "#b53f26"], ["#5e2e5c", "#d4562c"], ["#42224d", "#e87738"], ["#2b173b", "#f5954c"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5803,6 +5865,9 @@
         "charColor": "#ffb3d9",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󱕅", "dir": "󰲋", "git": "", "lang": ""},
+        "lead": [["░▒▓", "#ffb3d9", "transparent"]],
+        "chains": {"os": [["▓", "#ffb3d9", "#ffc2c5"], ["▒", "#ffc2c5", "#ffd1af"], ["░", "#ffd1af", "#f4e1ab"]], "dir": [["▓", "#f4e1ab", "#def2b6"], ["▒", "#def2b6", "#c6fec5"], ["░", "#c6fec5", "#b3fbe0"]], "git": [["▓", "#b3fbe0", "#9ff7fa"], ["▒", "#9ff7fa", "#aae0ff"], ["░", "#aae0ff", "#b7c3ff"]], "lang": [["▓", "#b7c3ff", "#c8b6ff"], ["▒", "#c8b6ff", "#e4beff"], ["░", "#e4beff", "#ffc6ff"]]},
+        "tail": [["▓▒░", "#ffc6ff", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5823,6 +5888,7 @@
         "charColor": "#ff9495",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰏘", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#ff9495", "#fc9b6f"], ["", "#fc9b6f", "#eca851"], ["", "#eca851", "#d1b64a"]], "dir": [["", "#d1b64a", "#adc35e"], ["", "#adc35e", "#80cd82"], ["", "#80cd82", "#4cd2ab"]], "git": [["", "#4cd2ab", "#1ad1d1"], ["", "#1ad1d1", "#36caf1"], ["", "#36caf1", "#6abfff"]], "lang": [["", "#6abfff", "#97b3ff"], ["", "#97b3ff", "#bda6ff"], ["", "#bda6ff", "#dc9beb"]]},
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5843,6 +5909,7 @@
         "charColor": "#ff5e00",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰔏", "dir": "󰉋"},
+        "chains": {"os": [["█", "#ff6500", "#ff6500"], ["█", "#ff6900", "#ff6900"], ["█", "#ff7000", "#ff7000"]], "dir": [["█", "#ff7e00", "#ff7e00"], ["█", "#ff8607", "#ff8607"], ["█", "#ff9021", "#ff9021"]], "git": [["█", "#ffa34f", "#ffa34f"], ["█", "#ffb06a", "#ffb06a"], ["█", "#ffbc84", "#ffbc84"]], "lang": [["█", "#ffdec3", "#ffdec3"], ["█", "#fff4ea", "#fff4ea"], ["█", "#dfe7ff", "#dfe7ff"]]},
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5863,6 +5930,7 @@
         "charColor": "#a67cf3",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰏘", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#a67cf3", "#ab83f4"], ["", "#ab83f4", "#b08af6"], ["", "#b08af6", "#b590f7"]], "dir": [["", "#b590f7", "#ba97f8"], ["", "#ba97f8", "#c09df9"], ["", "#c09df9", "#c5a4fa"]], "git": [["", "#c5a4fa", "#bd9df5"], ["", "#bd9df5", "#b696ef"], ["", "#b696ef", "#af8eea"]], "lang": [["", "#af8eea", "#a787e4"], ["", "#a787e4", "#a080df"], ["", "#a080df", "#9979d9"]]},
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5904,6 +5972,9 @@
         "charColor": "#ff7ab6",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰚠", "dir": "󰲋", "git": "", "lang": ""},
+        "lead": [["▀", "#ff7ab6", "#5b4bff"]],
+        "chains": {"os": [["▀", "#ff87aa", "#694cff"], ["▀", "#ff939d", "#764cff"], ["▀", "#ff9e8e", "#834cff"], ["▀", "#ffa97e", "#8f4cff"]], "dir": [["▀", "#ffbc6e", "#af4ff7"], ["▀", "#ffc671", "#c351ee"], ["▀", "#ffcf74", "#d752e5"], ["▀", "#ffd877", "#eb50dc"]], "git": [["▀", "#eae58c", "#ff55bd"], ["▀", "#d3e89d", "#fe5da7"], ["▀", "#b9ebac", "#fe6290"], ["▀", "#9deeba", "#ff6777"]], "lang": [["▀", "#7ae5d5", "#ff7a5b"], ["▀", "#79dbe0", "#ff895c"], ["▀", "#79cfeb", "#ff985c"], ["▀", "#7ac4f5", "#ffa55b"]]},
+        "tail": [["▀", "#7ab8ff", "#ffb35b"], ["▀", "#7ab8ff", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5945,6 +6016,7 @@
         "charColor": "#b039a7",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰏘", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#7b2fbf", "#8c35b7"], ["", "#8c35b7", "#9e38af"], ["", "#9e38af", "#b039a7"]], "dir": [["", "#b039a7", "#c2389e"], ["", "#c2389e", "#aa46b3"], ["", "#aa46b3", "#914dc8"]], "git": [["", "#914dc8", "#7750dc"], ["", "#7750dc", "#5a4ff0"], ["", "#5a4ff0", "#5770f1"]], "lang": [["", "#5770f1", "#528df2"], ["", "#528df2", "#4aa8f1"], ["", "#4aa8f1", "#3fc2f0"]]},
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5965,6 +6037,9 @@
         "charColor": "#ff3df2",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󱠄", "dir": "󰲋", "git": "", "lang": ""},
+        "lead": [["", "#2b152f", "transparent"], ["", "#ff3df2", "#2b152f"]],
+        "chains": {"os": [["", "#ff3df2", "#2b152f"], ["", "#2b152f", "#0a0a12"], ["", "#2b1920", "#0a0a12"], ["", "#ff6b6b", "#2b1920"]], "dir": [["", "#ff6b6b", "#2b1920"], ["", "#2b1920", "#0a0a12"], ["", "#29261f", "#0a0a12"], ["", "#ffd93d", "#29261f"]], "git": [["", "#ffd93d", "#29261f"], ["", "#29261f", "#0a0a12"], ["", "#172a29", "#0a0a12"], ["", "#3dffb5", "#172a29"]], "lang": [["", "#3dffb5", "#172a29"], ["", "#172a29", "#0a0a12"], ["", "#162331", "#0a0a12"], ["", "#3dc8ff", "#162331"]]},
+        "tail": [["", "#3dc8ff", "#162331"], ["", "#162331", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -5985,6 +6060,8 @@
         "charColor": "#2fc8ff",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰮊", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["▗", "#ff4fa3", "#ececf5"], ["▘", "#2fc8ff", "#efebf3"], ["▝", "#3fe08a", "#f1e9f2"], ["▖", "#ffb13b", "#f4e7f1"]], "dir": [["▘", "#2fc8ff", "#f0ebf1"], ["▝", "#3fe08a", "#eceef0"], ["▖", "#ffb13b", "#e8f2f0"], ["▗", "#9b6bff", "#e4f5ef"]], "git": [["▝", "#3fe08a", "#e9f4ec"], ["▖", "#ffb13b", "#edf3e9"], ["▗", "#9b6bff", "#f2f2e5"], ["▘", "#ff4fa3", "#f6f1e2"]], "lang": [["▖", "#ffb13b", "#f2eee7"], ["▗", "#9b6bff", "#efeced"], ["▘", "#ff4fa3", "#ebe9f2"], ["▝", "#2fc8ff", "#e8e6f7"]]},
+        "tail": [["▘", "#9b6bff", "#e8e6f7"], ["▗", "#ff4fa3", "#e8e6f7"], ["", "#e8e6f7", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -6005,6 +6082,8 @@
         "charColor": "#fd736d",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󱥒", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#8ea3c0", "#eef2ff"], ["", "#8ea3c0", "#fd736d"]], "dir": [["", "#fd736d", "#f77e34"], ["", "#f77e34", "#e58f00"], ["", "#e58f00", "#c6a100"]], "git": [["", "#c6a100", "#80b934"], ["", "#80b934", "#00c589"], ["", "#00c589", "#00c2ce"]], "lang": [["", "#00c2ce", "#00b3fd"], ["", "#00b3fd", "#749eff"], ["", "#749eff", "#b688fe"]]},
+        "tail": [["", "#b688fe", "#3a1f7a"], ["", "#3a1f7a", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -6066,6 +6145,7 @@
         "charColor": "#fff6d8",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰝨", "dir": "󰲋", "git": "", "lang": ""},
+        "chains": {"os": [["", "#69335e", "#2a0f5c"], ["", "#b14956", "#69335e"], ["", "#ff5a3c", "#b14956"]], "dir": [["", "#ff9473", "#ff5a3c"], ["", "#ffc6a5", "#ff9473"], ["", "#fff6d8", "#ffc6a5"]], "git": [["", "#fff6d8", "#ffc6a5"], ["", "#ffc6a5", "#ff9473"], ["", "#ff9473", "#ff5a3c"]], "lang": [["", "#ff5a3c", "#b14956"], ["", "#b14956", "#69335e"], ["", "#69335e", "#2a0f5c"]]},
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -6086,6 +6166,9 @@
         "charColor": "#e8573c",
         "errorCharColor": "#ff3355",
         "moduleIcons": {"os": "󰏘", "dir": "󰲋", "git": "", "lang": ""},
+        "lead": [["░▒▓", "#e8573c", "transparent"]],
+        "chains": {"os": [["▓", "#e8573c", "#eb6a40"], ["▒", "#eb6a40", "#ee7c44"], ["░", "#ee7c44", "#f08d48"]], "dir": [["▓", "#f08d48", "#f29e4c"], ["▒", "#f29e4c", "#f2a84e"], ["░", "#f2a84e", "#f2b150"]], "git": [["▓", "#f2b150", "#f2bb51"], ["▒", "#f2bb51", "#f1c453"], ["░", "#f1c453", "#eda85e"]], "lang": [["▓", "#eda85e", "#e88a65"], ["▒", "#e88a65", "#e16b69"], ["░", "#e16b69", "#d9486b"]]},
+        "tail": [["▓▒░", "#d9486b", "transparent"]],
         "category": "powerline",
         "modules": { "os": true, "dir": true, "git": true, "lang": true, "time": true },
         "author": "Starship Studio",
@@ -6882,14 +6965,20 @@
 
       if (style === "powerline") {
         const seps = Array.isArray(p.sep) ? p.sep : [p.sep !== undefined ? p.sep : ""];
-        if (segs.length) add("mini-sep", p.leftCap || "", segs[0].c.bg);
+        const addCells = (cells) => cells.forEach(([glyph, fg, bg]) =>
+          add(isCellGlyph(glyph) ? "mini-sep" : "mini-cell", isCellGlyph(glyph) ? glyph.trim() : glyph, fg, bg));
+        const lead = segs.length && presetEdge("lead", segs[0].id, p);
+        if (lead) addCells(lead);
+        else if (segs.length) add("mini-sep", p.leftCap || "", segs[0].c.bg);
         segs.forEach((seg, i) => {
           add("mini-seg", seg.label, seg.c.fg, seg.c.bg);
           const next = segs[i + 1];
           const tr = next && presetTransition(seg.id, next.id, p);
-          if (tr && tr.bleed) add("mini-bleed", "").style.background = `linear-gradient(to right, ${tr.bleed.join(", ")})`;
-          else if (tr && tr.chain) tr.chain.forEach(([glyph, fg, bg]) => add("mini-sep", glyph, fg, bg));
+          const tail = !next && presetEdge("tail", seg.id, p);
+          if (tr && tr.bleed) box.appendChild(buildBleedBand("mini-bleed", tr.bleed));
+          else if (tr && tr.chain) addCells(tr.chain);
           else if (next) add("mini-sep", seps[i % seps.length], seg.c.bg, next.c.bg);
+          else if (tail) addCells(tail);
           else add("mini-sep", p.rightCap || "", seg.c.bg);
         });
         return box;
@@ -7046,6 +7135,8 @@
         layout: p.layout || null,
         ruleStops: p.ruleStops || null,
         chains: p.chains || null,
+        lead: p.lead || null,
+        tail: p.tail || null,
         bleed: p.bleed || null,
         customColors: null
       };
@@ -7335,7 +7426,24 @@
     }
 
     // Render Live Terminal Prompt Preview with Active Scenario
+    // Long glyph chains can outgrow the terminal; shrink the prompt line to fit
+    function fitPromptToPreview() {
+      // The container's "transition: all" would otherwise animate zoom and never settle
+      promptContainer.style.transition = "none";
+      promptContainer.style.zoom = "";
+      const parent = promptContainer.parentElement;
+      const cs = getComputedStyle(parent);
+      const avail = parent.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      if (promptContainer.scrollWidth > avail && avail > 0) {
+        promptContainer.style.zoom = (avail / promptContainer.scrollWidth).toFixed(3);
+      }
+      void promptContainer.offsetWidth;
+      promptContainer.style.transition = "";
+    }
+    window.addEventListener("resize", fitPromptToPreview);
+
     function renderPromptPreview() {
+      requestAnimationFrame(fitPromptToPreview);
       const theme = getActiveColors();
       terminalPreview.style.backgroundColor = theme.bg;
 
@@ -7445,7 +7553,11 @@
         return;
       }
 
+      const presetSrc = currentConfig.customColors ? null : currentConfig;
+      const lead = presetEdge("lead", activeSegs[0].id, presetSrc);
+
       // Left Cap Symbol
+      if (lead) appendGlyphCells(promptContainer, lead, "Click to customize Left Cap glyph", () => focusCapCustomizer("left"));
       const leftCapSpan = document.createElement("span");
       leftCapSpan.className = "separator-glyph interactive-cap";
       leftCapSpan.style.color = activeSegs[0].bg;
@@ -7453,7 +7565,7 @@
       leftCapSpan.textContent = currentConfig.leftCap;
       leftCapSpan.title = "Click to customize Left Cap glyph";
       leftCapSpan.onclick = () => focusCapCustomizer("left");
-      promptContainer.appendChild(leftCapSpan);
+      if (!lead) promptContainer.appendChild(leftCapSpan);
 
       // Render segments with middle separators
       activeSegs.forEach((seg, i) => {
@@ -7478,27 +7590,14 @@
         if (i < activeSegs.length - 1) {
           // Middle Separator: foreground = current segment bg, background = next segment bg
           const nextSeg = activeSegs[i + 1];
-          const tr = presetTransition(seg.id, nextSeg.id, currentConfig.customColors ? null : currentConfig);
+          const tr = presetTransition(seg.id, nextSeg.id, presetSrc);
           if (tr && tr.bleed) {
-            const band = document.createElement("span");
-            band.className = "bleed-band";
-            band.style.background = `linear-gradient(to right, ${tr.bleed.join(", ")})`;
-            band.setAttribute("aria-hidden", "true");
             promptContainer.classList.add("prompt-bleed");
-            promptContainer.appendChild(band);
+            promptContainer.appendChild(buildBleedBand("bleed-band", tr.bleed));
             return;
           }
           if (tr && tr.chain) {
-            tr.chain.forEach(([glyph, fg, bg]) => {
-              const cell = document.createElement("span");
-              cell.className = "separator-glyph interactive-cap";
-              cell.style.color = fg;
-              cell.style.backgroundColor = bg;
-              cell.textContent = glyph;
-              cell.title = `Click to customize Separator ${i + 1}`;
-              cell.onclick = () => focusCapCustomizer(`sep${i + 1}`);
-              promptContainer.appendChild(cell);
-            });
+            appendGlyphCells(promptContainer, tr.chain, `Click to customize Separator ${i + 1}`, () => focusCapCustomizer(`sep${i + 1}`));
             return;
           }
           sepSpan.style.color = seg.bg;
@@ -7507,6 +7606,11 @@
           sepSpan.title = `Click to customize Separator ${i + 1}`;
           sepSpan.onclick = () => focusCapCustomizer(`sep${i + 1}`);
         } else {
+          const tail = presetEdge("tail", seg.id, presetSrc);
+          if (tail) {
+            appendGlyphCells(promptContainer, tail, "Click to customize Right Cap glyph", () => focusCapCustomizer("right"));
+            return;
+          }
           // Right Cap: foreground = last segment bg, background = transparent
           sepSpan.style.color = seg.bg;
           sepSpan.style.backgroundColor = "transparent";
@@ -7528,6 +7632,51 @@
       if (src.bleed && toId === "time") return { bleed: src.bleed };
       if (src.chains && src.chains[fromId]) return { chain: src.chains[fromId] };
       return null;
+    }
+
+    // Preset-defined cells drawn instead of the left cap (before os) or right cap (after time)
+    function presetEdge(side, segId, src) {
+      if (!src) return null;
+      if (side === "lead") return segId === "os" ? src.lead : null;
+      return segId === "time" ? src.tail : null;
+    }
+
+    // Powerline / block glyphs fill the whole cell and scale with the prompt height;
+    // anything else (dots, braille, stars) is drawn at text size
+    const CELL_GLYPH = /^(?=.*[\ue0a0-\ue0d7\u2580-\u259f])[\ue0a0-\ue0d7\u2580-\u259f ]+$/;
+    const isCellGlyph = (glyph) => CELL_GLYPH.test(glyph);
+
+    function appendGlyphCells(container, cells, title, onclick) {
+      cells.forEach(([glyph, fg, bg]) => {
+        const cell = document.createElement("span");
+        const filling = isCellGlyph(glyph);
+        cell.className = (filling ? "separator-glyph" : "chain-text-cell") + " interactive-cap";
+        cell.style.color = fg;
+        cell.style.backgroundColor = bg;
+        cell.textContent = filling ? glyph.trim() : glyph;
+        cell.title = title;
+        cell.onclick = onclick;
+        container.appendChild(cell);
+      });
+    }
+
+    // $fill band: a list of colors is a smooth gradient, [top, bottom] pairs are
+    // half-block columns (U+2580) that share the width evenly
+    function buildBleedBand(cls, bleed) {
+      const band = document.createElement("span");
+      band.className = cls;
+      band.setAttribute("aria-hidden", "true");
+      if (typeof bleed[0] === "string") {
+        band.style.background = `linear-gradient(to right, ${bleed.join(", ")})`;
+        return band;
+      }
+      band.classList.add("bleed-columns");
+      bleed.forEach(([top, bottom]) => {
+        const col = document.createElement("span");
+        col.style.background = `linear-gradient(to bottom, ${top} 50%, ${bottom} 50%)`;
+        band.appendChild(col);
+      });
+      return band;
     }
 
     // Divider layout: directory and time are set into a full-width gradient rule
