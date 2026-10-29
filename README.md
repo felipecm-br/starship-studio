@@ -6,6 +6,10 @@
 [![GitHub](https://img.shields.io/badge/GitHub-starship--studio-blue?logo=github)](https://github.com/felipecm-br/starship-studio)
 [![GitHub Pages](https://img.shields.io/badge/Live-Demo-brightgreen.svg)](https://felipecm-br.github.io/starship-studio/)
 
+[![Starship Studio preset previews](screenshots/presets.png)](https://felipecm-br.github.io/starship-studio/)
+
+**[Open the studio](https://felipecm-br.github.io/starship-studio/)**: pick one of 65 presets, tweak it, and copy your `starship.toml`.
+
 ---
 
 ## ✨ Features
