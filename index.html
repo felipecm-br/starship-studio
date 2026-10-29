@@ -99,12 +99,11 @@
         "screenshot": "https://felipecm-br.github.io/starship-studio/preview.png",
         "featureList": [
           "Live interactive terminal prompt preview with real-time editing",
-          "35+ curated Starship presets including community favorites (Tokyo Night, Catppuccin, Gruvbox, HyDE, Omarchy)",
+          "60+ curated Starship presets including community favorites (Tokyo Night, Catppuccin, Gruvbox, HyDE, Omarchy)",
           "Powerline and Nerd Font separator explorer with customizable start and end caps",
           "Two-way live starship.toml editor and config parser",
           "Prompt line height customizer with Powerline vertical scaling",
           "One-click starship.toml export and clipboard copy",
-          "High-resolution PNG prompt export",
           "Zero build step, zero dependencies, client-side execution"
         ],
         "author": {
@@ -3030,16 +3029,6 @@
               </svg>
               <span>Export Config</span>
             </button>
-            <button type="button" class="terminal-action-btn" onclick="exportTerminalPng()"
-              title="Download live terminal prompt as a PNG image">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              <span>Export PNG</span>
-            </button>
           </div>
         </div>
         <!-- Interactive Terminal Scenario Playground -->
@@ -3590,7 +3579,7 @@
           <div class="faq-item">
             <h3>What is Starship Studio?</h3>
             <p>
-              Starship Studio is an interactive visual editor and preset generator for the Starship prompt with 35+
+              Starship Studio is an interactive visual editor and preset generator for the Starship prompt with 60+
               curated presets (including awesome-starship-prompts, Powerline, and Minimalist themes). Customize themes
               and export your <code>starship.toml</code> easily.
             </p>
@@ -8131,179 +8120,6 @@ error_symbol = "[${charSym}](${errCol})"
           showToast("TOML configuration parsed and applied to preview!");
         }
       }
-    }
-
-    // ── Native Canvas Terminal Image Exporter ─────────────────────────────────
-    function exportTerminalPng() {
-      const theme = getActiveColors();
-      const scen = scenarios[currentScenario] || scenarios.clean;
-
-      const width = 880;
-      const height = 220;
-      const dpr = window.devicePixelRatio || 2;
-
-      const canvas = document.createElement("canvas");
-      canvas.width = width * dpr;
-      canvas.height = height * dpr;
-      const ctx = canvas.getContext("2d");
-      ctx.scale(dpr, dpr);
-
-      const isLightUi = document.documentElement.getAttribute("data-theme") === "light";
-
-      // Terminal Outer Window
-      ctx.fillStyle = isLightUi ? "#f1f5f9" : "#0d0e15";
-      ctx.beginPath();
-      ctx.roundRect(0, 0, width, height, 12);
-      ctx.fill();
-
-      // Terminal Header
-      ctx.fillStyle = isLightUi ? "#e2e8f0" : "#141724";
-      ctx.beginPath();
-      ctx.roundRect(0, 0, width, 40, [12, 12, 0, 0]);
-      ctx.fill();
-
-      // Window Dots
-      const dots = [
-        { x: 20, y: 20, color: "#ef4444" },
-        { x: 38, y: 20, color: "#f59e0b" },
-        { x: 56, y: 20, color: "#10b981" }
-      ];
-      dots.forEach(d => {
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, 5.5, 0, Math.PI * 2);
-        ctx.fillStyle = d.color;
-        ctx.fill();
-      });
-
-      // Window Title
-      ctx.fillStyle = isLightUi ? "#64748b" : "#6b7280";
-      ctx.font = "12px monospace";
-      ctx.textAlign = "center";
-      ctx.fillText("zsh — starship prompt preview", width / 2, 24);
-
-      // Terminal Body Background
-      ctx.fillStyle = theme.bg;
-      ctx.beginPath();
-      ctx.roundRect(0, 40, width, height - 40, [0, 0, 12, 12]);
-      ctx.fill();
-
-      // Active Segments
-      const activeSegs = [];
-      const osIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.os) || currentConfig.iconSymbol || "󰣇";
-      const dirIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.dir) || "󰲋";
-      const gitIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.git) || "";
-      const langIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.lang) || "";
-      const timeIcon = (currentConfig.moduleIcons && currentConfig.moduleIcons.time) || "";
-
-      if (currentConfig.modules.os) activeSegs.push({ label: osIcon, bg: theme.os.bg, fg: theme.os.fg });
-      if (currentConfig.modules.dir) activeSegs.push({ label: `${dirIcon} ${scen.dir}`, bg: theme.dir.bg, fg: theme.dir.fg });
-      if (currentConfig.modules.git) activeSegs.push({ label: `${gitIcon} ${scen.git}`, bg: theme.git.bg, fg: theme.git.fg });
-      if (currentConfig.modules.lang) activeSegs.push({ label: `${langIcon} ${scen.lang}`, bg: theme.lang.bg, fg: theme.lang.fg });
-      if (currentConfig.modules.time) activeSegs.push({ label: `${timeIcon} ${scen.time}`, bg: theme.time.bg, fg: theme.time.fg });
-
-      let startX = 24;
-      const startY = 85;
-      const segHeight = 32;
-
-      ctx.textAlign = "left";
-      ctx.textBaseline = "middle";
-
-      if (activeSegs.length > 0) {
-        if (currentConfig.promptStyle === "transparent") {
-          activeSegs.forEach(seg => {
-            ctx.font = "bold 14px 'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace";
-            ctx.fillStyle = seg.bg;
-            ctx.fillText(seg.label, startX, startY + segHeight / 2);
-            startX += ctx.measureText(seg.label).width + 12;
-          });
-        } else if (currentConfig.promptStyle === "bracketed") {
-          activeSegs.forEach(seg => {
-            ctx.font = "14px 'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace";
-            ctx.fillStyle = "#64748b";
-            ctx.fillText("[ ", startX, startY + segHeight / 2);
-            startX += ctx.measureText("[ ").width;
-
-            ctx.font = "bold 14px 'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace";
-            ctx.fillStyle = seg.bg;
-            ctx.fillText(seg.label, startX, startY + segHeight / 2);
-            startX += ctx.measureText(seg.label).width;
-
-            ctx.font = "14px 'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace";
-            ctx.fillStyle = "#64748b";
-            ctx.fillText(" ] ", startX, startY + segHeight / 2);
-            startX += ctx.measureText(" ] ").width + 4;
-          });
-        } else {
-          // Left Cap
-          ctx.fillStyle = activeSegs[0].bg;
-          ctx.font = "30px 'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace";
-          const capWidth = ctx.measureText(currentConfig.leftCap).width;
-          ctx.fillText(currentConfig.leftCap, startX, startY + segHeight / 2);
-          startX += capWidth;
-
-          activeSegs.forEach((seg, i) => {
-            ctx.font = "14px 'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace";
-            const textMetrics = ctx.measureText(seg.label);
-            const padX = 10;
-            const boxWidth = textMetrics.width + (padX * 2);
-
-            // Segment Box
-            ctx.fillStyle = seg.bg;
-            ctx.fillRect(startX, startY, boxWidth, segHeight);
-
-            // Segment Text
-            ctx.fillStyle = seg.fg;
-            ctx.fillText(seg.label, startX + padX, startY + segHeight / 2);
-            startX += boxWidth;
-
-            // Separator / Right Cap
-            const sepChar = (i < activeSegs.length - 1) ? getSeparator(i) : currentConfig.rightCap;
-            ctx.font = "30px 'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace";
-            const sepWidth = ctx.measureText(sepChar).width;
-
-            if (i < activeSegs.length - 1) {
-              const nextSeg = activeSegs[i + 1];
-              ctx.fillStyle = nextSeg.bg;
-              ctx.fillRect(startX, startY, sepWidth, segHeight);
-            }
-
-            ctx.fillStyle = seg.bg;
-            ctx.fillText(sepChar, startX, startY + segHeight / 2);
-            startX += sepWidth;
-          });
-        }
-      }
-
-      // Line 2: Prompt symbol and command
-      const line2Y = 160;
-      ctx.font = "15px monospace";
-      const pSym = currentConfig.charSymbol || scen.charSymbol;
-      const pCol = (currentScenario === "error" && currentConfig.errorCharColor)
-        ? currentConfig.errorCharColor
-        : (currentConfig.charColor || scen.charColor);
-      ctx.fillStyle = pCol;
-      ctx.fillText(pSym + " ", 24, line2Y);
-
-      const charWidth = ctx.measureText(pSym + " ").width;
-      ctx.fillStyle = theme.fg || "#a9b1d6";
-      ctx.fillText(scen.command, 24 + charWidth, line2Y);
-
-      // Cursor
-      const cmdWidth = ctx.measureText(scen.command).width;
-      ctx.fillStyle = "rgba(169, 177, 214, 0.7)";
-      ctx.fillRect(24 + charWidth + cmdWidth + 4, line2Y - 8, 8, 16);
-
-      // Download PNG blob
-      canvas.toBlob(blob => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `starship-prompt-${currentConfig.activePreset || 'custom'}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast("Terminal preview saved as PNG image!");
-      }, "image/png");
     }
 
     // Copy to Clipboard
