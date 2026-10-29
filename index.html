@@ -1393,6 +1393,28 @@
       padding: 0 3px;
     }
 
+    /* Divider layout: a full-width rule with dir/time set into it ($fill) */
+    .prompt-preview-container.prompt-divider {
+      display: flex;
+      width: 100%;
+      gap: 1ch;
+    }
+
+    .divider-rule {
+      flex: 0 0 2ch;
+      height: 3px;
+      border-radius: 1px;
+    }
+
+    .divider-rule.divider-fill {
+      flex: 1 1 auto;
+      min-width: 4ch;
+    }
+
+    .line2-module {
+      font-weight: 600;
+    }
+
     .separator-minimal {
       font-size: 12px;
       color: var(--text-muted);
@@ -2170,6 +2192,17 @@
     .mini-gap {
       width: 0.6ch;
       flex-shrink: 0;
+    }
+
+    .mini-rule {
+      flex: 0 0 1.5ch;
+      height: 2px;
+      margin: 0 0.5ch;
+    }
+
+    .mini-rule.mini-fill {
+      flex: 1 1 auto;
+      min-width: 3ch;
     }
 
     .mini-char {
@@ -5659,6 +5692,8 @@
         "name": "Chroma Divider (Section Rule Edition)",
         "preview": " █  █ ",
         "promptStyle": "transparent",
+        "layout": "divider",
+        "ruleStops": ["#3ee8b5", "#42c2e6", "#7d8df4", "#b26fe4", "#e97dba", "#ffb36b"],
         "leftCap": "",
         "sep": "",
         "rightCap": "",
@@ -6834,6 +6869,16 @@
         return box;
       }
 
+      if (style === "transparent" && p.layout === "divider") {
+        const stops = p.ruleStops || [t.os.bg, t.time.bg];
+        add("mini-rule", "", null, stops[0]);
+        if (on("dir")) add("mini-text", "~", t.dir.bg);
+        add("mini-rule mini-fill", "").style.background = `linear-gradient(to right, ${stops.join(", ")})`;
+        if (on("time")) add("mini-text", "\uf43a", t.time.bg);
+        add("mini-rule", "", null, stops[stops.length - 1]);
+        return box;
+      }
+
       segs.forEach((seg, i) => {
         if (i > 0) add("mini-gap", "");
         if (style === "bracketed") {
@@ -6972,6 +7017,8 @@
         charSymbol: p.charSymbol || null,
         charColor: p.charColor || null,
         errorCharColor: p.errorCharColor || null,
+        layout: p.layout || null,
+        ruleStops: p.ruleStops || null,
         customColors: null
       };
       if (p.leftCap !== undefined) cfg.leftCap = p.leftCap;
@@ -7299,9 +7346,16 @@
       if (currentConfig.modules.time) activeSegs.push({ id: 'time', name: 'Time', label: `${timeIcon} ${scen.time}`, bg: theme.time.bg, fg: theme.time.fg });
 
       promptContainer.innerHTML = "";
+      promptContainer.classList.remove("prompt-divider");
+      if (promptLine2) promptLine2.querySelectorAll(".line2-module").forEach(el => el.remove());
 
       if (activeSegs.length === 0) {
         promptContainer.innerHTML = `<span style="color: ${theme.fg};">Empty Prompt Line — Toggle a module above to preview</span>`;
+        return;
+      }
+
+      if (currentConfig.promptStyle === "transparent" && currentConfig.layout === "divider") {
+        renderDividerPreview(activeSegs, promptLine2);
         return;
       }
 
@@ -7411,6 +7465,43 @@
         }
 
         promptContainer.appendChild(sepSpan);
+      });
+    }
+
+    // Divider layout: directory and time are set into a full-width gradient rule
+    // (Starship's $fill); the other modules move to the second line before the character
+    function renderDividerPreview(activeSegs, promptLine2) {
+      const stops = currentConfig.ruleStops || [activeSegs[0].bg, activeSegs[activeSegs.length - 1].bg];
+      const rule = (bg, fill) => {
+        const el = document.createElement("span");
+        el.className = "divider-rule" + (fill ? " divider-fill" : "");
+        el.style.background = bg;
+        el.setAttribute("aria-hidden", "true");
+        promptContainer.appendChild(el);
+      };
+      const segSpan = (seg, cls) => {
+        const el = document.createElement("span");
+        el.className = cls + " interactive-segment";
+        el.style.color = seg.bg;
+        el.textContent = seg.label;
+        el.title = `Click to customize ${seg.name}`;
+        el.onclick = () => focusSegmentCustomizer(seg.id);
+        return el;
+      };
+
+      promptContainer.classList.add("prompt-divider");
+      const dir = activeSegs.find(s => s.id === "dir");
+      const time = activeSegs.find(s => s.id === "time");
+      rule(stops[0]);
+      if (dir) promptContainer.appendChild(segSpan(dir, "prompt-segment-minimal"));
+      rule(`linear-gradient(to right, ${stops.join(", ")})`, true);
+      if (time) promptContainer.appendChild(segSpan(time, "prompt-segment-minimal"));
+      rule(stops[stops.length - 1]);
+
+      if (!promptLine2) return;
+      const anchor = promptLine2.firstElementChild;
+      activeSegs.filter(s => s.id !== "dir" && s.id !== "time").forEach(seg => {
+        promptLine2.insertBefore(segSpan(seg, "line2-module"), anchor);
       });
     }
 
