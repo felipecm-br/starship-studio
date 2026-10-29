@@ -404,7 +404,26 @@
     return String(s).toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "custom";
   }
 
-  const api = { importStarshipPreset, parseToml };
+  // Colors from someone else's TOML end up in inline styles: keep only hex and
+  // plain color names (palette values that aren't colors become `fallback`).
+  const SAFE_COLOR = /^(#[0-9a-f]{3,8}|[a-z]+)$/i;
+
+  function sanitizePresetColors({ preset, theme }, fallback = "transparent") {
+    const c = (v) => (v == null || SAFE_COLOR.test(v) ? v : fallback);
+    const cells = (list) => list.map(([glyph, fg, bg]) => [glyph, c(fg), c(bg)]);
+    const p = { ...preset };
+    ["charColor", "errorCharColor"].forEach(k => { if (k in p) p[k] = c(p[k]); });
+    if (p.ruleStops) p.ruleStops = p.ruleStops.map(c);
+    if (p.lead) p.lead = cells(p.lead);
+    if (p.tail) p.tail = cells(p.tail);
+    if (p.chains) p.chains = Object.fromEntries(Object.entries(p.chains).map(([k, v]) => [k, cells(v)]));
+    if (p.bleed) p.bleed = p.bleed.map(b => (Array.isArray(b) ? b.map(c) : c(b)));
+    const t = { ...theme, bg: SAFE_COLOR.test(theme.bg) ? theme.bg : DEFAULT_BG, fg: SAFE_COLOR.test(theme.fg) ? theme.fg : DEFAULT_FG };
+    ["os", "dir", "git", "lang", "ai", "time"].forEach(k => { t[k] = { bg: c(theme[k].bg), fg: c(theme[k].fg) }; });
+    return { preset: p, theme: t };
+  }
+
+  const api = { importStarshipPreset, parseToml, sanitizePresetColors };
   if (typeof module === "object" && module.exports) module.exports = api;
   else Object.assign(root, api);
 })(typeof window !== "undefined" ? window : globalThis);

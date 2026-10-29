@@ -653,11 +653,11 @@
       gap: 8px;
     }
 
-    .preset-card.is-user .preset-header {
+    .preset-card.has-extra .preset-header {
       padding-right: 104px;
     }
 
-    .preset-quick-copy-btn.preset-remove-btn {
+    .preset-quick-copy-btn.preset-extra-btn {
       right: 56px;
     }
 
@@ -1339,6 +1339,8 @@
       pointer-events: none;
     }
 
+    .preset-filter-btn[hidden],
+    .btn[hidden],
     .preview-peek-badge[hidden] {
       display: none;
     }
@@ -6895,19 +6897,20 @@
 
         card.appendChild(btn);
         card.appendChild(copyBtn);
-        if (p.user) {
-          card.classList.add("is-user");
-          const removeBtn = document.createElement("button");
-          removeBtn.type = "button";
-          removeBtn.className = "preset-quick-copy-btn preset-remove-btn";
-          removeBtn.textContent = "Remove";
-          removeBtn.title = "Remove from your gallery";
-          removeBtn.setAttribute("aria-label", `Remove ${p.name} from your gallery`);
-          removeBtn.onclick = (e) => {
+        if (p.user || p.shared) {
+          card.classList.add("has-extra");
+          const extraBtn = document.createElement("button");
+          extraBtn.type = "button";
+          extraBtn.className = "preset-quick-copy-btn preset-extra-btn" + (p.user ? " preset-remove-btn" : "");
+          extraBtn.textContent = p.user ? "Remove" : "Save";
+          extraBtn.title = p.user ? "Remove from your gallery" : "Save to your gallery (Mine)";
+          extraBtn.setAttribute("aria-label", p.user ? `Remove ${p.name} from your gallery` : `Save ${p.name} to your gallery`);
+          extraBtn.onclick = (e) => {
             e.stopPropagation();
-            removeUserPreset(p.id);
+            if (p.user) removeUserPreset(p.id);
+            else saveSharedPreset(p.id);
           };
-          card.appendChild(removeBtn);
+          card.appendChild(extraBtn);
         }
         presetsGrid.appendChild(card);
       });
@@ -7208,6 +7211,29 @@
     // Ids are written with dashes in links (chroma-opal); underscores, any case
     // and preset aliases are accepted too.
     const PRESET_URL_PARAM = "preset";
+    // Imported prompts travel inside the link itself: ?theme=<deflated {n, t} JSON, base64url>
+    const THEME_URL_PARAM = "theme";
+    const SHARED_TOML_LIMIT = 64 * 1024;
+
+    async function encodeSharedTheme(name, toml) {
+      const json = new TextEncoder().encode(JSON.stringify({ n: name, t: toml }));
+      const stream = new Blob([json]).stream().pipeThrough(new CompressionStream("deflate-raw"));
+      const bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+      let bin = "";
+      for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+      return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+
+    async function decodeSharedTheme(code) {
+      const bin = atob(code.replace(/-/g, "+").replace(/_/g, "/"));
+      const bytes = Uint8Array.from(bin, ch => ch.charCodeAt(0));
+      const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+      const data = JSON.parse(await new Response(stream).text());
+      if (!data || typeof data.t !== "string" || !data.t.trim() || data.t.length > SHARED_TOML_LIMIT) {
+        throw new Error("no TOML in the link");
+      }
+      return { name: typeof data.n === "string" ? data.n.slice(0, 60) : "", toml: data.t };
+    }
 
     function presetSlug(p) {
       return p.id.replace(/_/g, "-");
@@ -7219,24 +7245,34 @@
       return presets.find(p => p.id === key || p.alias === key) || null;
     }
 
-    function presetShareUrl(p) {
+    // Gallery presets link by id; imported and shared ones carry their TOML (async)
+    async function presetShareUrl(p) {
       const url = new URL(window.location.href);
       url.hash = "";
-      url.searchParams.set(PRESET_URL_PARAM, presetSlug(p));
+      url.searchParams.delete(PRESET_URL_PARAM);
+      url.searchParams.delete(THEME_URL_PARAM);
+      if (p.user || p.shared) url.searchParams.set(THEME_URL_PARAM, await encodeSharedTheme(p.name, p.rawToml));
+      else url.searchParams.set(PRESET_URL_PARAM, presetSlug(p));
       return url.toString();
     }
 
     // Keep the address bar pointing at the applied preset without adding history entries
     function syncPresetUrl(p) {
-      try {
-        window.history.replaceState(null, "", presetShareUrl(p));
-      } catch (e) {
+      presetShareUrl(p).then(link => {
+        if (currentConfig.activePreset !== p.id) return;  // another preset was applied meanwhile
+        window.history.replaceState(null, "", link);
+      }).catch(() => {
         // file:// pages in some browsers refuse replaceState; the share button still works
-      }
+      });
     }
 
     function loadPresetFromUrl() {
-      const slug = new URLSearchParams(window.location.search).get(PRESET_URL_PARAM);
+      const params = new URLSearchParams(window.location.search);
+      if (params.get(THEME_URL_PARAM)) {
+        loadSharedThemeFromUrl(params.get(THEME_URL_PARAM));
+        return;
+      }
+      const slug = params.get(PRESET_URL_PARAM);
       if (!slug) return;
       const p = findPresetBySlug(slug);
       if (p) {
@@ -7251,17 +7287,49 @@
       showToast(`Preset "${slug}" not found, showing the default prompt`);
     }
 
+    async function loadSharedThemeFromUrl(code) {
+      let shared;
+      try {
+        shared = await decodeSharedTheme(code);
+      } catch (e) {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.delete(THEME_URL_PARAM);
+          window.history.replaceState(null, "", url.toString());
+        } catch (e2) { /* see syncPresetUrl */ }
+        showToast("This shared prompt link is broken or incomplete");
+        return;
+      }
+      // Your own preset coming back (reload, or a link you sent yourself)
+      const own = presets.find(p => p.user && p.rawToml === shared.toml.trim());
+      if (own) {
+        applyPreset(own);
+        return;
+      }
+      let preset;
+      try {
+        preset = registerSharedPreset(shared);
+      } catch (e) {
+        showToast(`Couldn't read the shared prompt: ${e.message || e}`);
+        return;
+      }
+      renderThemeSelect();
+      applyPreset(preset);
+      showToast(`Previewing shared prompt "${preset.name}". Click Save on its card to keep it`);
+    }
+
     function copyPresetLink(btnEl) {
       const p = presets.find(item => item.id === currentConfig.activePreset);
       if (!p) {
         showToast("Pick a preset first to share a link to it");
         return;
       }
-      if (p.user) {
-        showToast("Your imported presets are saved in this browser only, so they can't be shared by link yet");
-        return;
-      }
-      const link = presetShareUrl(p);
+      presetShareUrl(p).then(link => copyShareLink(p, link, btnEl), () => {
+        showToast("Couldn't build a link in this browser");
+      });
+    }
+
+    function copyShareLink(p, link, btnEl) {
       const done = () => {
         showToast(`Link to "${p.name}" copied to clipboard!`);
         const label = btnEl && btnEl.querySelector(".btn-copy-label");
@@ -7540,7 +7608,10 @@
       if (promptLine2) promptLine2.querySelectorAll(".line2-module").forEach(el => el.remove());
 
       if (activeSegs.length === 0) {
-        promptContainer.innerHTML = `<span style="color: ${theme.fg};">Empty Prompt Line — Toggle a module above to preview</span>`;
+        const empty = document.createElement("span");
+        empty.style.color = theme.fg;
+        empty.textContent = "Empty Prompt Line — Toggle a module above to preview";
+        promptContainer.appendChild(empty);
         return;
       }
 
@@ -8277,11 +8348,12 @@ error_symbol = "[${charSym}](${errCol})"
       }
     }
 
-    function buildUserPreset(item) {
-      const { preset, theme } = importStarshipPreset(item.toml, {
-        id: item.id, name: item.name, author: "You", authorUrl: ""
-      });
-      preset.user = true;
+    // `shared`: opened from someone's link, shown until saved (never stored)
+    function buildUserPreset(item, shared = false) {
+      const { preset, theme } = sanitizePresetColors(importStarshipPreset(item.toml, {
+        id: item.id, name: item.name, author: shared ? "Community" : "You", authorUrl: ""
+      }));
+      preset[shared ? "shared" : "user"] = true;
       return { preset, theme };
     }
 
@@ -8293,6 +8365,47 @@ error_symbol = "[${charSym}](${errCol})"
       if (at !== -1) presets.splice(at, 1);
       presets.unshift(preset);
       return preset;
+    }
+
+    function registerSharedPreset({ name, toml }) {
+      const derivedName = name || importStarshipPreset(toml).preset.name;
+      const id = uniqueUserPresetId(derivedName).replace(/^user_/, "shared_");
+      const { preset, theme } = buildUserPreset({ id, name: derivedName, toml }, true);
+      themes[preset.theme] = theme;
+      presets.unshift(preset);
+      return preset;
+    }
+
+    function saveSharedPreset(id) {
+      const p = presets.find(item => item.id === id && item.shared);
+      if (!p) return;
+      const item = { id: uniqueUserPresetId(p.name), name: p.name, toml: p.rawToml };
+      if (!writeUserPresetStore([item, ...readUserPresetStore()])) return;
+      presets.splice(presets.indexOf(p), 1);
+      delete themes[p.theme];
+      const saved = registerUserPreset(item);
+      renderThemeSelect();
+      applyPreset(saved);
+      showToast(`Saved "${saved.name}" to your gallery`);
+    }
+
+    // Pre-filled GitHub issue proposing the active imported preset for the gallery
+    const SUBMIT_ISSUE_URL = "https://github.com/felipecm-br/starship-studio/issues/new";
+
+    async function submitPresetToGallery() {
+      const p = presets.find(item => item.id === currentConfig.activePreset);
+      if (!p || !(p.user || p.shared)) {
+        showToast("Import or open your own prompt first");
+        return;
+      }
+      const link = await presetShareUrl(p);
+      const head = `**Preset name:** ${p.name}\n**Author / credit link:** \n**Live preview:** ${link}\n`;
+      const tomlBlock = `\n<details><summary>starship.toml</summary>\n\n\`\`\`toml\n${p.rawToml}\n\`\`\`\n</details>\n`;
+      const foot = "\n_Submitted from Starship Studio._";
+      const issueUrl = (body) => `${SUBMIT_ISSUE_URL}?title=${encodeURIComponent("Preset: " + p.name)}&body=${encodeURIComponent(body)}`;
+      let url = issueUrl(head + tomlBlock + foot);
+      if (url.length > 8000) url = issueUrl(head + "\nThe full TOML is inside the live preview link." + foot);
+      window.open(url, "_blank", "noopener");
     }
 
     function loadUserPresets() {
@@ -8434,6 +8547,8 @@ error_symbol = "[${charSym}](${errCol})"
       const modalAuthorLink = document.getElementById("modalAuthorLink");
       const modalAuthorDot = document.getElementById("modalAuthorDot");
       const currentP = presets.find(p => p.id === currentConfig.activePreset);
+      const modalSubmitBtn = document.getElementById("modalSubmitBtn");
+      if (modalSubmitBtn) modalSubmitBtn.hidden = !(currentP && (currentP.user || currentP.shared));
       if (modalPresetName) modalPresetName.textContent = currentP ? currentP.name : "Custom Prompt";
       if (modalPresetStyle) {
         const s = currentConfig.promptStyle;
@@ -8641,6 +8756,15 @@ error_symbol = "[${charSym}](${errCol})"
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
           <span>Download .toml</span>
+        </button>
+        <button type="button" class="btn btn-secondary" id="modalSubmitBtn" onclick="submitPresetToGallery()" hidden
+          title="Open a pre-filled GitHub issue proposing this prompt for the gallery">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            aria-hidden="true">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+          <span>Submit to gallery</span>
         </button>
       </div>
 
