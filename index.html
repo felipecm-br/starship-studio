@@ -3010,6 +3010,15 @@
               </svg>
               <span class="btn-copy-label">Copy TOML</span>
             </button>
+            <button type="button" class="terminal-action-btn" id="sharePresetBtn" onclick="copyPresetLink(this)"
+              title="Copy a link that opens Starship Studio with the current preset loaded">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                aria-hidden="true">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <span class="btn-copy-label">Share Link</span>
+            </button>
             <button type="button" class="terminal-action-btn terminal-btn-export" onclick="openExportModal()"
               title="Open modal dialog with full starship.toml configuration and install steps">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -6753,6 +6762,7 @@
 
       updateCustomizer();
       initCompactStickyPreview();
+      loadPresetFromUrl();
     }
 
     // Populate Select Dropdowns
@@ -7220,7 +7230,77 @@
       } else {
         updateCustomizer(false);
       }
+      syncPresetUrl(p);
       showToast(`Loaded preset "${p.name}"`);
+    }
+
+    // ── Shareable preset links: ?preset=<id> ──────────────────────────────────
+    // Ids are written with dashes in links (chroma-opal); underscores, any case
+    // and preset aliases are accepted too.
+    const PRESET_URL_PARAM = "preset";
+
+    function presetSlug(p) {
+      return p.id.replace(/_/g, "-");
+    }
+
+    function findPresetBySlug(slug) {
+      const key = String(slug || "").trim().toLowerCase().replace(/-/g, "_");
+      if (!key) return null;
+      return presets.find(p => p.id === key || p.alias === key) || null;
+    }
+
+    function presetShareUrl(p) {
+      const url = new URL(window.location.href);
+      url.hash = "";
+      url.searchParams.set(PRESET_URL_PARAM, presetSlug(p));
+      return url.toString();
+    }
+
+    // Keep the address bar pointing at the applied preset without adding history entries
+    function syncPresetUrl(p) {
+      try {
+        window.history.replaceState(null, "", presetShareUrl(p));
+      } catch (e) {
+        // file:// pages in some browsers refuse replaceState; the share button still works
+      }
+    }
+
+    function loadPresetFromUrl() {
+      const slug = new URLSearchParams(window.location.search).get(PRESET_URL_PARAM);
+      if (!slug) return;
+      const p = findPresetBySlug(slug);
+      if (p) {
+        applyPreset(p);
+        return;
+      }
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete(PRESET_URL_PARAM);
+        window.history.replaceState(null, "", url.toString());
+      } catch (e) { /* see syncPresetUrl */ }
+      showToast(`Preset "${slug}" not found, showing the default prompt`);
+    }
+
+    function copyPresetLink(btnEl) {
+      const p = presets.find(item => item.id === currentConfig.activePreset);
+      if (!p) {
+        showToast("Pick a preset first to share a link to it");
+        return;
+      }
+      const link = presetShareUrl(p);
+      const done = () => {
+        showToast(`Link to "${p.name}" copied to clipboard!`);
+        const label = btnEl && btnEl.querySelector(".btn-copy-label");
+        if (label) {
+          label.textContent = "✓ Copied";
+          setTimeout(() => { label.textContent = "Share Link"; }, 1500);
+        }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(done, () => window.prompt("Copy this link:", link));
+      } else {
+        window.prompt("Copy this link:", link);
+      }
     }
 
     // ── Interactive Playground Scenarios ──────────────────────────────────────
