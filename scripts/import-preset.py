@@ -9,6 +9,7 @@ For each TOML this writes (or replaces, when the id already exists):
     the divider layout, character symbol and module icons.
 
 Only the Python standard library is used (tomllib, Python 3.11+).
+preset-import.js is the browser port (user imports); keep the two in step.
 
 Usage:
   scripts/import-preset.py PRESET.toml [PRESET.toml ...] [--dry-run]

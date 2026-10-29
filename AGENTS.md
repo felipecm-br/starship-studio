@@ -31,6 +31,7 @@ This repository contains **Starship Studio**, an interactive web-based visual ed
 - **Workflow** (stdlib Python 3.11+ and Chromium, no dependencies):
   1. `scripts/import-preset.py path/to/preset.toml [...]` writes the theme and preset entries into `index.html`, deriving every field below from the TOML. Re-running it replaces the entries for that id (use `--id`/`--name` to fix a misspelled filename or header; `--dry-run` prints instead of writing). Re-apply any hand edits after a re-import.
   2. `scripts/preview-sheet.sh -o /tmp/sheet.png <preset_id> [...]` renders the live preview of the given presets into one PNG. Compare it with the TOML / a real terminal and fix differences (in the importer or the renderer, generically) before committing.
+- `preset-import.js` is the browser port of `import-preset.py` (powers **Import** → **Mine**). Change both together and keep their output identical for every preset's `rawToml`.
 - The `rawToml` is the source of truth and ships verbatim; the preview fields are derived from it, with colors resolved from its own palette (never approximated):
   - `theme`: a matching entry in `themes` (bg/fg per segment: `os`, `dir`, `git`, `lang`, `ai`, `time`).
   - `leftCap` / `sep` / `rightCap`: enough for presets with a single glyph per transition.

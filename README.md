@@ -19,6 +19,7 @@
 - **⚡ Live Interactive Prompt Studio**: Real-time prompt preview reflecting your chosen directory path, git branch, execution status, and separator style.
 - **📏 Fine-Tuned Typography**: Adjust prompt line height (px) and vertical separator scaling for pixel-perfect Powerline alignment.
 - **🔗 Shareable Preset Links**: Every preset has its own URL, e.g. [`?preset=chroma-opal`](https://felipecm-br.github.io/starship-studio/?preset=chroma-opal). The address bar follows the applied preset, and **Share Link** copies it.
+- **📥 Import Your Own Prompt**: Paste or open any `starship.toml` to add it to the gallery under **Mine**. The preview is derived from its format string and palette, and it stays saved in your browser.
 - **📥 One-Click Export**: Copy the generated `starship.toml` directly to your clipboard or download it as a configuration file.
 - **🏎️ Zero Dependencies**: 100% client-side HTML, CSS, and vanilla JavaScript. No build step or backend required.
 

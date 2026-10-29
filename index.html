@@ -647,6 +647,63 @@
       font-weight: 600;
     }
 
+    .presets-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .preset-card.is-user .preset-header {
+      padding-right: 104px;
+    }
+
+    .preset-quick-copy-btn.preset-remove-btn {
+      right: 56px;
+    }
+
+    .preset-quick-copy-btn.preset-remove-btn:hover,
+    .preset-quick-copy-btn.preset-remove-btn:focus-visible {
+      border-color: var(--accent-pink);
+      color: var(--accent-pink);
+    }
+
+    .import-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .import-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .import-row input[type="text"] {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .import-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .import-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .import-error {
+      font-size: 12px;
+      color: var(--accent-pink);
+      margin: 0;
+      font-family: var(--font-code);
+    }
+
     /* Floating Quick Actions Bar (Centered bottom so it never covers the sidebar on laptops) */
     .floating-quick-bar {
       position: fixed;
@@ -3107,6 +3164,17 @@
             <span><span class="ui-glyph" aria-hidden="true">󰏘</span> Presets Gallery</span>
             <span class="presets-count-badge" id="presetsTotalBadge" aria-live="polite">35 presets</span>
           </div>
+          <div class="presets-header-actions">
+          <button type="button" class="btn btn-sm btn-secondary export-header-btn" onclick="openImportModal()"
+            title="Add your own starship.toml to the gallery">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Import</span>
+          </button>
           <button type="button" class="btn btn-sm btn-primary export-header-btn" onclick="openExportModal()"
             title="View and copy active starship.toml configuration">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -3118,6 +3186,7 @@
             </svg>
             <span>Export TOML</span>
           </button>
+          </div>
         </h2>
 
         <!-- Dedicated Filter Bar with spacious pill buttons & instant search -->
@@ -3142,6 +3211,11 @@
               onclick="setPresetFilter('light')">
               <span><span class="ui-glyph" aria-hidden="true"></span> Light</span>
               <span class="filter-count" id="count-light">0</span>
+            </button>
+            <button type="button" class="preset-filter-btn" aria-pressed="false" data-filter="mine"
+              onclick="setPresetFilter('mine')" id="filter-mine" hidden>
+              <span><span class="ui-glyph" aria-hidden="true"></span> Mine</span>
+              <span class="filter-count" id="count-mine">0</span>
             </button>
           </div>
           <div class="preset-search-wrap">
@@ -3682,6 +3756,7 @@
   <!-- Toast Notification -->
   <div class="toast" id="toast" role="status" aria-live="polite">Copied to clipboard!</div>
 
+  <script src="preset-import.js"></script>
   <script>
     // ── Glyphs Database from separators.md & Powerline standard ──────────────────
     const glyphCategories = [
@@ -6617,6 +6692,8 @@
     // ── Initialize App ────────────────────────────────────────────────────────
     function init() {
       initTheme();
+      loadUserPresets();
+      initImportDrop();
       renderGlyphSelects();
       renderGlyphLibrary();
       renderPresetButtons();
@@ -6744,13 +6821,20 @@
       if (countPowerline) countPowerline.textContent = presets.filter(p => p.category === "powerline").length;
       if (countMinimal) countMinimal.textContent = presets.filter(p => p.category === "minimal").length;
       if (countLight) countLight.textContent = presets.filter(p => p.category === "light").length;
+      const userCount = presets.filter(p => p.user).length;
+      const countMine = document.getElementById("count-mine");
+      const filterMine = document.getElementById("filter-mine");
+      if (countMine) countMine.textContent = userCount;
+      if (filterMine) filterMine.hidden = userCount === 0;
+      if (!userCount && currentPresetFilter === "mine") currentPresetFilter = "all";
 
       const filtered = presets.filter(p => {
         const catMatch =
           currentPresetFilter === "all" ||
           (currentPresetFilter === "powerline" && p.category === "powerline") ||
           (currentPresetFilter === "minimal" && p.category === "minimal") ||
-          (currentPresetFilter === "light" && p.category === "light");
+          (currentPresetFilter === "light" && p.category === "light") ||
+          (currentPresetFilter === "mine" && p.user);
         if (!catMatch) return false;
         if (!presetSearchQuery) return true;
         const themeName = (themes[p.theme] && themes[p.theme].name) ? themes[p.theme].name : "";
@@ -6811,6 +6895,20 @@
 
         card.appendChild(btn);
         card.appendChild(copyBtn);
+        if (p.user) {
+          card.classList.add("is-user");
+          const removeBtn = document.createElement("button");
+          removeBtn.type = "button";
+          removeBtn.className = "preset-quick-copy-btn preset-remove-btn";
+          removeBtn.textContent = "Remove";
+          removeBtn.title = "Remove from your gallery";
+          removeBtn.setAttribute("aria-label", `Remove ${p.name} from your gallery`);
+          removeBtn.onclick = (e) => {
+            e.stopPropagation();
+            removeUserPreset(p.id);
+          };
+          card.appendChild(removeBtn);
+        }
         presetsGrid.appendChild(card);
       });
     }
@@ -7094,7 +7192,7 @@
         const headerComment = "# ==============================================================================\n# Preset: " + p.name + "\n# Created by: " + authorText + authorUrlText + "\n# Configured with Starship Studio: https://github.com/felipecm-br/starship-studio\n# ==============================================================================\n\n";
 
         let raw = p.rawToml.trim();
-        if (!raw.startsWith("# ==============================================================================")) {
+        if (!p.user && !raw.startsWith("# ==============================================================================")) {
           raw = headerComment + raw;
         }
         tomlOutput.value = raw + "\n";
@@ -7157,6 +7255,10 @@
       const p = presets.find(item => item.id === currentConfig.activePreset);
       if (!p) {
         showToast("Pick a preset first to share a link to it");
+        return;
+      }
+      if (p.user) {
+        showToast("Your imported presets are saved in this browser only, so they can't be shared by link yet");
         return;
       }
       const link = presetShareUrl(p);
@@ -8151,6 +8253,171 @@ error_symbol = "[${charSym}](${errCol})"
     // Start
     window.onload = init;
 
+    // ── Your presets: imported starship.toml files saved in localStorage ──────
+    // Only the TOML and name are stored; the preview is re-derived on load so
+    // importer fixes apply to presets saved earlier.
+    const USER_PRESETS_KEY = "starship_studio_user_presets";
+
+    function readUserPresetStore() {
+      try {
+        const list = JSON.parse(localStorage.getItem(USER_PRESETS_KEY) || "[]");
+        return Array.isArray(list) ? list : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function writeUserPresetStore(list) {
+      try {
+        localStorage.setItem(USER_PRESETS_KEY, JSON.stringify(list));
+        return true;
+      } catch (e) {
+        showToast("Couldn't save: browser storage is unavailable or full");
+        return false;
+      }
+    }
+
+    function buildUserPreset(item) {
+      const { preset, theme } = importStarshipPreset(item.toml, {
+        id: item.id, name: item.name, author: "You", authorUrl: ""
+      });
+      preset.user = true;
+      return { preset, theme };
+    }
+
+    // Add (or replace) one stored preset in the in-memory gallery, first in line
+    function registerUserPreset(item) {
+      const { preset, theme } = buildUserPreset(item);
+      themes[preset.theme] = theme;
+      const at = presets.findIndex(p => p.id === preset.id);
+      if (at !== -1) presets.splice(at, 1);
+      presets.unshift(preset);
+      return preset;
+    }
+
+    function loadUserPresets() {
+      readUserPresetStore().slice().reverse().forEach(item => {
+        try {
+          registerUserPreset(item);
+        } catch (e) {
+          console.warn(`Skipping saved preset "${item && item.name}":`, e);
+        }
+      });
+      renderThemeSelect();
+    }
+
+    function removeUserPreset(id) {
+      const p = presets.find(item => item.id === id);
+      if (!p || !window.confirm(`Remove "${p.name}" from your gallery?`)) return;
+      if (!writeUserPresetStore(readUserPresetStore().filter(item => item.id !== id))) return;
+      presets.splice(presets.indexOf(p), 1);
+      delete themes[p.theme];
+      renderThemeSelect();
+      renderPresetButtons();
+      showToast(`Removed "${p.name}"`);
+    }
+
+    function uniqueUserPresetId(name) {
+      const base = "user_" + (String(name).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "prompt");
+      let id = base;
+      for (let n = 2; presets.some(p => p.id === id) || themes[id]; n++) id = `${base}_${n}`;
+      return id;
+    }
+
+    function openImportModal() {
+      const backdrop = document.getElementById("importModalBackdrop");
+      if (!backdrop) return;
+      setImportError("");
+      backdrop.style.display = "flex";
+      requestAnimationFrame(() => backdrop.classList.add("active"));
+      document.body.style.overflow = "hidden";
+      const textarea = document.getElementById("importToml");
+      if (textarea) textarea.focus();
+    }
+
+    function closeImportModal() {
+      const backdrop = document.getElementById("importModalBackdrop");
+      if (!backdrop || backdrop.style.display === "none") return;
+      backdrop.classList.remove("active");
+      setTimeout(() => {
+        backdrop.style.display = "none";
+        document.body.style.overflow = "";
+      }, 250);
+    }
+
+    function closeImportModalOnBackdrop(e) {
+      if (e.target && e.target.id === "importModalBackdrop") closeImportModal();
+    }
+
+    function setImportError(msg) {
+      const el = document.getElementById("importError");
+      if (!el) return;
+      el.textContent = msg;
+      el.hidden = !msg;
+    }
+
+    function readImportFile(file) {
+      if (!file) return;
+      file.text().then(text => {
+        document.getElementById("importToml").value = text;
+        const nameInput = document.getElementById("importName");
+        if (nameInput && !nameInput.value.trim()) {
+          nameInput.value = file.name.replace(/\.toml$/i, "").replace(/^starship$/i, "");
+        }
+        setImportError("");
+      }, () => setImportError("Couldn't read that file"));
+    }
+
+    function onImportFile(input) {
+      readImportFile(input.files && input.files[0]);
+      input.value = "";
+    }
+
+    function importFromEditor() {
+      document.getElementById("importToml").value = tomlOutput.value;
+      setImportError("");
+    }
+
+    function submitImport() {
+      const toml = document.getElementById("importToml").value;
+      const nameInput = document.getElementById("importName");
+      if (!toml.trim()) {
+        setImportError("Paste a starship.toml first");
+        return;
+      }
+      let item;
+      try {
+        const derived = importStarshipPreset(toml);
+        const name = (nameInput.value.trim() || derived.preset.name).slice(0, 60);
+        item = { id: uniqueUserPresetId(name), name, toml };
+        buildUserPreset(item);  // validate before saving
+      } catch (e) {
+        setImportError(e.message || String(e));
+        return;
+      }
+      if (!writeUserPresetStore([item, ...readUserPresetStore()])) return;
+      const preset = registerUserPreset(item);
+      renderThemeSelect();
+      document.getElementById("importToml").value = "";
+      nameInput.value = "";
+      closeImportModal();
+      setPresetFilter("mine");
+      applyPreset(preset);
+      showToast(`Added "${preset.name}" to your gallery`);
+    }
+
+    function initImportDrop() {
+      const textarea = document.getElementById("importToml");
+      if (!textarea) return;
+      textarea.addEventListener("dragover", (e) => e.preventDefault());
+      textarea.addEventListener("drop", (e) => {
+        const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (!file) return;
+        e.preventDefault();
+        readImportFile(file);
+      });
+    }
+
     // ── State-of-the-Art Export Modal & Quick Actions ─────────────────────────
     function openExportModal() {
       const backdrop = document.getElementById("exportModalBackdrop");
@@ -8267,6 +8534,7 @@ error_symbol = "[${charSym}](${errCol})"
       // Escape: close modal dialogs and drawer
       if (e.key === "Escape") {
         closeExportModal();
+        closeImportModal();
         closeModuleIconDrawer();
         return;
       }
@@ -8430,6 +8698,61 @@ error_symbol = "[${charSym}](${errCol})"
             href="https://starship.rs/config-schema.json" target="_blank"
             rel="noopener noreferrer">starship.rs</a></span>
         <button type="button" class="btn btn-secondary btn-sm" onclick="closeExportModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import Modal: add your own starship.toml to the gallery -->
+  <div class="modal-backdrop" id="importModalBackdrop" onclick="closeImportModalOnBackdrop(event)" role="dialog"
+    aria-modal="true" aria-labelledby="importModalTitle" style="display: none;">
+    <div class="modal-container" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div>
+            <h2 id="importModalTitle" class="modal-title">Import your prompt</h2>
+            <div class="modal-subtitle">Paste or open a starship.toml to add it to your gallery</div>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeImportModal()" aria-label="Close dialog">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-tab-panel import-form">
+        <div class="import-row">
+          <input type="text" id="importName" aria-label="Preset name" placeholder="Name (optional)" maxlength="60"
+            autocomplete="off">
+          <input type="file" id="importFile" accept=".toml,text/plain" hidden onchange="onImportFile(this)">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('importFile').click()">
+            Open .toml file</button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="importFromEditor()"
+            title="Use the TOML currently in the editor">Use editor TOML</button>
+        </div>
+        <div class="modal-code-wrapper">
+          <textarea id="importToml" class="modal-code-editor" spellcheck="false" aria-label="starship.toml to import"
+            placeholder="# Paste your ~/.config/starship.toml here"></textarea>
+        </div>
+        <p class="import-error" id="importError" role="alert" hidden></p>
+        <p class="import-hint">Saved in this browser only. The preview is derived from your format string and palette.</p>
+      </div>
+
+      <div class="modal-footer">
+        <span class="modal-footer-note">Tip: drop a .toml file onto the box</span>
+        <div class="import-actions">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeImportModal()">Cancel</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="submitImport()">Add to gallery</button>
+        </div>
       </div>
     </div>
   </div>
