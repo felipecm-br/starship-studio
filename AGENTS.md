@@ -28,6 +28,9 @@ This repository contains **Starship Studio**, an interactive web-based visual ed
 
 ### 3. Preset Preview Fidelity
 - **Every new or changed preset must render in the live preview and its gallery card exactly as it renders in a real terminal (or as close as the browser allows).** A preset is not done until its preview matches its TOML.
+- **Workflow** (stdlib Python 3.11+ and Chromium, no dependencies):
+  1. `scripts/import-preset.py path/to/preset.toml [...]` writes the theme and preset entries into `index.html`, deriving every field below from the TOML. Re-running it replaces the entries for that id (use `--id`/`--name` to fix a misspelled filename or header; `--dry-run` prints instead of writing). Re-apply any hand edits after a re-import.
+  2. `scripts/preview-sheet.sh -o /tmp/sheet.png <preset_id> [...]` renders the live preview of the given presets into one PNG. Compare it with the TOML / a real terminal and fix differences (in the importer or the renderer, generically) before committing.
 - The `rawToml` is the source of truth and ships verbatim; the preview fields are derived from it, with colors resolved from its own palette (never approximated):
   - `theme`: a matching entry in `themes` (bg/fg per segment: `os`, `dir`, `git`, `lang`, `ai`, `time`).
   - `leftCap` / `sep` / `rightCap`: enough for presets with a single glyph per transition.
