@@ -26,7 +26,22 @@ This repository contains **Starship Studio**, an interactive web-based visual ed
 - **Starship Schema Compatibility**:
   - All generated TOML configs must adhere to the official Starship configuration schema (`https://starship.rs/config-schema.json`).
 
-### 3. SEO & Discoverability
+### 3. Preset Preview Fidelity
+- **Every new or changed preset must render in the live preview and its gallery card exactly as it renders in a real terminal (or as close as the browser allows).** A preset is not done until its preview matches its TOML.
+- The `rawToml` is the source of truth and ships verbatim; the preview fields are derived from it, with colors resolved from its own palette (never approximated):
+  - `theme`: a matching entry in `themes` (bg/fg per segment: `os`, `dir`, `git`, `lang`, `ai`, `time`).
+  - `leftCap` / `sep` / `rightCap`: enough for presets with a single glyph per transition.
+  - `lead`: `[glyph, fg, bg]` cells drawn before the first segment (replaces `leftCap`).
+  - `chains`: `{ os|dir|git|lang: [[glyph, fg, bg], ...] }` multi-glyph transitions after that module.
+  - `tail`: cells after the last segment (replaces `rightCap`).
+  - `bleed`: a `$fill` band before `time`: a list of colors (smooth gradient) or `[top, bottom]` pairs (U+2580 half-block columns).
+  - `layout: "divider"` + `ruleStops`: full-width rule with `dir`/`time` set into it and the other modules on line 2.
+  - `charSymbol` / `charColor` / `errorCharColor` and `moduleIcons` from `[character]` and each module's format.
+- Use `"transparent"` for `bg` cells over the terminal background. Glyphs outside the Powerline/block ranges (dots, braille, stars) render at text size automatically.
+- **Verify visually**: apply the preset in headless Chromium (`chromium --headless=new --screenshot`) and compare the preview with the format string glyph by glyph (caps, every transition, decorations, fills). Check the gallery card too and a narrow width (~420px) for overflow.
+- If a terminal feature can't be expressed with the existing fields, extend the renderer generically (opt-in preset field) instead of special-casing one preset ID.
+
+### 4. SEO & Discoverability
 - Maintain `<meta>` description, Open Graph, Twitter cards, and Schema.org JSON-LD structured data in `index.html`.
 - Keep `robots.txt` and `sitemap.xml` in sync with any structural or URL changes.
 
